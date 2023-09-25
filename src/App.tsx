@@ -27,21 +27,21 @@ export default function App(): JSX.Element {
                         alignItems="flex-start"
                         overflow="hidden"
                         sx={{
-                            minWidth: DarkTheme.spacing(26)
+                            minWidth: DarkTheme.spacing(23)
                         }}
                     >
                         <Paper
                             elevation={2}
                             sx={{
                                 height: "auto",
-                                width: DarkTheme.spacing(47),
+                                width: DarkTheme.spacing(49),
                                 padding: DarkTheme.spacing(1),
                                 paddingBottom: "0",
                                 margin: DarkTheme.spacing(1),
                                 overflowX: "hidden",
                                 overflowY: "auto",
-                                "@media screen and (max-width:800px)": {
-                                    width: DarkTheme.spacing(24)
+                                "@media screen and (max-width:816px)": {
+                                    width: DarkTheme.spacing(25)
                                 }
                             }}
                         >
@@ -64,22 +64,18 @@ export default function App(): JSX.Element {
                                 gap={DarkTheme.spacing(1)}
                             >
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(22)}
-                                    height={DarkTheme.spacing(22)}
+                                    width={DarkTheme.spacing(23)}
+                                    height="auto"
                                 >
                                     <Canvas
-                                        width={DarkTheme.spacing(20)}
-                                        height={DarkTheme.spacing(20)}
+                                        width={DarkTheme.spacing(21)}
+                                        height={DarkTheme.spacing(40)}
                                     />
                                 </PropertyWrapper>
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(22)}
-                                    height={DarkTheme.spacing(22)}
+                                    width={DarkTheme.spacing(23)}
+                                    height="auto"
                                 >
-                                    <Canvas
-                                        width={DarkTheme.spacing(20)}
-                                        height={DarkTheme.spacing(20)}
-                                    />
                                 </PropertyWrapper>
                             </Grid>
                         </Paper>
@@ -117,8 +113,10 @@ type Canvas = {
     height: string;
 };
 
-function Canvas({ width: width, height: height }: Canvas) {
+function Canvas({ width, height }: Canvas) {
     const canvas_ref = useRef(null);
+    const canvas_width = `${Number(width.slice(0,-2)) * 2}`;
+    const canvas_height = `${Number(height.slice(0,-2)) * 2}`;
 
     const get_context = (): CanvasRenderingContext2D => {
         const canvas: any = canvas_ref.current;
@@ -127,13 +125,39 @@ function Canvas({ width: width, height: height }: Canvas) {
 
     useEffect(() => {
         const ctx: CanvasRenderingContext2D = get_context();
-        ctx.fillRect(0, 0, 100, 100);
+        ctx.strokeStyle = "white"
+        ctx.fillRect(0, 0, 672, 672);
+
+        ctx.strokeStyle = "white"
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let v = 96; v < 672; v += 96) {
+            ctx.moveTo(v, 0);
+            ctx.lineTo(v, 672);
+        }
+        for (let h = 96; h < 672; h += 96) {
+            ctx.moveTo(0, h);
+            ctx.lineTo(672, h);
+        }
+        ctx.stroke();
         ctx.save();
     })
 
     return (
-        <>
-            <canvas ref={canvas_ref} width={width} height={height} />
-        </>
+        <div
+            style={{
+                maxWidth: width,
+                maxHeight: height,
+            }}
+        >
+            <canvas
+                ref={canvas_ref}
+                width={canvas_width}
+                height={canvas_height}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                }} />
+        </div >
     );
 }
