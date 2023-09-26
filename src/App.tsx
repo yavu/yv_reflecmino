@@ -3,9 +3,10 @@ import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Divider, FormControl, MenuItem, Paper, Select, SelectChangeEvent, SxProps, TextField, Typography } from '@mui/material';
+import { Button, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEvent, SxProps, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DarkTheme } from './theme/dark';
+import { generate } from './puzzle/generate';
 
 export default function App(): JSX.Element {
     return (
@@ -40,7 +41,7 @@ export default function App(): JSX.Element {
                                 margin: DarkTheme.spacing(1),
                                 overflowX: "hidden",
                                 overflowY: "auto",
-                                "@media screen and (max-width:816px)": {
+                                "@media screen and (max-width:824px)": {
                                     width: DarkTheme.spacing(25)
                                 }
                             }}
@@ -64,18 +65,23 @@ export default function App(): JSX.Element {
                                 gap={DarkTheme.spacing(1)}
                             >
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(23)}
+                                    width={DarkTheme.spacing(44)}
                                     height="auto"
                                 >
                                     <Canvas
-                                        width={DarkTheme.spacing(21)}
-                                        height={DarkTheme.spacing(40)}
+                                        width={DarkTheme.spacing(42)}
+                                        height={DarkTheme.spacing(42)}
                                     />
                                 </PropertyWrapper>
                                 <PropertyWrapper
                                     width={DarkTheme.spacing(23)}
                                     height="auto"
                                 >
+                                    <Button
+                                        onClick= {() => generate()}
+                                    >
+                                        test
+                                    </Button>
                                 </PropertyWrapper>
                             </Grid>
                         </Paper>
@@ -115,11 +121,17 @@ type Canvas = {
 
 function Canvas({ width, height }: Canvas) {
     const canvas_ref = useRef(null);
-    const canvas_width = `${Number(width.slice(0,-2)) * 2}`;
-    const canvas_height = `${Number(height.slice(0,-2)) * 2}`;
+    const canvas_width = `${Number(width.slice(0, -2)) * 2}`;
+    const canvas_height = `${Number(height.slice(0, -2)) * 2}`;
 
     const get_context = (): CanvasRenderingContext2D => {
         const canvas: any = canvas_ref.current;
+        //canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
+        //canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
+        //canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
+        //canvas.addEventListener("mousedown", () => {console.log("m_down")}, false);
+        //canvas.addEventListener("mousemove", () => {console.log("m_move")}, false);
+        //canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
         return canvas.getContext('2d');
     };
 
