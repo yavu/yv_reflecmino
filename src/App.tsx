@@ -64,6 +64,7 @@ export default function App(): JSX.Element {
                                 alignItems="flex-start"
                                 gap={DarkTheme.spacing(1)}
                             >
+                                {/*
                                 <PropertyWrapper
                                     width={DarkTheme.spacing(44)}
                                     height="auto"
@@ -73,12 +74,13 @@ export default function App(): JSX.Element {
                                         height={DarkTheme.spacing(42)}
                                     />
                                 </PropertyWrapper>
+                                */}
                                 <PropertyWrapper
                                     width={DarkTheme.spacing(23)}
                                     height="auto"
                                 >
                                     <Button
-                                        onClick= {() => generate()}
+                                        onClick={() => generate(2)}
                                     >
                                         test
                                     </Button>
