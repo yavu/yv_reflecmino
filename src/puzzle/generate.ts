@@ -11,7 +11,7 @@ export function generate(seed: number) {
     const get_s = (index: number) => {
         if (index < 5) { return { x: index + 1, y: 0, move: [0, 1] }; }
         else if (index < 10) { return { x: index - 4, y: 6, move: [0, -1] }; }
-        else { return { x: index % 2 * 6, y: (index - index % 2) / 2 - 4, move: [index % 2 == 0 ? 1 : -1, 0] }; }
+        else { return { x: index % 2 * 6, y: (index - index % 2) / 2 - 4, move: [index % 2 === 0 ? 1 : -1, 0] }; }
     }
     const mirror_random_count = random.nextInt(3, 7);
     const laser = [
@@ -22,10 +22,10 @@ export function generate(seed: number) {
     const empty_board = [
         ["#", ...flame.slice(0, 5), "#"],
         [flame[10], " ", " ", " ", " ", " ", flame[11]],
-        [flame[12], " ", " ", " ", " ", " ", flame[13]],
+        [flame[12], "/", " ", " ", " ", " ", flame[13]],
         [flame[14], " ", " ", " ", " ", " ", flame[15]],
-        [flame[16], " ", " ", " ", " ", " ", flame[17]],
-        [flame[18], " ", " ", " ", " ", " ", flame[19]],
+        [flame[16], " ", "\\", " ", " ", "/", flame[17]],
+        [flame[18], " ", "\\", " ", "/", " ", flame[19]],
         ["#", ...flame.slice(5, 10), "#"]
     ];
 
@@ -33,80 +33,27 @@ export function generate(seed: number) {
         const board = base;
         for (let i = 0; i < 2; i++) {
             let move = laser[i].move;
-            let mirror = laser[i].mirror;
-            let range = 0;
-            for (let x = laser[i].x + move[0], y = laser[i].y + move[1]; board[y - move[1]][x - move[0]] !== "E"; x += move[0], y += move[1]) {
-                console.log(`${x},${y}`);
-                if (x > 1000 || y > 1000 || x < -1000 || y < -1000) {
-                    break;
+            let x = laser[i].x + move[0];
+            let y = laser[i].y + move[1];
+            for (let mirror = 1; mirror > 0; mirror--) {
+                const pick = [
+                    move[0] === 0 ? board.map((a) => a[x - 1]) : board[y + 1],
+                    move[0] === 0 ? board.map((a) => a[x]) : board[y],
+                    move[0] === 0 ? board.map((a) => a[x + 1]) : board[y - 1]
+                ];
+                const deadend_mirror_index = [...pick[1]].map((e, index) => (e === "/" && pick[Math.abs(move[0]) * 2][index] === "#") || (e === "\\" && pick[Math.abs(move[1]) * 2][index] === "#") ? "X" : e).indexOf("X");
+                const sort = move[0] + move[1] < 0 ? [...pick[1]].reverse() : [...pick[1]];
+                console.log(deadend_mirror_index);
+                console.log(sort);
+                const mirror_index = [...sort].map(e => e.replace(/[/\\]/g, "M")).indexOf("M");
+                const trim = [...sort].slice(0, mirror_index !== -1 ? mirror_index + 1 : undefined).slice(0, deadend_mirror_index !== -1 ? deadend_mirror_index : undefined);
+                console.log(trim);
+                const range = [...trim].map((e, index) => e === " " || e === "/" || e === "\\" ? index : "X").filter(e => e !== "X");
+                console.log(range);
+                for (let i = random.nextInt(1, range.length); i > 0; i--) {
+                    x += move[0];
+                    y += move[1];
                 }
-                switch (board[y][x]) {
-                    case " ":
-                        board[y][x] = Math.abs(move[0]) === 0 ? "|" : "-";
-                        break;
-                    case "\\":
-                        move = Math.abs(move[0]) === 1 ? [-move[1], move[0]] : [move[1], -move[0]];
-                        range = 0;
-                        console.log(Math.abs(move[0]) === 1 ? "R" : "L");
-                        break;
-                    case "/":
-                        move = Math.abs(move[0]) === 0 ? [-move[1], move[0]] : [move[1], -move[0]];
-                        range = 0;
-                        console.log(Math.abs(move[0]) === 0 ? "R" : "L");
-                        break;
-                    case "|":
-                    case "-":
-                        board[y][x] = "+";
-                        break;
-                    case "#":
-                    case "S":
-                        if (mirror > 0) {
-                            for (let j = random.nextInt(1, range); j > 0; j--) {
-                                x -= move[0];
-                                y -= move[1];
-                                if (board[y][x] === "+") {
-                                    board[y][x] = Math.abs(move[0]) === 0 ? "-" : "|";
-                                }
-                                else if (board[y][x] !== "#") {
-                                    board[y][x] = " ";
-                                }
-                            }
-                            if (board[y][x] !== "|" && board[y][x] !== "-") {
-                                if (random.nextInt(0, 2) === 0) {
-                                    if (board[y + move[0]][x - move[1]] !== "#") {
-                                        board[y][x] = Math.abs(move[0]) === 1 ? "\\" : "/";
-                                        move = [-move[1], move[0]];
-                                    }
-                                    else {
-                                        board[y][x] = Math.abs(move[0]) === 0 ? "\\" : "/";
-                                        move = [move[1], -move[0]];
-                                    }
-                                    console.log(`set_R ${x},${y}`);
-                                }
-                                else {
-                                    if (board[y - move[0]][x + move[1]] !== "#") {
-                                        board[y][x] = Math.abs(move[0]) === 0 ? "\\" : "/";
-                                        move = [move[1], -move[0]];
-                                    }
-                                    else {
-                                        board[y][x] = Math.abs(move[0]) === 1 ? "\\" : "/";
-                                        move = [-move[1], move[0]];
-                                    }
-                                    console.log(`set_L ${x},${y}`);
-                                }
-                                mirror--;
-                            }
-                            else {
-                                board[y][x] = "+";
-                            }
-                            range = 0;
-                        }
-                        else {
-                            board[y][x] = "E";
-                        }
-                        break;
-                }
-                range++;
             }
         }
         return board;
@@ -114,5 +61,6 @@ export function generate(seed: number) {
     const board = random_mirror(empty_board);
     console.log(`${board[0].join("")}\n${board[1].join("")}\n${board[2].join("")}\n${board[3].join("")}\n${board[4].join("")}\n${board[5].join("")}\n${board[6].join("")}`);
     console.log(laser);
+    console.log("======================");
 }
 
