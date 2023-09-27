@@ -9,6 +9,13 @@ import { DarkTheme } from './theme/dark';
 import { generate } from './puzzle/generate';
 
 export default function App(): JSX.Element {
+
+    
+    const [seed, setSeed] = React.useState<number>(0);
+    const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSeed(Number(event.target.value));
+    };
+
     return (
         <>
             <header>
@@ -79,8 +86,16 @@ export default function App(): JSX.Element {
                                     width={DarkTheme.spacing(23)}
                                     height="auto"
                                 >
+                                <TextField
+                                    label="Text"
+                                    size="small"
+                                    margin="dense"
+                                    value={seed}
+                                    fullWidth
+                                    onChange={HandleTextChange}
+                                />
                                     <Button
-                                        onClick={() => generate(2)}
+                                        onClick={() => generate(seed)}
                                     >
                                         test
                                     </Button>
