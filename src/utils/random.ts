@@ -18,7 +18,7 @@ export class Random {
     }
 
     // min以上max以下の乱数を生成する
-    nextInt(min:number, max:number) {
+    next_int(min:number, max:number) {
         const r = Math.abs(this.next());
         return min + (r % (max - min));
     }
