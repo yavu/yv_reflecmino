@@ -28,11 +28,11 @@ export function generate(seed: number) {
         //[flame[13], " 15 ", "25 ", "35 ", "45 ", "55 ", flame[14]],
         //["#", ...flame.slice(15), "#"]
         ["#", "#", "#", "#", "#", "#", "#"],
-        ["#", "A", "B", "C", "D", "E", "#"],
-        ["#", "F", "G", "H", "I", "J", "#"],
-        ["#", "K", "/", "M", "\\", "O", "#"],
-        ["#", "P", "Q", "R", "S", "T", "#"],
-        ["#", "U", "V", "W", "X", "Y", "#"],
+        ["#", "A", "/", "C", "\\", "E", "#"],
+        ["#", "/", "G", "H", "I", "\\", "#"],
+        ["#", "K", "L", "M", "N", "O", "#"],
+        ["#", "\\", "Q", "R", "S", "/", "#"],
+        ["#", "U", "\\", "W", "/", "Y", "#"],
         ["#", "#", "#", "#", "#", "#", "#"]
     ];
     //console.log(empty_board);
@@ -44,18 +44,21 @@ export function generate(seed: number) {
             let x = laser[i].x;
             let y = laser[i].y;
             for (let mirror = 1; mirror > 0; mirror--) {
-                const pick = move[0] === 0 ? { "0": board[3][x - 1], "1": board.map((a) => a[x]), "2": board[3][x + 1] } : { "0": board[y + 1][3], "1": board[y], "2": board[y - 1][3] };
+                const pick = {
+                    "0": { "0": board[3][x - move[1]], "1": board.map((a) => a[x]), "2": board[3][x + move[1]] },
+                    "1": { "0": board[y - move[0]][3], "1": board[y], "2": board[y + move[0]][3] }
+                }[move[0] === 0 ? 0 : 1];
                 const sort = move[0] + move[1] < 0 ? [...pick[1]].reverse().map(e => e.replace(/u002F/g, "w").replace(/u005C/g, "/").replace(/w/g, "\\")) : [...pick[1]];
                 const trim_forward = {
                     "0": move[1] === 1 ? [...sort].slice(y + 1, sort.length - 1) : [...sort].slice(sort.length - y, [...sort].length - 1),
                     "1": move[0] === 1 ? [...sort].slice(x + 1, sort.length - 1) : [...sort].slice(sort.length - x, [...sort].length - 1)
-                }[move[0] === 0 ? 0 : 1]
+                }[move[0] === 0 ? 0 : 1];
                 const trim_r_mirror = [...trim_forward].slice(0, sort.includes("/") ? sort.indexOf("/") : undefined);
                 const trim_l_mirror = [...trim_r_mirror].slice(0, sort.includes("\\") ? sort.indexOf("\\") : undefined);
-                //const trim_deadend_mirror = [...trim_l_mirror][-1] === "/" &&
-                //const range = [...trim_deadend_mirror];
-                //console.log(`${x},${y}`);
-                //console.log(`${pick[0].join()}\n${range.join()}\n${pick[2].join()}`);
+                const trim_deadend_mirror = ([...trim_l_mirror][trim_l_mirror.length - 1] === "/" && pick[0] === "#") || ([...trim_l_mirror][trim_l_mirror.length - 1] === "\\" && pick[2] === "#") ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1) : [...trim_l_mirror];
+                const range = [...trim_deadend_mirror];
+                console.log(`${x},${y}`);
+                console.log(`${pick[0]}\n${range.join()}\n${pick[2]}`);
                 //console.log(`${range.join()}`);
             }
         }
