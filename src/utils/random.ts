@@ -22,4 +22,10 @@ export class Random {
         const r = Math.abs(this.next());
         return min + (r % (max - min));
     }
+
+    // boolの乱数を生成する
+    next_bool() {
+        const r = Math.abs(this.next());
+        return !!(0 + (r % (2 - 0)));
+    }
 }
