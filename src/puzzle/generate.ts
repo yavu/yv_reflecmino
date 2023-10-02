@@ -1,4 +1,4 @@
-import { compose_n } from "../utils/function";
+import { compose_n, while_f } from "../utils/function";
 import { Random } from "../utils/random"
 
 export function generate(seed: number) {
@@ -32,11 +32,15 @@ export function generate(seed: number) {
     ];
 
     const random_mirror = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }[]) => {
+        type Data = [board: string[][], x: number, y: number, move: Move];
+
         for (let i = 0; i < 1; i++) {
             //let move = laser[i].move;
             //let x = laser[i].x;
             //let y = laser[i].y;
-            const set_mirror = (data: [board: string[][], x: number, y: number, move: Move][]) => {
+
+
+            const set_mirror = (data: [...Data, number][]) => {
                 const current = data[data.length - 1];
                 const board = current[0];
                 const x = current[1];
@@ -75,20 +79,20 @@ export function generate(seed: number) {
 
                 const replace_array = <A>(base: A[], index: number, other: A) => [...base.slice(0, index), other, ...base.slice(index + 1)];
 
-                const laser_move = (data: [board: string[][], x: number, y: number, move: Move]) => {
+                const laser_move = (data: Data) => {
                     const x = data[1] + data[3][0];
                     const y = data[2] + data[3][1];
                     const y_array = replace_array([...data[0][y]], x, "￭");
                     const board = replace_array(structuredClone(data[0]), y, y_array);
-                    const new_data: [board: string[][], x: number, y: number, move: Move] = [board, x, y, data[3]];
+                    const new_data: Data = [board, x, y, data[3]];
                     return new_data;
                 }
                 const random_range = range[random.next_int(0, range.length)];
-                const line_board: [board: string[][], x: number, y: number, move: Move] = random_range > 0
+                const line_board: Data = random_range > 0
                     ? compose_n(random_range, laser_move)([board, x, y, move])
                     : [board, x, y, move];
 
-                const mirror = (data: [board: string[][], x: number, y: number, move: Move]) => {
+                const mirror = (data: Data) => {
                     const x = data[1] + data[3][0];
                     const y = data[2] + data[3][1];
                     const random_turn = random.next_bool();
@@ -126,19 +130,25 @@ export function generate(seed: number) {
                             }
                         }
                     })();
-                    const new_data: [board: string[][], x: number, y: number, move: Move] = [board, x, y, move];
+                    const new_data: Data = [board, x, y, move];
                     return new_data;
                 }
-                const mirror_board = mirror(line_board);
+                const mirror_board: [...Data, number] = [...mirror(line_board), current[4] - 1];
                 console.log([...mirror_board[0]].join("\n"));
-                const new_data = structuredClone(data).concat([mirror_board]);
+                //const new_data = structuredClone(data).concat([...mirror_board]);
+                const new_data = range.length !== 0
+                    ? structuredClone(data).concat([[...mirror_board]])
+                    : [...data].slice(0,data.length - 1);
+                console.log(new_data);
                 return new_data;
             }
-            //const temp = set_mirror([[base, laser[i].x, laser[i].y, laser[i].move]]);
-            //console.log(temp);
-            //set_mirror(temp);
-            const board = compose_n(laser[i].mirror, set_mirror)([[base, laser[i].x, laser[i].y, laser[i].move]]);
-            console.log(board);
+
+            const initial: [...Data, number][] = [[base, laser[i].x, laser[i].y, laser[i].move, laser[i].mirror]];
+            const new_data = while_f(initial, s => {
+                const result = set_mirror(s);
+                return [s[s.length - 1][4] > 0, result];
+            });
+            console.log(new_data);
         }
     }
     random_mirror(empty_board, laser);
