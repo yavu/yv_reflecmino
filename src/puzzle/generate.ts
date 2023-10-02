@@ -14,6 +14,7 @@ export function generate(seed: number) {
         else if (index < 15) { return { x: (index + 1) % 2 * 6, y: (index - 1 - (index - 1) % 2) / 2 - 1, move: [(index % 2 === 0 ? -1 : 1), 0] }; }
         else { return { x: index - 14, y: 6, move: [0, -1] }; }
     }
+
     const mirror_random_count = random.next_int(3, 7);
     const laser = [
         Object.assign({ mirror: mirror_random_count }, get_s(flame.indexOf("S"))),
@@ -21,29 +22,14 @@ export function generate(seed: number) {
     ]
 
     const empty_board = [
-        //["#", ...flame.slice(0, 5), "#"],
-        //[flame[5], " 11 ", "21 ", "31 ", "41 ", "51 ", flame[6]],
-        //[flame[7], " 12 ", "22 ", "32 ", "42 ", "52 ", flame[8]],
-        //[flame[9], " 13 ", "23 ", "33 ", "43 ", "53 ", flame[10]],
-        //[flame[11], " 14 ", "24 ", "34 ", "44 ", "54 ", flame[12]],
-        //[flame[13], " 15 ", "25 ", "35 ", "45 ", "55 ", flame[14]],
-        //["#", ...flame.slice(15), "#"]
-        //["#", "#", "#", "#", "#", "#", "#"],
-        //["#", "A", "/", "C", "\\", "E", "#"],
-        //["#", "/", "G", "H", "I", "\\", "#"],
-        //["#", "K", "L", "M", "N", "O", "#"],
-        //["#", "\\", "Q", "R", "S", "/", "#"],
-        //["#", "U", "\\", "W", "/", "Y", "#"],
-        //["#", "#", "#", "#", "#", "#", "#"]
         ["#", "#", "#", "#", "#", "#", "#"],
         ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", "￭", " ", " ", " ", "#"],
-        ["#", " ", "￭", " ", "￭", " ", "#"],
-        ["#", " ", "￭", " ", " ", " ", "#"],
-        ["#", " ", "￭", " ", " ", " ", "#"],
+        ["#", " ", " ", " ", " ", " ", "#"],
+        ["#", " ", " ", " ", " ", " ", "#"],
+        ["#", " ", " ", " ", " ", " ", "#"],
+        ["#", " ", " ", " ", " ", " ", "#"],
         ["#", "#", "#", "#", "#", "#", "#"]
     ];
-    //console.log(empty_board);
 
     const random_mirror = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }[]) => {
         for (let i = 0; i < 2; i++) {
@@ -84,9 +70,21 @@ export function generate(seed: number) {
                         ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1)
                         : [...trim_l_mirror];
                 })();
-                const range = [...trim_deadend_mirror].map((e, index) => e !== "￭" ? index + 1 : "x").filter(e => e !== "x");
-                //console.log(`${pick[0]}\n${range.join()}\n${pick[2]}`);
-                console.log(`${range.join()}`);
+                const range = [...trim_deadend_mirror].map((e, index) => e !== "￭" ? index + 1 : -1).filter(e => e !== -1);
+                console.log(range.join());
+
+                const replace_array = <A>(base: A[], index: number, other: A) => [...base.slice(0, index), other, ...base.slice(index + 1)];
+
+                const random_range_move = (data: [board: string[][], x: number, y: number, move: Move]) => {
+                    const x = data[1] + data[3][0];
+                    const y = data[2] + data[3][1];
+                    const y_array = replace_array([...data[0][y]], x, "￭");
+                    const board = replace_array(structuredClone(data[0]), y, y_array);
+                    const new_data: [board: string[][], x: number, y: number, move: Move] = [board, x, y, data[3],];
+                    return new_data;
+                }
+                const board_line = compose_n(range[random.next_int(0, range.length)], random_range_move)([board, x, y, move])
+                console.log([...board_line[0]].join("\n"));
                 /*
                 const random_range = random.next_int(1, range.length);
                 const new_x = x + move[0] * random_range;
@@ -116,6 +114,6 @@ export function generate(seed: number) {
     }
     random_mirror(empty_board, laser);
     const board = empty_board;
-    console.log(`${board[0].join("")}\n${board[1].join("")}\n${board[2].join("")}\n${board[3].join("")}\n${board[4].join("")}\n${board[5].join("")}\n${board[6].join("")}`);
+    console.log(`${board.join("\n")}`);
     console.log("======================");
 }
