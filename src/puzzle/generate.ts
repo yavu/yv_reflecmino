@@ -8,7 +8,8 @@ export function generate(seed: number) {
     const initial = "##################";
     const flame = compose_n(2, random_insert)(initial).split("");
 
-    const get_s = (index: number) => {
+    type Move = [0, 1] | [0, -1] | [1, 0] | [-1, 0];
+    const get_s = (index: number): { x: number, y: number, move: Move } => {
         if (index < 5) { return { x: index + 1, y: 0, move: [0, 1] }; }
         else if (index < 15) { return { x: (index + 1) % 2 * 6, y: (index - 1 - (index - 1) % 2) / 2 - 1, move: [(index % 2 === 0 ? -1 : 1), 0] }; }
         else { return { x: index - 14, y: 6, move: [0, -1] }; }
@@ -36,47 +37,60 @@ export function generate(seed: number) {
         //["#", "#", "#", "#", "#", "#", "#"]
         ["#", "#", "#", "#", "#", "#", "#"],
         ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
+        ["#", " ", "￭", " ", " ", " ", "#"],
+        ["#", " ", "￭", " ", "￭", " ", "#"],
+        ["#", " ", "￭", " ", " ", " ", "#"],
+        ["#", " ", "￭", " ", " ", " ", "#"],
         ["#", "#", "#", "#", "#", "#", "#"]
     ];
     //console.log(empty_board);
 
-    const random_mirror = (base: string[][]) => {
-        let board = base;
-        let history = [];
+    const random_mirror = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }[]) => {
         for (let i = 0; i < 2; i++) {
-            let move = laser[i].move;
-            let x = laser[i].x;
-            let y = laser[i].y;
-            history.push(
-                { "board": board, "x": x, "y": y, "move": move }
-            );
-            for (let mirror = 3; mirror > 0; mirror--) {
-                board = history[history.length-1].board;
+            //let move = laser[i].move;
+            //let x = laser[i].x;
+            //let y = laser[i].y;
+            const set_mirror = (data: [board: string[][], mirror: number, x: number, y: number, move: Move][]) => {
+                const current = data[data.length - 1];
+                const board = current[0];
+                const x = current[2];
+                const y = current[3];
+                const move = current[4];
                 console.log(`${x},${y}`);
-                const pick = move[0] === 0
-                    ? { "0": board[3][x - move[1]], "1": board.map((a) => a[x]), "2": board[3][x + move[1]] }
-                    : { "0": board[y - move[0]][3], "1": board[y], "2": board[y + move[0]][3] }
+                const pick: [string, string[], string] = move[0] === 0
+                    ? [board[3][x - move[1]], board.map((a) => a[x]), board[3][x + move[1]]]
+                    : [board[y - move[0]][3], board[y], board[y + move[0]][3]]
                 const sort = move[0] + move[1] < 0
                     ? [...pick[1]].reverse().map(e => e.replace(/u002F/g, "w").replace(/u005C/g, "/").replace(/w/g, "\\"))
                     : [...pick[1]];
-                const trim_forward = move[0] === 0
-                    ? move[1] === 1 ? [...sort].slice(y + 1, sort.length - 1) : [...sort].slice(sort.length - y, [...sort].length - 1)
-                    : move[0] === 1 ? [...sort].slice(x + 1, sort.length - 1) : [...sort].slice(sort.length - x, [...sort].length - 1)
+                const trim_forward = (() => {
+                    if (move[0] === 0) {
+                        // Y軸移動
+                        if (move[1] === 1) { return [...sort].slice(y + 1, sort.length - 1); }
+                        else { return [...sort].slice(sort.length - y, [...sort].length - 1); }
+                    }
+                    else {
+                        // X軸移動
+                        if (move[0] === 1) { return [...sort].slice(x + 1, sort.length - 1); }
+                        else { return [...sort].slice(sort.length - x, [...sort].length - 1); }
+                    }
+                })();
                 const trim_r_mirror = [...trim_forward].slice(0, sort.includes("/") ? sort.indexOf("/") : undefined);
                 const trim_l_mirror = [...trim_r_mirror].slice(0, sort.includes("\\") ? sort.indexOf("\\") : undefined);
-                const trim_deadend_mirror = ([...trim_l_mirror][trim_l_mirror.length - 1] === "/" && pick[0] === "#") || ([...trim_l_mirror][trim_l_mirror.length - 1] === "\\" && pick[2] === "#") ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1) : [...trim_l_mirror];
-                const range = [...trim_deadend_mirror];
+                const trim_deadend_mirror = (() => {
+                    const left_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "/" && pick[0] === "#";
+                    const right_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "\\" && pick[2] === "#";
+                    return left_is_wall || right_is_wall
+                        ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1)
+                        : [...trim_l_mirror];
+                })();
+                const range = [...trim_deadend_mirror].map((e, index) => e !== "￭" ? index + 1 : "x").filter(e => e !== "x");
                 //console.log(`${pick[0]}\n${range.join()}\n${pick[2]}`);
                 console.log(`${range.join()}`);
-                for (let i = random.next_int(1, range.length); i > 0; i--) {
-                    x += move[0];
-                    y += move[1];
-                    board[y][x] = "￭";
-                }
+                /*
+                const random_range = random.next_int(1, range.length);
+                const new_x = x + move[0] * random_range;
+                const new_y = y + move[1] * random_range;
                 if (range[range.length - 1] == "\\") {
                     move = [-move[1], move[0]];
                 }
@@ -95,14 +109,13 @@ export function generate(seed: number) {
                 }
                 history.push(
                     { "board": board, "x": x, "y": y, "move": move }
-                );
+                );*/
             }
+            set_mirror([[base, laser[i].mirror, laser[i].x, laser[i].y, laser[i].move]])
         }
-        console.log(history);
-        return history[history.length-1].board;
     }
-    const board = random_mirror(empty_board);
+    random_mirror(empty_board, laser);
+    const board = empty_board;
     console.log(`${board[0].join("")}\n${board[1].join("")}\n${board[2].join("")}\n${board[3].join("")}\n${board[4].join("")}\n${board[5].join("")}\n${board[6].join("")}`);
     console.log("======================");
 }
-
