@@ -32,7 +32,7 @@ export function generate(seed: number) {
     ];
 
     const random_mirror = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }[]) => {
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 1; i++) {
             //let move = laser[i].move;
             //let x = laser[i].x;
             //let y = laser[i].y;
@@ -87,7 +87,6 @@ export function generate(seed: number) {
                 const line_board: [board: string[][], x: number, y: number, move: Move] = random_range > 0
                     ? compose_n(random_range, laser_move)([board, x, y, move])
                     : [board, x, y, move];
-                //console.log([...line_board[0]].join("\n"));
 
                 const mirror = (data: [board: string[][], x: number, y: number, move: Move]) => {
                     const x = data[1] + data[3][0];
@@ -95,7 +94,10 @@ export function generate(seed: number) {
                     const random_turn = random.next_bool();
                     const board = (() => {
                         if (data[0][y][x] === " ") {
-                            const y_array = replace_array([...data[0][y]], x, random_turn ? "\\" : "/");
+                            const y_array = (() => {
+                                if (random_turn) { return replace_array([...data[0][y]], x, Math.abs(data[3][0]) === 1 ? "\\" : "/"); }
+                                else { return replace_array([...data[0][y]], x, Math.abs(data[3][0]) === 0 ? "\\" : "/"); }
+                            })();
                             return replace_array(structuredClone(data[0]), y, y_array);
                         }
                         else {
@@ -104,16 +106,6 @@ export function generate(seed: number) {
                     })();
                     const move: Move = (() => {
                         if (random_turn) {
-                            switch (data[3][0]) {
-                                case 0:
-                                    return [data[3][1], 0];
-                                case 1:
-                                    return [data[3][1], -1];
-                                case -1:
-                                    return [data[3][1], 1];
-                            }
-                        }
-                        else {
                             switch (data[3][1]) {
                                 case 0:
                                     return [0, data[3][0]];
@@ -123,19 +115,32 @@ export function generate(seed: number) {
                                     return [1, data[3][0]];
                             }
                         }
+                        else {
+                            switch (data[3][0]) {
+                                case 0:
+                                    return [data[3][1], 0];
+                                case 1:
+                                    return [data[3][1], -1];
+                                case -1:
+                                    return [data[3][1], 1];
+                            }
+                        }
                     })();
                     const new_data: [board: string[][], x: number, y: number, move: Move] = [board, x, y, move];
                     return new_data;
                 }
                 const mirror_board = mirror(line_board);
                 console.log([...mirror_board[0]].join("\n"));
-                return structuredClone(data).push(mirror_board);
+                const new_data = structuredClone(data).concat([mirror_board]);
+                return new_data;
             }
-            set_mirror([[base, laser[i].x, laser[i].y, laser[i].move]])
+            //const temp = set_mirror([[base, laser[i].x, laser[i].y, laser[i].move]]);
+            //console.log(temp);
+            //set_mirror(temp);
+            const board = compose_n(laser[i].mirror, set_mirror)([[base, laser[i].x, laser[i].y, laser[i].move]]);
+            console.log(board);
         }
     }
     random_mirror(empty_board, laser);
-    const board = empty_board;
-    console.log(`${board.join("\n")}`);
     console.log("======================");
 }
