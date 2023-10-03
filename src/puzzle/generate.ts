@@ -40,7 +40,6 @@ export function generate(seed: number) {
             const y = current[2];
             const move = current[3];
             const mirror = current[4];
-            //console.log(`${x},${y}`);
             const pick: [string, string[], string] = move[0] === 0
                 ? [board[3][x - move[1]], board.map((a) => a[x]), board[3][x + move[1]]]
                 : [board[y - move[0]][3], board[y], board[y + move[0]][3]];
@@ -59,20 +58,29 @@ export function generate(seed: number) {
                     else { return [...sort].slice(sort.length - x, [...sort].length - 1); }
                 }
             })();
-            const trim_r_mirror = trim_forward.includes("/")
-                ? [...trim_forward].slice(0, trim_forward.indexOf("/"))
-                : [...trim_forward];
-            const trim_l_mirror = trim_forward.includes("\\")
-                ? [...trim_r_mirror].slice(0, trim_forward.indexOf("\\"))
-                : [...trim_r_mirror];
-            const trim_deadend_mirror = (() => {
-                const left_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "/" && pick[0] === "#";
-                const right_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "\\" && pick[2] === "#";
-                return left_is_wall || right_is_wall
-                    ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1)
-                    : [...trim_l_mirror];
+            const trim_mirror = (() => {
+                const trim_r_mirror = trim_forward.includes("/")
+                    ? [...trim_forward].slice(0, trim_forward.indexOf("/") + 1)
+                    : [...trim_forward];
+                const trim_l_mirror = trim_forward.includes("\\")
+                    ? [...trim_r_mirror].slice(0, trim_forward.indexOf("\\") + 1)
+                    : [...trim_r_mirror];
+
+                if (mirror > 0) {
+                    const trim_deadend_mirror = (() => {
+                        const left_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "/" && pick[0] === "#";
+                        const right_is_wall = [...trim_l_mirror][trim_l_mirror.length - 1] === "\\" && pick[2] === "#";
+                        return left_is_wall || right_is_wall
+                            ? [...trim_l_mirror].slice(0, trim_l_mirror.length - 1)
+                            : [...trim_l_mirror];
+                    })();
+                    return trim_deadend_mirror;
+                }
+                else {
+                    return [...trim_l_mirror];
+                }
             })();
-            const range = [...trim_deadend_mirror].map((e, index) => e !== "￭" ? index : -1).filter(e => e !== -1);
+            const range = [...trim_mirror].map((e, index) => e !== "￭" ? index : -1).filter(e => e !== -1);
             console.log(range);
 
             const draw_laser = (data: Data) => {
@@ -86,8 +94,8 @@ export function generate(seed: number) {
                 ? range[random.next_int(0, range.length)]
                 : range[range.length - 1];
             const lined_data: Data = random_range > 0
-                ? compose_n(random_range, draw_laser)([board, x, y, move, current[4]])
-                : [board, x, y, move, current[4]];
+                ? compose_n(random_range, draw_laser)(current)
+                : current;
 
             const set_mirror = (data: Data) => {
                 const x = data[1] + data[3][0];
@@ -174,22 +182,24 @@ export function generate(seed: number) {
             const current = result[result.length - 1];
             return [current[4] > 0 || current[0][current[2]][current[1]] !== "#", result];
         });
-        //console.log(drawn_data);
+        console.log(drawn_data);
         return drawn_data[drawn_data.length - 1]
     }
     const first_drawn_data = random_mirror(empty_board, laser[0]);
     const second_drawn_data = random_mirror(first_drawn_data[0], laser[1]);
     const s_drawn_board = (() => {
         const board = second_drawn_data[0];
-        const first_drawn = replace_2d_array(board,laser[0].x,laser[0].y,"s");
-        return replace_2d_array(first_drawn,laser[1].x,laser[1].y,"s");
+        const first_drawn = replace_2d_array(board, laser[0].x, laser[0].y, "s");
+        const second_drawn = replace_2d_array(first_drawn, laser[1].x, laser[1].y, "s");
+        return second_drawn;
     })();
     const e_drawn_board = (() => {
         const board = s_drawn_board;
-        const first_drawn = replace_2d_array(board,first_drawn_data[1],first_drawn_data[2],"e");
-        return replace_2d_array(first_drawn,second_drawn_data[1],second_drawn_data[2],"e");
+        const first_drawn = replace_2d_array(board, first_drawn_data[1], first_drawn_data[2], "e");
+        const second_drawn = replace_2d_array(first_drawn, second_drawn_data[1], second_drawn_data[2], "e");
+        return second_drawn;
     })();
-    
-    console.log([...e_drawn_board].join("\n"));
+
+    console.log([...e_drawn_board].join("\n").replace(/,/g, " "));
     console.log("======================");
 }
