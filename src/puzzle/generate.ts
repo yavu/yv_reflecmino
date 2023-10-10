@@ -31,10 +31,10 @@ export function generate(seed: number) {
         ["#", "#", "#", "#", "#", "#", "#"]
     ];
 
-    type Data = [board: string[][], x: number, y: number, move: Move, mirror: number];
+    type LaserDraw = [board: string[][], x: number, y: number, move: Move, mirror: number];
     // ミラーを必要数置きつつレーザーを描画する関数
     const draw_random_laser = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }) => {
-        const move_laser = (data: Data[]) => {
+        const move_laser = (data: LaserDraw[]) => {
             const current = data[data.length - 1];
             const board = current[0];
             const x = current[1];
@@ -91,18 +91,18 @@ export function generate(seed: number) {
                 ? range[random.next_int(0, range.length)]
                 : range[range.length - 1];
             // 1マス進んでboardに書き込む
-            const draw_laser = (data: Data) => {
+            const draw_laser = (data: LaserDraw) => {
                 const x = data[1] + data[3][0];
                 const y = data[2] + data[3][1];
                 const board = replace_2d_array(data[0], x, y, "￭");
-                const new_data: Data = [board, x, y, data[3], data[4]];
+                const new_data: LaserDraw = [board, x, y, data[3], data[4]];
                 return new_data;
             }
-            const lined_data: Data = random_range > 0
+            const lined_data: LaserDraw = random_range > 0
                 ? compose_n(random_range, draw_laser)(current)
                 : current;
             // ミラー設置関数
-            const set_mirror = (data: Data) => {
+            const set_mirror = (data: LaserDraw) => {
                 const x = data[1] + data[3][0];
                 const y = data[2] + data[3][1];
                 const random_turn = random.next_bool();
@@ -119,11 +119,11 @@ export function generate(seed: number) {
                         return structuredClone(data[0]);
                     }
                 })();
-                const new_data: Data = [board, data[1], data[2], data[3], mirror];
+                const new_data: LaserDraw = [board, data[1], data[2], data[3], mirror];
                 return new_data;
             }
             // 反射関数
-            const reflection = (data: Data) => {
+            const reflection = (data: LaserDraw) => {
                 const x = data[1] + data[3][0];
                 const y = data[2] + data[3][1];
                 const turn_move = (direction: boolean, move: Move): Move => {
@@ -155,11 +155,11 @@ export function generate(seed: number) {
                         return data[3];
                     }
                 })();
-                const new_data: Data = [data[0], x, y, move, data[4]];
+                const new_data: LaserDraw = [data[0], x, y, move, data[4]];
                 return new_data;
             }
             // 返すデータを作成
-            const new_data: Data[] = (() => {
+            const new_data: LaserDraw[] = (() => {
                 if (mirror > 0) {
                     const result = reflection(set_mirror(lined_data));
                     if (range.length !== 0) {
@@ -173,7 +173,7 @@ export function generate(seed: number) {
                     }
                 }
                 else {
-                    const result: Data = (() => {
+                    const result: LaserDraw = (() => {
                         const data = reflection(lined_data);
                         const board = data[0][y][x] === " "
                             ? replace_2d_array(data[0], data[1] - data[3][0], data[2] - data[3][1], "￭")
@@ -186,7 +186,7 @@ export function generate(seed: number) {
             return new_data;
         }
         // レーザー必要数ミラーを接地し壁に衝突するまで処理
-        const initial: Data[] = [[base, laser.x, laser.y, laser.move, laser.mirror]];
+        const initial: LaserDraw[] = [[base, laser.x, laser.y, laser.move, laser.mirror]];
         const new_data = while_f(initial, s => {
             const result = move_laser(s);
             const current = result[result.length - 1];
@@ -198,7 +198,7 @@ export function generate(seed: number) {
 
     // レーザーを2本描画したボードを返す関数
     const draw_2_laser = (): string[][] => {
-        const first_draw = (): Data => {
+        const first_draw = (): LaserDraw => {
             const data = draw_random_laser(empty_board, laser[0]);
             if (data[1] !== laser[1].x || data[2] !== laser[1].y) {
                 return data;
@@ -231,7 +231,52 @@ export function generate(seed: number) {
     };
     const laser_drawn_board = draw_2_laser();
     console.log([...laser_drawn_board].join("\n").replace(/,/g, " "));
+    console.log([...laser_drawn_board].join("\n").replace(/[^\\/￭\n,]/g, "#").replace(/[,￭]/g, " ").replace(/[\\/]/g, "￮"));
     const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
     console.log(laser_cell_count);
+
+    const laser_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index,y_index] : "   ").join(" ")).join("\n");
+    console.log(laser_cell);
+    const mirror_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "\\" || x === "/" ? [x_index,y_index] : "   ").join(" ")).join("\n");
+    console.log(mirror_cell);
+    const straight_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "￭" ? [x_index,y_index] : "   ").join(" ")).join("\n");
+    console.log(straight_cell);
+
+    const tromino_pattern: { x: number, y: number }[][] = [
+        // C  #  #
+        // #  C  #
+        // #  #  C
+        [{ x: 0, y: 1 }, { x: 0, y: 2 }],
+        [{ x: 0, y: -1 }, { x: 0, y: 1 }],
+        [{ x: 0, y: -2 }, { x: 0, y: -1 }],
+        // c##  #C#  ##C
+        [{ x: 1, y: 0 }, { x: 2, y: 0 }],
+        [{ x: -1, y: 0 }, { x: 1, y: 0 }],
+        [{ x: -2, y: 0 }, { x: 0, y: 0 }],
+        // #   #   C
+        // C#  #C  ##
+        [{ x: 0, y: -1 }, { x: 1, y: 0 }],
+        [{ x: -1, y: 0 }, { x: -1, y: -1 }],
+        [{ x: 0, y: 1 }, { x: 1, y: 1 }],
+        // C#  #C  ##
+        // #   #   C
+        [{ x: 1, y: 0 }, { x: 0, y: 1 }],
+        [{ x: -1, y: 0 }, { x: -1, y: 1 }],
+        [{ x: 0, y: -1 }, { x: 1, y: -1 }],
+        // #C  C#  ##
+        //  #   #   C
+        [{ x: -1, y: 0 }, { x: 0, y: 1 }],
+        [{ x: 1, y: 0 }, { x: 1, y: 1 }],
+        [{ x: -1, y: -1 }, { x: 0, y: -1 }],
+        //  #   #   C
+        // #C  C#  ##
+        [{ x: -1, y: 0 }, { x: 0, y: -1 }],
+        [{ x: 1, y: 0 }, { x: 1, y: -1 }],
+        [{ x: -1, y: 1 }, { x: 0, y: 1 }]
+    ];
+
+    type PlaceMino = [board: string[][], x: number, y: number, move: Move];
+    //const place_tromino
+
     console.log("======================");
 }
