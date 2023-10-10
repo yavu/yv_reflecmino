@@ -240,7 +240,7 @@ export function generate(seed: number) {
     const mirror_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? [x_index, y_index] : [-1, -1]).filter(e => e[0] !== -1)).flat();
     console.log(mirror_cell);
     // レーザー通過マスposの配列から任意posのindexを取得(存在しなければ-1)
-    console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0,1])));
+    console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0, 1])));
 
     const tromino_pattern: [number, number][][] = [
         // C  #  #
@@ -252,7 +252,7 @@ export function generate(seed: number) {
         // c##  #C#  ##C
         [[1, 0], [2, 0]],
         [[-1, 0], [1, 0]],
-        [[-2, 0], [0, 0]],
+        [[-2, 0], [-1, 0]],
         // #   #   C
         // C#  #C  ##
         [[0, -1], [1, 0]],
