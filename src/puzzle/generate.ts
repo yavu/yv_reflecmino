@@ -231,48 +231,48 @@ export function generate(seed: number) {
     };
     const laser_drawn_board = draw_2_laser();
     console.log([...laser_drawn_board].join("\n").replace(/,/g, " "));
-    console.log([...laser_drawn_board].join("\n").replace(/[^\\/￭\n,]/g, "#").replace(/[,￭]/g, " ").replace(/[\\/]/g, "￮"));
+    console.log([...laser_drawn_board].join("\n").replace(/[^\\/￭\n,]/g, "#").replace(/[,￭]/g, " ").replace(/[\\/]/g, "x"));
     const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
     console.log(laser_cell_count);
 
-    const laser_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index,y_index] : "   ").join(" ")).join("\n");
+    const laser_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index, y_index] : [-1, -1]).filter(e => e[0] !== -1)).flat();
     console.log(laser_cell);
-    const mirror_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "\\" || x === "/" ? [x_index,y_index] : "   ").join(" ")).join("\n");
+    const mirror_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? [x_index, y_index] : [-1, -1]).filter(e => e[0] !== -1)).flat();
     console.log(mirror_cell);
-    const straight_cell = [...laser_drawn_board].map((y,y_index) => y.map((x,x_index) => x === "￭" ? [x_index,y_index] : "   ").join(" ")).join("\n");
-    console.log(straight_cell);
+    // レーザー通過マスposの配列から任意posのindexを取得(存在しなければ-1)
+    console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0,1])));
 
-    const tromino_pattern: { x: number, y: number }[][] = [
+    const tromino_pattern: [number, number][][] = [
         // C  #  #
         // #  C  #
         // #  #  C
-        [{ x: 0, y: 1 }, { x: 0, y: 2 }],
-        [{ x: 0, y: -1 }, { x: 0, y: 1 }],
-        [{ x: 0, y: -2 }, { x: 0, y: -1 }],
+        [[0, 1], [0, 2]],
+        [[0, -1], [0, 1]],
+        [[0, -2], [0, -1]],
         // c##  #C#  ##C
-        [{ x: 1, y: 0 }, { x: 2, y: 0 }],
-        [{ x: -1, y: 0 }, { x: 1, y: 0 }],
-        [{ x: -2, y: 0 }, { x: 0, y: 0 }],
+        [[1, 0], [2, 0]],
+        [[-1, 0], [1, 0]],
+        [[-2, 0], [0, 0]],
         // #   #   C
         // C#  #C  ##
-        [{ x: 0, y: -1 }, { x: 1, y: 0 }],
-        [{ x: -1, y: 0 }, { x: -1, y: -1 }],
-        [{ x: 0, y: 1 }, { x: 1, y: 1 }],
+        [[0, -1], [1, 0]],
+        [[-1, 0], [-1, -1]],
+        [[0, 1], [1, 1]],
         // C#  #C  ##
         // #   #   C
-        [{ x: 1, y: 0 }, { x: 0, y: 1 }],
-        [{ x: -1, y: 0 }, { x: -1, y: 1 }],
-        [{ x: 0, y: -1 }, { x: 1, y: -1 }],
+        [[1, 0], [0, 1]],
+        [[-1, 0], [-1, 1]],
+        [[0, -1], [1, -1]],
         // #C  C#  ##
         //  #   #   C
-        [{ x: -1, y: 0 }, { x: 0, y: 1 }],
-        [{ x: 1, y: 0 }, { x: 1, y: 1 }],
-        [{ x: -1, y: -1 }, { x: 0, y: -1 }],
+        [[-1, 0], [0, 1]],
+        [[1, 0], [1, 1]],
+        [[-1, -1], [0, -1]],
         //  #   #   C
         // #C  C#  ##
-        [{ x: -1, y: 0 }, { x: 0, y: -1 }],
-        [{ x: 1, y: 0 }, { x: 1, y: -1 }],
-        [{ x: -1, y: 1 }, { x: 0, y: 1 }]
+        [[-1, 0], [0, -1]],
+        [[1, 0], [1, -1]],
+        [[-1, 1], [0, 1]]
     ];
 
     type PlaceMino = [board: string[][], x: number, y: number, move: Move];
