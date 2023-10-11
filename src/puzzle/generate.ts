@@ -33,7 +33,7 @@ export function generate(seed: number) {
 
     type LaserDraw = [board: string[][], x: number, y: number, move: Move, mirror: number];
     // ミラーを必要数置きつつレーザーを描画する関数
-    const draw_random_laser = (base: string[][], laser: { mirror: number, x: number, y: number, move: Move }) => {
+    const draw_random_laser = (board: string[][], laser: { mirror: number, x: number, y: number, move: Move }) => {
         const move_laser = (data: LaserDraw[]) => {
             const current = data[data.length - 1];
             const board = current[0];
@@ -186,7 +186,7 @@ export function generate(seed: number) {
             return new_data;
         }
         // レーザー必要数ミラーを接地し壁に衝突するまで処理
-        const initial: LaserDraw[] = [[base, laser.x, laser.y, laser.move, laser.mirror]];
+        const initial: LaserDraw[] = [[board, laser.x, laser.y, laser.move, laser.mirror]];
         const new_data = while_f(initial, s => {
             const result = move_laser(s);
             const current = result[result.length - 1];
@@ -235,48 +235,33 @@ export function generate(seed: number) {
     const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
     console.log(laser_cell_count);
 
-    const laser_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index, y_index] : [-1, -1]).filter(e => e[0] !== -1)).flat();
-    console.log(laser_cell);
-    const mirror_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? [x_index, y_index] : [-1, -1]).filter(e => e[0] !== -1)).flat();
-    console.log(mirror_cell);
+    const laser_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index, y_index] : [-1]).filter(e => e[0] !== -1)).flat();
+    console.log([...laser_cell].join());
+    const mirror_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? [x_index, y_index] : [-1]).filter(e => e[0] !== -1)).flat();
+    //console.log(mirror_cell);
     // レーザー通過マスposの配列から任意posのindexを取得(存在しなければ-1)
-    console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0, 1])));
+    //console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0, 1])));
 
-    const tromino_pattern: [number, number][][] = [
-        // C  #  #
-        // #  C  #
-        // #  #  C
-        [[0, 1], [0, 2]],
-        [[0, -1], [0, 1]],
-        [[0, -2], [0, -1]],
-        // c##  #C#  ##C
-        [[1, 0], [2, 0]],
-        [[-1, 0], [1, 0]],
-        [[-2, 0], [-1, 0]],
-        // #   #   C
-        // C#  #C  ##
-        [[0, -1], [1, 0]],
-        [[-1, 0], [-1, -1]],
-        [[0, 1], [1, 1]],
-        // C#  #C  ##
-        // #   #   C
-        [[1, 0], [0, 1]],
-        [[-1, 0], [-1, 1]],
-        [[0, -1], [1, -1]],
-        // #C  C#  ##
-        //  #   #   C
-        [[-1, 0], [0, 1]],
-        [[1, 0], [1, 1]],
-        [[-1, -1], [0, -1]],
-        //  #   #   C
-        // #C  C#  ##
-        [[-1, 0], [0, -1]],
-        [[1, 0], [1, -1]],
-        [[-1, 1], [0, 1]]
-    ];
-
-    type PlaceMino = [board: string[][], x: number, y: number, move: Move];
-    //const place_tromino
+    type PlaceMino = [board: string[][], x: number, y: number, laser_cell: number[][]];
+    const place_tromino = (data: PlaceMino): PlaceMino => {
+        const x = data[1];
+        const y = data[2];
+        const adjacent_cell = [
+            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x, y - 1])),
+            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x + 1, y])),
+            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x, y + 1])),
+            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x - 1, y]))
+        ].filter(e => e !== -1).map(e => laser_cell[e]);
+        const r = random.next_int(0, adjacent_cell.length);
+        const next_x = adjacent_cell.length === 1
+            ? adjacent_cell[r][0]
+            : x;
+        const next_y = adjacent_cell.length === 1
+            ? adjacent_cell[r][1]
+            : y;
+        return [replace_2d_array(data[0], adjacent_cell[r][0], adjacent_cell[r][1], "@"), next_x, next_y, data[3].filter(e => JSON.stringify(e) !== JSON.stringify(adjacent_cell[r]))];
+    }
+    console.log(place_tromino([laser_drawn_board, mirror_cell[0][0], mirror_cell[0][1], laser_cell]));
 
     console.log("======================");
 }
