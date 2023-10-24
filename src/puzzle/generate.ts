@@ -231,46 +231,49 @@ export function generate(seed: number) {
     };
     const laser_drawn_board = draw_2_laser();
     console.log([...laser_drawn_board].join("\n").replace(/,/g, " "));
-    console.log([...laser_drawn_board].join("\n").replace(/[^\\/￭\n,]/g, "#").replace(/[,￭]/g, " ").replace(/[\\/]/g, "•"));
+    // console.log([...laser_drawn_board].join("\n").replace(/[^\\/￭\n,]/g, "#").replace(/[,￭]/g, " ").replace(/[\\/]/g, "•"));
     const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
     console.log(laser_cell_count);
 
-    const laser_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? [x_index, y_index] : [-1]).filter(e => e[0] !== -1)).flat();
-    console.log([...laser_cell].join(" "));
-    const mirror_cell: number[][] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? [x_index, y_index] : [-1]).filter(e => e[0] !== -1)).flat();
-    console.log([...mirror_cell].join(" "));
-    // レーザー通過マスposの配列から任意posのindexを取得(存在しなければ-1)
-    //console.log(laser_cell.findIndex(e => JSON.stringify(e) === JSON.stringify([0, 1])));
+    const mirror_cell: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
+    console.log(JSON.stringify([...mirror_cell]));
 
-    type PlaceMino = [board: string[][], x: number, y: number, laser_cell: number[][]];
-    const extend_mino = (data: PlaceMino): PlaceMino => {
+    const place_mino = (data: [board: string[][], x: number, y: number]) => {
         const x = data[1];
         const y = data[2];
-        console.log(x + "," + y);
-        // 伸ばせる座標を取得
-        const adjacent_cell = [
-            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x, y - 1])),
-            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x + 1, y])),
-            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x, y + 1])),
-            data[3].findIndex(e => JSON.stringify(e) === JSON.stringify([x - 1, y]))
-        ].filter(e => e !== -1).map(e => data[3][e]);
-        console.log(adjacent_cell);
-        // その中からランダムに選ぶ
-        const r = random.next_int(0, adjacent_cell.length);
-        // 現在座標から伸ばせるマスが今伸ばした所以外ないなら　そこを次回の実行位置にする
-        const next_x = adjacent_cell.length === 1
-            ? adjacent_cell[r][0]
-            : x;
-        const next_y = adjacent_cell.length === 1
-            ? adjacent_cell[r][1]
-            : y;
-        // レーザーが通る座標の配列から今伸ばした座標を消す
-        const new_laser_cell = data[3].filter(e => JSON.stringify(e) !== JSON.stringify(adjacent_cell[r]));
-        return [replace_2d_array(data[0], adjacent_cell[r][0], adjacent_cell[r][1], "@"), next_x, next_y, new_laser_cell];
+        const placeable_cell = [
+            [" ", " ", data[0][y - 2]?.[x] ?? "#", " ", " "],
+            [" ", data[0][y - 1]?.[x - 1] ?? "#", data[0][y - 1]?.[x] ?? "#", data[0][y - 1]?.[x + 1] ?? "#", " "],
+            [data[0][y]?.[x - 2] ?? "#", data[0][y]?.[x - 1] ?? "#", data[0][y]?.[x] ?? "#", data[0][y]?.[x + 1] ?? "#", data[0][y]?.[x + 2] ?? "#"],
+            [" ", data[0][y + 1]?.[x - 1] ?? "#", data[0][y + 1]?.[x] ?? "#", data[0][y + 1]?.[x + 1] ?? "#", " "],
+            [" ", " ", data[0][y + 2]?.[x] ?? "#", " ", " "]
+        ].map(y => y.map(x => x.replace(/[\\/]/g, "￭")));
+        console.log(placeable_cell.join("\n").replace(/,/g, " "));
+
+        // 絶対もっといい方法ある
+        const placeable_mino = [
+            placeable_cell[0][2] == "￭" && placeable_cell[1][2] == "￭" ? 0 : -1,
+            placeable_cell[1][2] == "￭" && placeable_cell[3][2] == "￭" ? 1 : -1,
+            placeable_cell[3][2] == "￭" && placeable_cell[4][2] == "￭" ? 2 : -1,
+            placeable_cell[2][0] == "￭" && placeable_cell[2][1] == "￭" ? 3 : -1,
+            placeable_cell[2][1] == "￭" && placeable_cell[2][3] == "￭" ? 4 : -1,
+            placeable_cell[2][3] == "￭" && placeable_cell[2][4] == "￭" ? 5 : -1,
+            placeable_cell[1][2] == "￭" && placeable_cell[2][1] == "￭" ? 6 : -1,
+            placeable_cell[1][2] == "￭" && placeable_cell[2][3] == "￭" ? 7 : -1,
+            placeable_cell[2][3] == "￭" && placeable_cell[3][2] == "￭" ? 8 : -1,
+            placeable_cell[2][1] == "￭" && placeable_cell[3][2] == "￭" ? 9 : -1,
+            placeable_cell[3][1] == "￭" && placeable_cell[3][2] == "￭" ? 10 : -1,
+            placeable_cell[1][1] == "￭" && placeable_cell[2][1] == "￭" ? 11 : -1,
+            placeable_cell[1][2] == "￭" && placeable_cell[1][3] == "￭" ? 12 : -1,
+            placeable_cell[2][3] == "￭" && placeable_cell[3][3] == "￭" ? 13 : -1,
+            placeable_cell[3][2] == "￭" && placeable_cell[3][3] == "￭" ? 14 : -1,
+            placeable_cell[2][1] == "￭" && placeable_cell[3][1] == "￭" ? 15 : -1,
+            placeable_cell[1][1] == "￭" && placeable_cell[1][2] == "￭" ? 16 : -1,
+            placeable_cell[1][3] == "￭" && placeable_cell[2][3] == "￭" ? 17 : -1,
+        ].filter(e => e != -1);
+        console.log(placeable_mino.join("\n").replace(/,/g, " "))
+        return placeable_mino;
     }
-    //console.log(place_tromino([laser_drawn_board, mirror_cell[0][0], mirror_cell[0][1], laser_cell]));
-    console.log(extend_mino(extend_mino([replace_2d_array(laser_drawn_board, mirror_cell[0][0], mirror_cell[0][1], "O"), mirror_cell[0][0], mirror_cell[0][1], laser_cell.filter(e => JSON.stringify(e) !== JSON.stringify(mirror_cell[0]))]))[0].join("\n").replace(/,/g, " "));
-
-
     console.log("======================");
 }
+
