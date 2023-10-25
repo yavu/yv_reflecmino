@@ -1,8 +1,8 @@
-export class Random {
-    x:number;
-    y:number;
-    z:number;
-    w:number;
+export class random {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
     constructor(seed = 88675123) {
         this.x = 123456789;
         this.y = 362436069;
@@ -18,7 +18,7 @@ export class Random {
     }
 
     // min以上max以下の乱数を生成する
-    next_int(min:number, max:number) {
+    next_int(min: number, max: number) {
         const r = Math.abs(this.next());
         return min + (r % (max - min));
     }

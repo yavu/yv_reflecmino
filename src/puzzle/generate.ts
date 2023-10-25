@@ -1,10 +1,11 @@
 import { compose_n, while_f, replace_2d_array } from "../utils/function";
-import { Random } from "../utils/random"
+import { random } from "../utils/random"
+import { empty_board } from "./const";
 
 export function generate(seed: number) {
-    const random = new Random(seed);
+    const rnd = new random(seed);
     const insert = (base: string, index: number, other: string) => base.slice(0, index) + other + base.slice(index);
-    const random_insert = (base: string) => insert(base, random.next_int(0, base.length + 2), "S");
+    const random_insert = (base: string) => insert(base, rnd.next_int(0, base.length + 2), "S");
     const initial = "##################";
     const flame = compose_n(2, random_insert)(initial).split("");
 
@@ -15,21 +16,13 @@ export function generate(seed: number) {
         else { return { x: index - 14, y: 6, move: [0, -1] }; }
     }
 
-    const mirror_random_count = random.next_int(3, 7);
+    const mirror_random_count = rnd.next_int(3, 7);
     const laser = [
         Object.assign({ mirror: mirror_random_count }, get_s(flame.indexOf("S"))),
         Object.assign({ mirror: 6 - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
     ]
 
-    const empty_board = [
-        ["#", "#", "#", "#", "#", "#", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#"],
-        ["#", "#", "#", "#", "#", "#", "#"]
-    ];
+
 
     type LaserDraw = [board: string[][], x: number, y: number, move: Move, mirror: number];
     // ミラーを必要数置きつつレーザーを描画する関数
@@ -88,7 +81,7 @@ export function generate(seed: number) {
             const range = [...trim_mirror].map((e, index) => e !== "￭" ? index : -1).filter(e => e !== -1);
             // その中からランダムに決める   ミラーを置く必要がないなら最長を選ぶ
             const random_range = mirror > 0
-                ? range[random.next_int(0, range.length)]
+                ? range[rnd.next_int(0, range.length)]
                 : range[range.length - 1];
             // 1マス進んでboardに書き込む
             const draw_laser = (data: LaserDraw) => {
@@ -105,7 +98,7 @@ export function generate(seed: number) {
             const set_mirror = (data: LaserDraw) => {
                 const x = data[1] + data[3][0];
                 const y = data[2] + data[3][1];
-                const random_turn = random.next_bool();
+                const random_turn = rnd.next_bool();
                 const mirror = data[0][y][x] === " "
                     ? data[4] - 1
                     : data[4];
@@ -244,36 +237,37 @@ export function generate(seed: number) {
         const placeable_cell = [
             [" ", " ", data[0][y - 2]?.[x] ?? "#", " ", " "],
             [" ", data[0][y - 1]?.[x - 1] ?? "#", data[0][y - 1]?.[x] ?? "#", data[0][y - 1]?.[x + 1] ?? "#", " "],
-            [data[0][y]?.[x - 2] ?? "#", data[0][y]?.[x - 1] ?? "#", data[0][y]?.[x] ?? "#", data[0][y]?.[x + 1] ?? "#", data[0][y]?.[x + 2] ?? "#"],
+            [data[0][y]?.[x - 2] ?? "#", data[0][y]?.[x - 1] ?? "#", "x", data[0][y]?.[x + 1] ?? "#", data[0][y]?.[x + 2] ?? "#"],
             [" ", data[0][y + 1]?.[x - 1] ?? "#", data[0][y + 1]?.[x] ?? "#", data[0][y + 1]?.[x + 1] ?? "#", " "],
             [" ", " ", data[0][y + 2]?.[x] ?? "#", " ", " "]
         ].map(y => y.map(x => x.replace(/[\\/]/g, "￭")));
-        console.log(placeable_cell.join("\n").replace(/,/g, " "));
+        console.log([...placeable_cell].join("\n").replace(/,/g, " "));
 
         // 絶対もっといい方法ある
         const placeable_mino = [
-            placeable_cell[0][2] == "￭" && placeable_cell[1][2] == "￭" ? 0 : -1,
-            placeable_cell[1][2] == "￭" && placeable_cell[3][2] == "￭" ? 1 : -1,
-            placeable_cell[3][2] == "￭" && placeable_cell[4][2] == "￭" ? 2 : -1,
-            placeable_cell[2][0] == "￭" && placeable_cell[2][1] == "￭" ? 3 : -1,
-            placeable_cell[2][1] == "￭" && placeable_cell[2][3] == "￭" ? 4 : -1,
-            placeable_cell[2][3] == "￭" && placeable_cell[2][4] == "￭" ? 5 : -1,
-            placeable_cell[1][2] == "￭" && placeable_cell[2][1] == "￭" ? 6 : -1,
-            placeable_cell[1][2] == "￭" && placeable_cell[2][3] == "￭" ? 7 : -1,
-            placeable_cell[2][3] == "￭" && placeable_cell[3][2] == "￭" ? 8 : -1,
-            placeable_cell[2][1] == "￭" && placeable_cell[3][2] == "￭" ? 9 : -1,
-            placeable_cell[3][1] == "￭" && placeable_cell[3][2] == "￭" ? 10 : -1,
-            placeable_cell[1][1] == "￭" && placeable_cell[2][1] == "￭" ? 11 : -1,
-            placeable_cell[1][2] == "￭" && placeable_cell[1][3] == "￭" ? 12 : -1,
-            placeable_cell[2][3] == "￭" && placeable_cell[3][3] == "￭" ? 13 : -1,
-            placeable_cell[3][2] == "￭" && placeable_cell[3][3] == "￭" ? 14 : -1,
-            placeable_cell[2][1] == "￭" && placeable_cell[3][1] == "￭" ? 15 : -1,
-            placeable_cell[1][1] == "￭" && placeable_cell[1][2] == "￭" ? 16 : -1,
-            placeable_cell[1][3] == "￭" && placeable_cell[2][3] == "￭" ? 17 : -1,
-        ].filter(e => e != -1);
-        console.log(placeable_mino.join("\n").replace(/,/g, " "))
-        return placeable_mino;
+            placeable_cell[0][2] === "￭" && placeable_cell[1][2] === "￭" ? 0 : -1,
+            placeable_cell[1][2] === "￭" && placeable_cell[3][2] === "￭" ? 1 : -1,
+            placeable_cell[3][2] === "￭" && placeable_cell[4][2] === "￭" ? 2 : -1,
+            placeable_cell[2][0] === "￭" && placeable_cell[2][1] === "￭" ? 3 : -1,
+            placeable_cell[2][1] === "￭" && placeable_cell[2][3] === "￭" ? 4 : -1,
+            placeable_cell[2][3] === "￭" && placeable_cell[2][4] === "￭" ? 5 : -1,
+            placeable_cell[1][2] === "￭" && placeable_cell[2][1] === "￭" ? 6 : -1,
+            placeable_cell[1][2] === "￭" && placeable_cell[2][3] === "￭" ? 7 : -1,
+            placeable_cell[2][3] === "￭" && placeable_cell[3][2] === "￭" ? 8 : -1,
+            placeable_cell[2][1] === "￭" && placeable_cell[3][2] === "￭" ? 9 : -1,
+            placeable_cell[3][1] === "￭" && placeable_cell[3][2] === "￭" ? 10 : -1,
+            placeable_cell[1][1] === "￭" && placeable_cell[2][1] === "￭" ? 11 : -1,
+            placeable_cell[1][2] === "￭" && placeable_cell[1][3] === "￭" ? 12 : -1,
+            placeable_cell[2][3] === "￭" && placeable_cell[3][3] === "￭" ? 13 : -1,
+            placeable_cell[3][2] === "￭" && placeable_cell[3][3] === "￭" ? 14 : -1,
+            placeable_cell[2][1] === "￭" && placeable_cell[3][1] === "￭" ? 15 : -1,
+            placeable_cell[1][1] === "￭" && placeable_cell[1][2] === "￭" ? 16 : -1,
+            placeable_cell[1][3] === "￭" && placeable_cell[2][3] === "￭" ? 17 : -1,
+        ].filter(e => e !== -1);
+        console.log([...placeable_mino].join(","));
+        return placeable_mino[rnd.next_int(0, placeable_mino.length)];
     }
+    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]));
     console.log("======================");
 }
 
