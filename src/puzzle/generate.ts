@@ -1,6 +1,6 @@
 import { compose_n, while_f, replace_2d_array } from "../utils/function";
 import { random } from "../utils/random"
-import { empty_board } from "./const";
+import { empty_board, mino_pattern } from "./const";
 
 export function generate(seed: number) {
     const rnd = new random(seed);
@@ -265,9 +265,12 @@ export function generate(seed: number) {
             placeable_cell[1][3] === "￭" && placeable_cell[2][3] === "￭" ? 17 : -1,
         ].filter(e => e !== -1);
         console.log([...placeable_mino].join(","));
-        return placeable_mino[rnd.next_int(0, placeable_mino.length)];
+        const random = placeable_mino[rnd.next_int(0, placeable_mino.length)];
+        const first_place = replace_2d_array(data[0], x + mino_pattern[random][0].x, y + mino_pattern[random][0].y, `${random}`);
+        const second_place = replace_2d_array(first_place, x + mino_pattern[random][1].x, y + mino_pattern[random][1].y, `${random}`);
+        return second_place;
     }
-    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]));
+    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
     console.log("======================");
 }
 
