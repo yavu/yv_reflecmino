@@ -231,46 +231,75 @@ export function generate(seed: number) {
     const mirror_cell: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
     console.log(JSON.stringify([...mirror_cell]));
 
-    const place_mino = (data: [board: string[][], x: number, y: number]) => {
+    const place_random_mino = (data: [board: string[][], x: number, y: number]): [string[][], boolean] => {
         const x = data[1];
         const y = data[2];
-        const placeable_cell = [
-            [" ", " ", data[0][y - 2]?.[x] ?? "#", " ", " "],
-            [" ", data[0][y - 1]?.[x - 1] ?? "#", data[0][y - 1]?.[x] ?? "#", data[0][y - 1]?.[x + 1] ?? "#", " "],
-            [data[0][y]?.[x - 2] ?? "#", data[0][y]?.[x - 1] ?? "#", "x", data[0][y]?.[x + 1] ?? "#", data[0][y]?.[x + 2] ?? "#"],
-            [" ", data[0][y + 1]?.[x - 1] ?? "#", data[0][y + 1]?.[x] ?? "#", data[0][y + 1]?.[x + 1] ?? "#", " "],
-            [" ", " ", data[0][y + 2]?.[x] ?? "#", " ", " "]
-        ].map(y => y.map(x => x.replace(/[\\/]/g, "￭")));
-        console.log([...placeable_cell].join("\n").replace(/,/g, " "));
+        if (data[0][y][x] === "/" || data[0][y][x] === "\\") {
+            const placeable_cell = [
+                [" ", " ", data[0][y - 2]?.[x] ?? "#", " ", " "],
+                [" ", data[0][y - 1]?.[x - 1] ?? "#", data[0][y - 1]?.[x] ?? "#", data[0][y - 1]?.[x + 1] ?? "#", " "],
+                [data[0][y]?.[x - 2] ?? "#", data[0][y]?.[x - 1] ?? "#", "x", data[0][y]?.[x + 1] ?? "#", data[0][y]?.[x + 2] ?? "#"],
+                [" ", data[0][y + 1]?.[x - 1] ?? "#", data[0][y + 1]?.[x] ?? "#", data[0][y + 1]?.[x + 1] ?? "#", " "],
+                [" ", " ", data[0][y + 2]?.[x] ?? "#", " ", " "]
+            ].map(y => y.map(x => x.replace(/[\\/]/g, "￭")));
+            //console.log([...placeable_cell].join("\n").replace(/,/g, " "));
 
-        // 絶対もっといい方法ある
-        const placeable_mino = [
-            placeable_cell[0][2] === "￭" && placeable_cell[1][2] === "￭" ? 0 : -1,
-            placeable_cell[1][2] === "￭" && placeable_cell[3][2] === "￭" ? 1 : -1,
-            placeable_cell[3][2] === "￭" && placeable_cell[4][2] === "￭" ? 2 : -1,
-            placeable_cell[2][0] === "￭" && placeable_cell[2][1] === "￭" ? 3 : -1,
-            placeable_cell[2][1] === "￭" && placeable_cell[2][3] === "￭" ? 4 : -1,
-            placeable_cell[2][3] === "￭" && placeable_cell[2][4] === "￭" ? 5 : -1,
-            placeable_cell[1][2] === "￭" && placeable_cell[2][1] === "￭" ? 6 : -1,
-            placeable_cell[1][2] === "￭" && placeable_cell[2][3] === "￭" ? 7 : -1,
-            placeable_cell[2][3] === "￭" && placeable_cell[3][2] === "￭" ? 8 : -1,
-            placeable_cell[2][1] === "￭" && placeable_cell[3][2] === "￭" ? 9 : -1,
-            placeable_cell[3][1] === "￭" && placeable_cell[3][2] === "￭" ? 10 : -1,
-            placeable_cell[1][1] === "￭" && placeable_cell[2][1] === "￭" ? 11 : -1,
-            placeable_cell[1][2] === "￭" && placeable_cell[1][3] === "￭" ? 12 : -1,
-            placeable_cell[2][3] === "￭" && placeable_cell[3][3] === "￭" ? 13 : -1,
-            placeable_cell[3][2] === "￭" && placeable_cell[3][3] === "￭" ? 14 : -1,
-            placeable_cell[2][1] === "￭" && placeable_cell[3][1] === "￭" ? 15 : -1,
-            placeable_cell[1][1] === "￭" && placeable_cell[1][2] === "￭" ? 16 : -1,
-            placeable_cell[1][3] === "￭" && placeable_cell[2][3] === "￭" ? 17 : -1,
-        ].filter(e => e !== -1);
-        console.log([...placeable_mino].join(","));
-        const random = placeable_mino[rnd.next_int(0, placeable_mino.length)];
-        const first_place = replace_2d_array(data[0], x + mino_pattern[random][0].x, y + mino_pattern[random][0].y, `${random}`);
-        const second_place = replace_2d_array(first_place, x + mino_pattern[random][1].x, y + mino_pattern[random][1].y, `${random}`);
-        return second_place;
+            // 絶対もっといい方法ある
+            const placeable_mino = [
+                placeable_cell[0][2] === "￭" && placeable_cell[1][2] === "￭" ? 0 : -1,
+                placeable_cell[1][2] === "￭" && placeable_cell[3][2] === "￭" ? 1 : -1,
+                placeable_cell[3][2] === "￭" && placeable_cell[4][2] === "￭" ? 2 : -1,
+                placeable_cell[2][0] === "￭" && placeable_cell[2][1] === "￭" ? 3 : -1,
+                placeable_cell[2][1] === "￭" && placeable_cell[2][3] === "￭" ? 4 : -1,
+                placeable_cell[2][3] === "￭" && placeable_cell[2][4] === "￭" ? 5 : -1,
+                placeable_cell[1][2] === "￭" && placeable_cell[2][1] === "￭" ? 6 : -1,
+                placeable_cell[1][2] === "￭" && placeable_cell[2][3] === "￭" ? 7 : -1,
+                placeable_cell[2][3] === "￭" && placeable_cell[3][2] === "￭" ? 8 : -1,
+                placeable_cell[2][1] === "￭" && placeable_cell[3][2] === "￭" ? 9 : -1,
+                placeable_cell[3][1] === "￭" && placeable_cell[3][2] === "￭" ? 10 : -1,
+                placeable_cell[1][1] === "￭" && placeable_cell[2][1] === "￭" ? 11 : -1,
+                placeable_cell[1][2] === "￭" && placeable_cell[1][3] === "￭" ? 12 : -1,
+                placeable_cell[2][3] === "￭" && placeable_cell[3][3] === "￭" ? 13 : -1,
+                placeable_cell[3][2] === "￭" && placeable_cell[3][3] === "￭" ? 14 : -1,
+                placeable_cell[2][1] === "￭" && placeable_cell[3][1] === "￭" ? 15 : -1,
+                placeable_cell[1][1] === "￭" && placeable_cell[1][2] === "￭" ? 16 : -1,
+                placeable_cell[1][3] === "￭" && placeable_cell[2][3] === "￭" ? 17 : -1,
+            ].filter(e => e !== -1);
+            //console.log([...placeable_mino].join(","));
+            console.log(`${x},${y}`);
+
+            if (placeable_mino.length > 0) {
+                const random = placeable_mino[rnd.next_int(0, placeable_mino.length)];
+                console.log(`${random}`);
+                const first_place = replace_2d_array(data[0], x, y, `${random}`);
+                const second_place = replace_2d_array(first_place, x + mino_pattern[random][0].x, y + mino_pattern[random][0].y, `${random}`);
+                const third_place = replace_2d_array(second_place, x + mino_pattern[random][1].x, y + mino_pattern[random][1].y, `${random}`);
+                return [third_place, true];
+            }
+            else {
+                return [data[0], false];
+            }
+        }
+        else {
+            return [data[0], false];
+        }
     }
-    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
+
+    const draw_4_mino = (): string[][] => {
+        const first_place = place_random_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]);
+        const second_place = place_random_mino([first_place[0], mirror_cell[1].x, mirror_cell[1].y]);
+        const third_place = place_random_mino([second_place[0], mirror_cell[2].x, mirror_cell[2].y]);
+        const fourth_place = place_random_mino([third_place[0], mirror_cell[3].x, mirror_cell[3].y]);
+        if (first_place[1] && second_place[1] && third_place[1] && fourth_place[1]) {
+            return fourth_place[0];
+        }
+        else {
+            return draw_4_mino();
+        }
+    };
+
+    console.log(draw_4_mino().map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
     console.log("======================");
 }
 
