@@ -6,8 +6,7 @@ export function generate(seed: number) {
     const rnd = new random(seed);
     const insert = (base: string, index: number, other: string) => base.slice(0, index) + other + base.slice(index);
     const random_insert = (base: string) => insert(base, rnd.next_int(0, base.length + 2), "S");
-    const initial = "##################";
-    const flame = compose_n(2, random_insert)(initial).split("");
+    const flame = compose_n(2, random_insert)("##################").split("");
 
     type Move = [0, 1] | [0, -1] | [1, 0] | [-1, 0];
     const get_s = (index: number): { x: number, y: number, move: Move } => {
@@ -179,14 +178,15 @@ export function generate(seed: number) {
             return new_data;
         }
         // レーザー必要数ミラーを接地し壁に衝突するまで処理
-        const initial: DrawLaser[] = [[board, laser.x, laser.y, laser.move, laser.mirror]];
+        const initial: [DrawLaser[], number] = [[[board, laser.x, laser.y, laser.move, laser.mirror]], 100];
         const new_data = while_f(initial, s => {
-            const result = move_laser(s);
+            const result = move_laser(s[0]);
             const current = result[result.length - 1];
-            return [current[4] > 0 || current[0][current[2]][current[1]] !== "#", result];
+            const return_data: [DrawLaser[], number] = [result, s[1] - 1];
+            return [(current[4] > 0 || current[0][current[2]][current[1]] !== "#") && return_data[1] > 0, return_data];
         });
         // 最新のデータを返す
-        return new_data[new_data.length - 1];
+        return new_data[0][new_data[0].length - 1];
     }
 
     // レーザーを2本描画したボードを返す関数
@@ -223,15 +223,15 @@ export function generate(seed: number) {
         }
     };
 
-    const laser_drawn_board = draw_two_laser();
-    console.log([...laser_drawn_board].join("\n").replace(/,/g, "  "));
+    // const laser_drawn_board = draw_two_laser();
+    // console.log([...laser_drawn_board].join("\n").replace(/,/g, "  "));
 
-    const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
-    console.log(laser_cell_count);
+    // const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
+    // console.log(laser_cell_count);
 
-    const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
+    // const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
 
-    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], placed_mino: number]
+    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_pos: { x: number, y: number }[]]
     const place_random_mino = (data: PlaceMino): PlaceMino => {
         const board = data[0];
         const random_pos = data[1][rnd.next_int(0, data[1].length)];
@@ -246,7 +246,7 @@ export function generate(seed: number) {
         ].map(y => y.map(x => x.replace(/[\\/]/g, "￭")));
         // console.log([...placeable_cell].join("\n").replace(/,/g, " "));
 
-        // 絶対もっといい方法ある
+        // 絶対もっといい方法あるけどとりあえずこれで
         const placeable_mino = [
             placeable_cell[0][2] === "￭" && placeable_cell[1][2] === "￭" ? 0 : -1,
             placeable_cell[1][2] === "￭" && placeable_cell[3][2] === "￭" ? 1 : -1,
@@ -267,11 +267,9 @@ export function generate(seed: number) {
             placeable_cell[1][1] === "￭" && placeable_cell[1][2] === "￭" ? 16 : -1,
             placeable_cell[1][3] === "￭" && placeable_cell[2][3] === "￭" ? 17 : -1,
         ].filter(e => e !== -1);
-        //console.log([...placeable_mino].join(","));
-        // console.log(`${x},${y}`);
+
         if (placeable_mino.length > 0) {
             const random_mino = placeable_mino[rnd.next_int(0, placeable_mino.length)];
-            // console.log(`${random_mino}`);
             const place_cell = [
                 { x: x + mino_pattern[random_mino][0].x, y: y + mino_pattern[random_mino][0].y, },
                 { x: x + mino_pattern[random_mino][1].x, y: y + mino_pattern[random_mino][1].y, }
@@ -279,30 +277,29 @@ export function generate(seed: number) {
             const place_1 = replace_2d_array(board, x, y, `${random_mino}`);
             const place_2 = replace_2d_array(place_1, place_cell[0].x, place_cell[0].y, `${random_mino}`);
             const place_3 = replace_2d_array(place_2, place_cell[1].x, place_cell[1].y, `${random_mino}`);
-            // console.log([...place_3].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
             const laser_cells = data[1].filter(e => JSON.stringify(e) != JSON.stringify(random_pos) && JSON.stringify(e) != JSON.stringify(place_cell[0]) && JSON.stringify(e) != JSON.stringify(place_cell[1]));
-            return [place_3, laser_cells, data[2] + 1];
+            const mino_pos = [...data[2], random_pos];
+            return [place_3, laser_cells, mino_pos];
         }
         else {
-            return [data[0], data[1], -1];
+            return data;
         }
     }
 
-    const place_four_mino = (): string[][] => {
-        const initial: PlaceMino = [laser_drawn_board, laser_cells, 0];
-        const placed = while_f(initial, s => {
-            const result = place_random_mino(s);
-            return [result[2] != 4 && result[2] != -1, result];
-        });
-        if (![...placed[0]].flat().includes("/") && ![...placed[0]].flat().includes("\\") && placed[2] == 4) {
-            return placed[0];
-        }
-        else {
-            return place_four_mino();
-        }
-    };
+    const initial: [string[][], PlaceMino] = [[[]], [[[]], [], []]];
+    const all_drawn_board = while_f(initial, s => {
+        const laser_drawn_board = draw_two_laser();
+        const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
+        const place_1 = place_random_mino([laser_drawn_board, laser_cells, []]);
+        const place_2 = place_random_mino(place_1);
+        const place_3 = place_random_mino(place_2);
+        const place_4 = place_random_mino(place_3);
+        const return_data: [string[][], PlaceMino] = [laser_drawn_board, place_4];
+        return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length != 4, return_data];
+    });
 
-    console.log(place_four_mino().map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    console.log(all_drawn_board[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    console.log(all_drawn_board[1][0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
     console.log("======================");
 }

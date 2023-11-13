@@ -87,7 +87,7 @@ export default function App(): JSX.Element {
                                     height="auto"
                                 >
                                 <TextField
-                                    label="Text"
+                                    label="Seed"
                                     size="small"
                                     margin="dense"
                                     value={seed}
@@ -97,7 +97,7 @@ export default function App(): JSX.Element {
                                     <Button
                                         onClick={() => generate(seed)}
                                     >
-                                        test
+                                        Run
                                     </Button>
                                 </PropertyWrapper>
                             </Grid>

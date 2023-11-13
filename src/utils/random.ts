@@ -1,3 +1,4 @@
+// これをimmutableにするのはTypeScriptではつらいので今回は諦める
 export class random {
     x: number;
     y: number;
