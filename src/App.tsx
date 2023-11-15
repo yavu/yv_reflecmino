@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -10,7 +10,7 @@ import { generate } from './puzzle/generate';
 
 export default function App(): JSX.Element {
 
-    
+
     const [seed, setSeed] = React.useState<number>(0);
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
@@ -71,7 +71,6 @@ export default function App(): JSX.Element {
                                 alignItems="flex-start"
                                 gap={DarkTheme.spacing(1)}
                             >
-                                {/*
                                 <PropertyWrapper
                                     width={DarkTheme.spacing(44)}
                                     height="auto"
@@ -81,19 +80,18 @@ export default function App(): JSX.Element {
                                         height={DarkTheme.spacing(42)}
                                     />
                                 </PropertyWrapper>
-                                */}
                                 <PropertyWrapper
                                     width={DarkTheme.spacing(23)}
                                     height="auto"
                                 >
-                                <TextField
-                                    label="Seed"
-                                    size="small"
-                                    margin="dense"
-                                    value={seed}
-                                    fullWidth
-                                    onChange={HandleTextChange}
-                                />
+                                    <TextField
+                                        label="Seed"
+                                        size="small"
+                                        margin="dense"
+                                        value={seed}
+                                        fullWidth
+                                        onChange={HandleTextChange}
+                                    />
                                     <Button
                                         onClick={() => generate(seed)}
                                     >
@@ -137,40 +135,53 @@ type Canvas = {
 };
 
 function Canvas({ width, height }: Canvas) {
+    // const [ctx, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
     const canvas_ref = useRef(null);
-    const canvas_width = `${Number(width.slice(0, -2)) * 2}`;
-    const canvas_height = `${Number(height.slice(0, -2)) * 2}`;
-
-    const get_context = (): CanvasRenderingContext2D => {
-        const canvas: any = canvas_ref.current;
-        //canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
-        //canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
-        //canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
-        //canvas.addEventListener("mousedown", () => {console.log("m_down")}, false);
-        //canvas.addEventListener("mousemove", () => {console.log("m_move")}, false);
-        //canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
-        return canvas.getContext('2d');
-    };
+    const canvas_width = Number(width.slice(0, -2)) * 2;
+    const canvas_height = Number(height.slice(0, -2)) * 2;
 
     useEffect(() => {
-        const ctx: CanvasRenderingContext2D = get_context();
-        ctx.strokeStyle = "white"
-        ctx.fillRect(0, 0, 672, 672);
+        const canvas: any = canvas_ref.current;
+        // setContext(canvas.getContext('2d'));
+        // canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
+        // canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
+        // canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
+        canvas.addEventListener("mousemove", (e: any) => {
+            const ctx = canvas.getContext('2d');
+            const rect = e.target.getBoundingClientRect();
+            const mouse_pos = {
+                x: (canvas_width * (e.clientX - rect.left) / canvas.clientWidth),
+                y: (canvas_height * (e.clientY - rect.top) / canvas.clientHeight),
+            };
+            console.log(mouse_pos);
+            if (ctx !== null) {
+                ctx.fillRect(mouse_pos.x - 10, mouse_pos.y - 10, 10, 10);
+            }
+        }, false);
+        // canvas.addEventListener("mousemove", () => {console.log("m_move")}, false);
+        // canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
+    }, []);
 
-        ctx.strokeStyle = "white"
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        for (let v = 96; v < 672; v += 96) {
-            ctx.moveTo(v, 0);
-            ctx.lineTo(v, 672);
-        }
-        for (let h = 96; h < 672; h += 96) {
-            ctx.moveTo(0, h);
-            ctx.lineTo(672, h);
-        }
-        ctx.stroke();
-        ctx.save();
-    })
+    // useEffect(() => {
+    //     if (ctx !== null) {
+    //         ctx.strokeStyle = "white"
+    //         ctx.fillRect(0, 0, 672, 672);
+
+    //         ctx.strokeStyle = "white"
+    //         ctx.lineWidth = 2;
+    //         ctx.beginPath();
+    //         for (let v = 96; v < 672; v += 96) {
+    //             ctx.moveTo(v, 0);
+    //             ctx.lineTo(v, 672);
+    //         }
+    //         for (let h = 96; h < 672; h += 96) {
+    //             ctx.moveTo(0, h);
+    //             ctx.lineTo(672, h);
+    //         }
+    //         ctx.stroke();
+    //         ctx.save();
+    //     }
+    // },[ctx]);
 
     return (
         <div

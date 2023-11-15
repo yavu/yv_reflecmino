@@ -21,8 +21,6 @@ export function generate(seed: number) {
         Object.assign({ mirror: 6 - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
     ]
 
-
-
     type DrawLaser = [board: string[][], x: number, y: number, move: Move, mirror: number];
     // ミラーを必要数置きつつレーザーを描画する関数
     const draw_random_laser = (board: string[][], laser: { mirror: number, x: number, y: number, move: Move }) => {
@@ -223,15 +221,8 @@ export function generate(seed: number) {
         }
     };
 
-    // const laser_drawn_board = draw_two_laser();
-    // console.log([...laser_drawn_board].join("\n").replace(/,/g, "  "));
-
-    // const laser_cell_count = [...laser_drawn_board].join().replace(/[^\\/￭]/g, "").length;
-    // console.log(laser_cell_count);
-
-    // const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
-
     type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_pos: { x: number, y: number }[]]
+    // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
         const board = data[0];
         const random_pos = data[1][rnd.next_int(0, data[1].length)];
@@ -287,6 +278,7 @@ export function generate(seed: number) {
     }
 
     const initial: [string[][], PlaceMino] = [[[]], [[[]], [], []]];
+    // レーザーが描画されたボード、ミノが描画されたボード、レーザーが通る何も設置されていないマスの座標、ミノの座標を返す関数
     const all_drawn_board = while_f(initial, s => {
         const laser_drawn_board = draw_two_laser();
         const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
@@ -297,7 +289,7 @@ export function generate(seed: number) {
         const return_data: [string[][], PlaceMino] = [laser_drawn_board, place_4];
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length != 4, return_data];
     });
-
+    console.log(all_drawn_board);
     console.log(all_drawn_board[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     console.log(all_drawn_board[1][0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
