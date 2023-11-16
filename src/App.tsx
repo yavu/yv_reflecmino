@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Stage, Layer, Rect } from 'react-konva';
 import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -7,6 +8,7 @@ import { Button, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEven
 import Grid from '@mui/material/Unstable_Grid2';
 import { DarkTheme } from './theme/dark';
 import { generate } from './puzzle/generate';
+import { drag as drag } from './puzzle/ui';
 
 export default function App(): JSX.Element {
 
@@ -42,13 +44,13 @@ export default function App(): JSX.Element {
                             elevation={2}
                             sx={{
                                 height: "auto",
-                                width: DarkTheme.spacing(49),
+                                width: DarkTheme.spacing(47),
                                 padding: DarkTheme.spacing(1),
                                 paddingBottom: "0",
                                 margin: DarkTheme.spacing(1),
                                 overflowX: "hidden",
                                 overflowY: "auto",
-                                "@media screen and (max-width:824px)": {
+                                "@media screen and (max-width:792px)": {
                                     width: DarkTheme.spacing(25)
                                 }
                             }}
@@ -72,16 +74,16 @@ export default function App(): JSX.Element {
                                 gap={DarkTheme.spacing(1)}
                             >
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(44)}
+                                    width={DarkTheme.spacing(22)}
                                     height="auto"
                                 >
                                     <Canvas
-                                        width={DarkTheme.spacing(42)}
-                                        height={DarkTheme.spacing(42)}
+                                        width={DarkTheme.spacing(20)}
+                                        height={DarkTheme.spacing(32)}
                                     />
                                 </PropertyWrapper>
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(23)}
+                                    width={DarkTheme.spacing(22)}
                                     height="auto"
                                 >
                                     <TextField
@@ -134,70 +136,58 @@ type Canvas = {
     height: string;
 };
 
+// function Canvas({ width, height }: Canvas) {
+//     // const [ctx, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
+//     const canvas_ref = useRef(null);
+//     const canvas_size = { x: Number(width.slice(0, -2)) * 2, y: Number(height.slice(0, -2)) * 2 };
+
+//     useEffect(() => {
+//         const canvas: any = canvas_ref.current;
+//         // setContext(canvas.getContext('2d'));
+//         // canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
+//         // canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
+//         canvas.addEventListener("touchmove", (e: any) => { drag(canvas, canvas_size, e); }, false);
+//         // canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
+//         // canvas.addEventListener("mousedown", () => {console.log("m_down")}, false);
+//         canvas.addEventListener("mousemove", (e: any) => { drag(canvas, canvas_size, e); }, false);
+//         // canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
+//     }, []);
+
+//     return (
+//         <div
+//             style={{
+//                 maxWidth: width,
+//                 maxHeight: height,
+//             }}
+//         >
+//             <canvas
+//                 ref={canvas_ref}
+//                 width={canvas_size.x}
+//                 height={canvas_size.y}
+//                 style={{
+//                     width: "100%",
+//                     height: "100%",
+//                     touchAction: "pinch-zoom"
+//                 }} />
+//         </div >
+//     );
+// }
+
+
 function Canvas({ width, height }: Canvas) {
-    // const [ctx, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
-    const canvas_ref = useRef(null);
-    const canvas_width = Number(width.slice(0, -2)) * 2;
-    const canvas_height = Number(height.slice(0, -2)) * 2;
-
-    useEffect(() => {
-        const canvas: any = canvas_ref.current;
-        // setContext(canvas.getContext('2d'));
-        // canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
-        // canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
-        // canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
-        canvas.addEventListener("mousemove", (e: any) => {
-            const ctx = canvas.getContext('2d');
-            const rect = e.target.getBoundingClientRect();
-            const mouse_pos = {
-                x: (canvas_width * (e.clientX - rect.left) / canvas.clientWidth),
-                y: (canvas_height * (e.clientY - rect.top) / canvas.clientHeight),
-            };
-            console.log(mouse_pos);
-            if (ctx !== null) {
-                ctx.fillRect(mouse_pos.x - 10, mouse_pos.y - 10, 10, 10);
-            }
-        }, false);
-        // canvas.addEventListener("mousemove", () => {console.log("m_move")}, false);
-        // canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
-    }, []);
-
-    // useEffect(() => {
-    //     if (ctx !== null) {
-    //         ctx.strokeStyle = "white"
-    //         ctx.fillRect(0, 0, 672, 672);
-
-    //         ctx.strokeStyle = "white"
-    //         ctx.lineWidth = 2;
-    //         ctx.beginPath();
-    //         for (let v = 96; v < 672; v += 96) {
-    //             ctx.moveTo(v, 0);
-    //             ctx.lineTo(v, 672);
-    //         }
-    //         for (let h = 96; h < 672; h += 96) {
-    //             ctx.moveTo(0, h);
-    //             ctx.lineTo(672, h);
-    //         }
-    //         ctx.stroke();
-    //         ctx.save();
-    //     }
-    // },[ctx]);
+    const stage_ref = useRef(null);
 
     return (
-        <div
+        <Stage
+            ref={stage_ref}
+            width={Number(width.slice(0, -2))}
+            height={Number(height.slice(0, -2))}
             style={{
-                maxWidth: width,
-                maxHeight: height,
-            }}
-        >
-            <canvas
-                ref={canvas_ref}
-                width={canvas_width}
-                height={canvas_height}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                }} />
-        </div >
+                touchAction: "pinch-zoom"
+            }} >
+            <Layer>
+                <Rect width={50} height={50} fill="red" />
+            </Layer>
+        </Stage>
     );
 }
