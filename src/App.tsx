@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Stage, Layer, Rect } from 'react-konva';
 import { ReactNode } from 'react';
 import './App.css';
@@ -8,12 +8,12 @@ import { Button, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEven
 import Grid from '@mui/material/Unstable_Grid2';
 import { DarkTheme } from './theme/dark';
 import { generate } from './puzzle/generate';
-import { drag as drag } from './puzzle/ui';
+import { KonvaEventObject } from 'konva/lib/Node';
 
 export default function App(): JSX.Element {
 
 
-    const [seed, setSeed] = React.useState<number>(0);
+    const [seed, setSeed] = useState<number>(0);
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
     };
@@ -136,57 +136,67 @@ type Canvas = {
     height: string;
 };
 
-// function Canvas({ width, height }: Canvas) {
-//     // const [ctx, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
-//     const canvas_ref = useRef(null);
-//     const canvas_size = { x: Number(width.slice(0, -2)) * 2, y: Number(height.slice(0, -2)) * 2 };
-
-//     useEffect(() => {
-//         const canvas: any = canvas_ref.current;
-//         // setContext(canvas.getContext('2d'));
-//         // canvas.addEventListener("touchstart", () => {console.log("t_down")}, false);
-//         // canvas.addEventListener("touchmove", () => {console.log("t_move")}, false);
-//         canvas.addEventListener("touchmove", (e: any) => { drag(canvas, canvas_size, e); }, false);
-//         // canvas.addEventListener("touchend", () => {console.log("t_up")}, false);
-//         // canvas.addEventListener("mousedown", () => {console.log("m_down")}, false);
-//         canvas.addEventListener("mousemove", (e: any) => { drag(canvas, canvas_size, e); }, false);
-//         // canvas.addEventListener("mouseup", () => {console.log("m_up")}, false);
-//     }, []);
-
-//     return (
-//         <div
-//             style={{
-//                 maxWidth: width,
-//                 maxHeight: height,
-//             }}
-//         >
-//             <canvas
-//                 ref={canvas_ref}
-//                 width={canvas_size.x}
-//                 height={canvas_size.y}
-//                 style={{
-//                     width: "100%",
-//                     height: "100%",
-//                     touchAction: "pinch-zoom"
-//                 }} />
-//         </div >
-//     );
-// }
-
-
 function Canvas({ width, height }: Canvas) {
     const stage_ref = useRef(null);
+
+    const [dragging, setDragging] = useState<boolean>(false);
+    const [pos, setPos] = useState({ x: 50, y: 50 });
+
+    const HandleDragStart = useCallback(() => { setDragging(true) }, [setDragging]);
+    const HandleDragEnd = useCallback(
+        (e: KonvaEventObject<DragEvent>) => {
+            setDragging(false);
+            e.target.position({
+                x: Math.round(e.target.position().x / 50) * 50,
+                y: Math.round(e.target.position().y / 50) * 50,
+            });
+            setPos(e.target.position());
+            // console.log(`crp: ${e.target.position().x} : ${e.target.position().y}`);
+            console.log(`r50: ${Math.round(e.target.position().x / 50) * 50} : ${Math.round(e.target.position().y / 50) * 50}`);
+        }, [setDragging]
+    );
 
     return (
         <Stage
             ref={stage_ref}
-            width={Number(width.slice(0, -2))}
-            height={Number(height.slice(0, -2))}
+            width={parseInt(width.slice(0, -2))}
+            height={parseInt(height.slice(0, -2))}
             style={{
                 touchAction: "pinch-zoom"
             }} >
             <Layer>
-                <Rect width={50} height={50} fill="red" />
+                <Rect
+                    width={50}
+                    height={50}
+                    fill={"blue"}
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                />
+                <Rect
+                    width={50}
+                    height={50}
+                    fill={"blue"}
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                />
+                <Rect
+                    width={50}
+                    height={50}
+                    fill={"blue"}
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                />
+                <Rect
+                    width={50}
+                    height={50}
+                    fill={"blue"}
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                />
             </Layer>
         </Stage>
     );
