@@ -6,7 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Button, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEvent, SxProps, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { DarkTheme } from './theme/dark';
+import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 
@@ -27,7 +27,7 @@ export default function App(): JSX.Element {
                 />
             </header>
             <body>
-                <ThemeProvider theme={DarkTheme}>
+                <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Grid
                         container
@@ -37,21 +37,21 @@ export default function App(): JSX.Element {
                         alignItems="flex-start"
                         overflow="hidden"
                         sx={{
-                            minWidth: DarkTheme.spacing(23)
+                            minWidth: theme.spacing(23)
                         }}
                     >
                         <Paper
                             elevation={2}
                             sx={{
                                 height: "auto",
-                                width: DarkTheme.spacing(47),
-                                padding: DarkTheme.spacing(1),
+                                width: theme.spacing(47),
+                                padding: theme.spacing(1),
                                 paddingBottom: "0",
-                                margin: DarkTheme.spacing(1),
+                                margin: theme.spacing(1),
                                 overflowX: "hidden",
                                 overflowY: "auto",
                                 "@media screen and (max-width:792px)": {
-                                    width: DarkTheme.spacing(25)
+                                    width: theme.spacing(25)
                                 }
                             }}
                         >
@@ -62,8 +62,8 @@ export default function App(): JSX.Element {
                             </Typography>
                             <Divider
                                 sx={{
-                                    marginTop: DarkTheme.spacing(0.5),
-                                    marginBottom: DarkTheme.spacing(1)
+                                    marginTop: theme.spacing(0.5),
+                                    marginBottom: theme.spacing(1)
                                 }}
                             />
                             <Grid
@@ -71,19 +71,19 @@ export default function App(): JSX.Element {
                                 direction="row"
                                 justifyContent="center"
                                 alignItems="flex-start"
-                                gap={DarkTheme.spacing(1)}
+                                gap={theme.spacing(1)}
                             >
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(22)}
+                                    width={theme.spacing(22)}
                                     height="auto"
                                 >
                                     <Canvas
-                                        width={DarkTheme.spacing(20)}
-                                        height={DarkTheme.spacing(32)}
+                                        width={theme.spacing(20)}
+                                        height={theme.spacing(32)}
                                     />
                                 </PropertyWrapper>
                                 <PropertyWrapper
-                                    width={DarkTheme.spacing(22)}
+                                    width={theme.spacing(22)}
                                     height="auto"
                                 >
                                     <TextField
@@ -122,8 +122,8 @@ function PropertyWrapper({ width, height, children }: PropertyWrapper): JSX.Elem
             sx={{
                 width: width,
                 height: height,
-                padding: DarkTheme.spacing(1),
-                marginBottom: DarkTheme.spacing(1)
+                padding: theme.spacing(1),
+                marginBottom: theme.spacing(1)
             }}
         >
             {children}
@@ -172,41 +172,47 @@ function Canvas({ width, height }: Canvas) {
                 >
                     <Line
                         points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#B6d8f0"}//"#718a9d"}
+                        fill={"#cad5dd"}
                         closed={true}
                         stroke={"white"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={6}
                         y={6}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#929ca4"}
+                        stroke={"#abb5bd"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={56}
                         y={6}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#929ca4"}
+                        stroke={"#abb5bd"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={56}
                         y={56}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#929ca4"}
+                        stroke={"#abb5bd"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[60, 10, 90, 40]}
+                        stroke={"white"}
+                        strokeWidth={8}
+                        lineCap={"round"}
                     />
                 </Group>
                 <Group
@@ -216,41 +222,147 @@ function Canvas({ width, height }: Canvas) {
                 >
                     <Line
                         points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#B6d8f0"}//"#718a9d"}
+                        fill={"#cad5dd"}
                         closed={true}
                         stroke={"white"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={6}
                         y={6}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#ff7f1e"}
+                        stroke={"#ff9f56"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={56}
                         y={6}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#ff7f1e"}
+                        stroke={"#ff9f56"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
                     />
                     <Rect
                         width={38}
                         height={38}
                         x={56}
                         y={56}
-                        fill={"#7698b0"}
-                        stroke={"#96b8d0"}
+                        fill={"#ff7f1e"}
+                        stroke={"#ff9f56"}
                         strokeWidth={6}
-                        lineJoin={"bevel"}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[60, 10, 90, 40]}
+                        stroke={"white"}
+                        strokeWidth={8}
+                        lineCap={"round"}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                >
+                    <Line
+                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
+                        fill={"#cad5dd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={6}
+                        y={6}
+                        fill={"#0099FF"}
+                        stroke={"#14b3ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={6}
+                        fill={"#0099FF"}
+                        stroke={"#14b3ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={56}
+                        fill={"#0099FF"}
+                        stroke={"#14b3ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[60, 10, 90, 40]}
+                        stroke={"white"}
+                        strokeWidth={8}
+                        lineCap={"round"}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                >
+                    <Line
+                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
+                        fill={"#cad5dd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={6}
+                        y={6}
+                        fill={"#d9e4f1"}
+                        stroke={"#e9f1ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={6}
+                        fill={"#d9e4f1"}
+                        stroke={"#e9f1ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={56}
+                        fill={"#d9e4f1"}
+                        stroke={"#e9f1ff"}
+                        strokeWidth={6}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[60, 10, 90, 40]}
+                        stroke={"white"}
+                        strokeWidth={8}
+                        lineCap={"round"}
                     />
                 </Group>
             </Layer>

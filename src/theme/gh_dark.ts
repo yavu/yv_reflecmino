@@ -1,6 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 
-export const DarkTheme = createTheme({
+export const gh_dark = createTheme({
     typography: {
         fontFamily: "Share Tech Mono",
         button: {
@@ -17,8 +17,8 @@ export const DarkTheme = createTheme({
             main: "#ef6c00",
         },
         background: {
-            default: "#101d31",
-            paper: "#101d31",
+            default: '#22272e',
+            paper: '#1b2029',
         },
         error: {
             main: "#ff1744",
@@ -38,7 +38,7 @@ export const DarkTheme = createTheme({
             }
             
             ::-webkit-scrollbar-thumb {
-                background: rgba(30, 160, 255, 0.3);
+                background: rgba(136, 153, 185, 0.3);
                 border-radius: 8px;
                 opacity: 0.1;
             }
