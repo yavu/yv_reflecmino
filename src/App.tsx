@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Stage, Layer, Rect } from 'react-konva';
+import { Stage, Layer, Rect, Image, Group, Line } from 'react-konva';
 import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -152,7 +152,7 @@ function Canvas({ width, height }: Canvas) {
             });
             setPos(e.target.position());
             // console.log(`crp: ${e.target.position().x} : ${e.target.position().y}`);
-            console.log(`r50: ${Math.round(e.target.position().x / 50) * 50} : ${Math.round(e.target.position().y / 50) * 50}`);
+            console.log(`pos: ${Math.round(e.target.position().x / 50) * 50} : ${Math.round(e.target.position().y / 50) * 50}`);
         }, [setDragging]
     );
 
@@ -165,38 +165,94 @@ function Canvas({ width, height }: Canvas) {
                 touchAction: "pinch-zoom"
             }} >
             <Layer>
-                <Rect
-                    width={50}
-                    height={50}
-                    fill={"blue"}
+                <Group
                     draggable
                     onDragStart={HandleDragStart}
                     onDragEnd={HandleDragEnd}
-                />
-                <Rect
-                    width={50}
-                    height={50}
-                    fill={"blue"}
+                >
+                    <Line
+                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
+                        fill={"#B6d8f0"}//"#718a9d"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={6}
+                        y={6}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={6}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={56}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                </Group>
+                <Group
                     draggable
                     onDragStart={HandleDragStart}
                     onDragEnd={HandleDragEnd}
-                />
-                <Rect
-                    width={50}
-                    height={50}
-                    fill={"blue"}
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                />
-                <Rect
-                    width={50}
-                    height={50}
-                    fill={"blue"}
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                />
+                >
+                    <Line
+                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
+                        fill={"#B6d8f0"}//"#718a9d"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={6}
+                        y={6}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={6}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                    <Rect
+                        width={38}
+                        height={38}
+                        x={56}
+                        y={56}
+                        fill={"#7698b0"}
+                        stroke={"#96b8d0"}
+                        strokeWidth={6}
+                        lineJoin={"bevel"}
+                    />
+                </Group>
             </Layer>
         </Stage>
     );
