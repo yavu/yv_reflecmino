@@ -51,7 +51,9 @@ export default function App(): JSX.Element {
                                 overflowX: "hidden",
                                 overflowY: "auto",
                                 "@media screen and (max-width:792px)": {
-                                    width: theme.spacing(25)
+                                    width: theme.spacing(24),
+                                    marginLeft: 0,
+                                    marginRight: 0
                                 }
                             }}
                         >
@@ -73,15 +75,26 @@ export default function App(): JSX.Element {
                                 alignItems="flex-start"
                                 gap={theme.spacing(1)}
                             >
-                                <PropertyWrapper
-                                    width={theme.spacing(22)}
-                                    height="auto"
+                                <Paper
+                                    elevation={6}
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                        maxWidth: theme.spacing(22),
+                                        padding: theme.spacing(1),
+                                        marginBottom: theme.spacing(1)
+                                    }}
                                 >
-                                    <Canvas
-                                        width={theme.spacing(20)}
-                                        height={theme.spacing(32)}
-                                    />
-                                </PropertyWrapper>
+                                    <Grid
+                                        container
+                                        justifyContent="center"
+                                    >
+                                        <Canvas
+                                            width={theme.spacing(20)}
+                                            height={theme.spacing(32)}
+                                        />
+                                    </Grid>
+                                </Paper>
                                 <PropertyWrapper
                                     width={theme.spacing(22)}
                                     height="auto"
@@ -103,8 +116,8 @@ export default function App(): JSX.Element {
                             </Grid>
                         </Paper>
                     </Grid>
-                </ThemeProvider>
-            </body>
+                </ThemeProvider >
+            </body >
         </>
     )
 }
@@ -140,19 +153,24 @@ function Canvas({ width, height }: Canvas) {
     const stage_ref = useRef(null);
 
     const [dragging, setDragging] = useState<boolean>(false);
-    const [pos, setPos] = useState({ x: 50, y: 50 });
 
     const HandleDragStart = useCallback(() => { setDragging(true) }, [setDragging]);
     const HandleDragEnd = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             setDragging(false);
-            e.target.position({
-                x: Math.round(e.target.position().x / 50) * 50,
-                y: Math.round(e.target.position().y / 50) * 50,
-            });
-            setPos(e.target.position());
-            // console.log(`crp: ${e.target.position().x} : ${e.target.position().y}`);
-            console.log(`pos: ${Math.round(e.target.position().x / 50) * 50} : ${Math.round(e.target.position().y / 50) * 50}`);
+            const pointer_pos = e.target.getStage()?.getPointerPosition() ?? { x: 0, y: 0 };
+            if (pointer_pos.y < 318) {
+                e.target.position({
+                    x: (Math.round((e.target.position().x + 15) / 50) * 50) - 15,
+                    y: (Math.round((e.target.position().y + 15) / 50) * 50) - 15,
+                });
+                e.target.scale({ x: 1, y: 1 });
+            }
+            else {
+                e.target.scale({ x: 0.75, y: 0.75 });
+            }
+            console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
+            console.log(`cur: ${Math.round(pointer_pos.x)} : ${Math.round(pointer_pos.y)}`);
         }, [setDragging]
     );
 
@@ -161,57 +179,294 @@ function Canvas({ width, height }: Canvas) {
             ref={stage_ref}
             width={parseInt(width.slice(0, -2))}
             height={parseInt(height.slice(0, -2))}
-            style={{
-                touchAction: "pinch-zoom"
-            }} >
+        >
             <Layer>
+                <Group>
+                    <Rect
+                        PreventDefault={false}
+                        width={316}
+                        height={316}
+                        x={2}
+                        y={2}
+                        fill={"#abb5bd"}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        cornerRadius={2}
+                    />
+                    <Rect
+                        PreventDefault={false}
+                        width={250}
+                        height={250}
+                        x={35}
+                        y={35}
+                        fill={"#9ba5ad"}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                        cornerRadius={2}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 250, 0]}
+                        x={35}
+                        y={85}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 250, 0]}
+                        x={35}
+                        y={135}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 250, 0]}
+                        x={35}
+                        y={185}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 250, 0]}
+                        x={35}
+                        y={235}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 0, 250]}
+                        x={85}
+                        y={35}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 0, 250]}
+                        x={135}
+                        y={35}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 0, 250]}
+                        x={185}
+                        y={35}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                    <Line
+                        PreventDefault={false}
+                        points={[0, 0, 0, 250]}
+                        x={235}
+                        y={35}
+                        stroke={"#a6b0b8"}
+                        strokeWidth={4}
+                    />
+                </Group>
+
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                    rotation={90}
+                    x={100}
+                    y={100}
+                >
+                    <Rect
+                        width={50}
+                        height={33}
+                        fill={"#abb5bd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={25}
+                        x={8}
+                        y={8}
+                        fill={"#9ba5ad"}
+                        stroke={"#828c94"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 50, 0]}
+                        x={0}
+                        y={33}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineCap={'square'}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                    rotation={0}
+                    x={100}
+                    y={100}
+                >
+                    <Rect
+                        width={50}
+                        height={33}
+                        fill={"#abb5bd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={25}
+                        x={8}
+                        y={8}
+                        fill={"#9ba5ad"}
+                        stroke={"#828c94"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 50, 0]}
+                        x={0}
+                        y={33}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineCap={'square'}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                    rotation={270}
+                    x={100}
+                    y={100}
+                >
+                    <Rect
+                        width={50}
+                        height={33}
+                        fill={"#abb5bd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={25}
+                        x={8}
+                        y={8}
+                        fill={"#ff9f56"}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 50, 0]}
+                        x={0}
+                        y={33}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineCap={'square'}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                    rotation={180}
+                    x={100}
+                    y={100}
+                >
+                    <Rect
+                        width={50}
+                        height={33}
+                        fill={"#abb5bd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={25}
+                        x={8}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 50, 0]}
+                        x={0}
+                        y={33}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineCap={'square'}
+                    />
+                </Group>
+
+
                 <Group
                     draggable
                     onDragStart={HandleDragStart}
                     onDragEnd={HandleDragEnd}
                 >
                     <Line
-                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#cad5dd"}
+                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
+                        x={-50}
+                        y={50}
+                        fill={"#abb5bd"}
                         closed={true}
                         stroke={"white"}
-                        strokeWidth={6}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={6}
-                        y={6}
-                        fill={"#929ca4"}
-                        stroke={"#abb5bd"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={-42}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={6}
-                        fill={"#929ca4"}
-                        stroke={"#abb5bd"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={56}
-                        fill={"#929ca4"}
-                        stroke={"#abb5bd"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={8}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Line
-                        points={[60, 10, 90, 40]}
+                        points={[0, 0, 24, 24]}
+                        x={-37}
+                        y={13}
                         stroke={"white"}
-                        strokeWidth={8}
+                        strokeWidth={6}
                         lineCap={"round"}
                     />
                 </Group>
@@ -221,47 +476,114 @@ function Canvas({ width, height }: Canvas) {
                     onDragEnd={HandleDragEnd}
                 >
                     <Line
-                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#cad5dd"}
+                        points={[0, 0, 0, -150, 50, -150, 50, 0]}
+                        x={-50}
+                        y={50}
+                        fill={"#abb5bd"}
                         closed={true}
                         stroke={"white"}
-                        strokeWidth={6}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={6}
-                        y={6}
-                        fill={"#ff7f1e"}
-                        stroke={"#ff9f56"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={-92}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={6}
-                        fill={"#ff7f1e"}
-                        stroke={"#ff9f56"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={-42}
+                        fill={"#ffffff"}
+                        stroke={"#dddddd"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={56}
-                        fill={"#ff7f1e"}
-                        stroke={"#ff9f56"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Line
-                        points={[60, 10, 90, 40]}
+                        points={[0, 0, 24, 24]}
+                        x={-37}
+                        y={-87}
                         stroke={"white"}
-                        strokeWidth={8}
+                        strokeWidth={6}
+                        lineCap={"round"}
+                    />
+                    <Line
+                        points={[24, 0, 0, 24]}
+                        x={-37}
+                        y={13}
+                        stroke={"white"}
+                        strokeWidth={6}
+                        lineCap={"round"}
+                    />
+                </Group>
+                <Group
+                    draggable
+                    onDragStart={HandleDragStart}
+                    onDragEnd={HandleDragEnd}
+                    rotation={90}
+                >
+                    <Line
+                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
+                        x={-50}
+                        y={50}
+                        fill={"#abb5bd"}
+                        closed={true}
+                        stroke={"white"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={-42}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={34}
+                        height={34}
+                        x={8}
+                        y={8}
+                        fill={"#14b3ff"}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 24, 24]}
+                        x={-37}
+                        y={13}
+                        stroke={"white"}
+                        strokeWidth={6}
                         lineCap={"round"}
                     />
                 </Group>
@@ -271,100 +593,98 @@ function Canvas({ width, height }: Canvas) {
                     onDragEnd={HandleDragEnd}
                 >
                     <Line
-                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#cad5dd"}
+                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
+                        x={-50}
+                        y={50}
+                        fill={"#abb5bd"}
                         closed={true}
                         stroke={"white"}
-                        strokeWidth={6}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={6}
-                        y={6}
-                        fill={"#0099FF"}
-                        stroke={"#14b3ff"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={-42}
+                        fill={"#ff9f56"}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={6}
-                        fill={"#0099FF"}
-                        stroke={"#14b3ff"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={-42}
+                        y={8}
+                        fill={"#ff9f56"}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={56}
-                        fill={"#0099FF"}
-                        stroke={"#14b3ff"}
-                        strokeWidth={6}
+                        width={34}
+                        height={34}
+                        x={8}
+                        y={8}
+                        fill={"#ff9f56"}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Line
-                        points={[60, 10, 90, 40]}
+                        points={[0, 0, 24, 24]}
+                        x={-37}
+                        y={-37}
                         stroke={"white"}
-                        strokeWidth={8}
+                        strokeWidth={6}
+                        lineCap={"round"}
+                    />
+                    <Line
+                        points={[0, 0, 24, 24]}
+                        x={-37}
+                        y={13}
+                        stroke={"white"}
+                        strokeWidth={6}
                         lineCap={"round"}
                     />
                 </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                >
+
+                {/* <Group>
                     <Line
-                        points={[0, 0, 100, 0, 100, 100, 50, 100, 50, 50, 0, 50]}
-                        fill={"#cad5dd"}
-                        closed={true}
+                        points={[24, 0, 50, 0, 50, 50, 276, 50]}
+                        x={10}
+                        y={110}
                         stroke={"white"}
-                        strokeWidth={6}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={38}
-                        height={38}
-                        x={6}
-                        y={6}
-                        fill={"#d9e4f1"}
-                        stroke={"#e9f1ff"}
-                        strokeWidth={6}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={6}
-                        fill={"#d9e4f1"}
-                        stroke={"#e9f1ff"}
-                        strokeWidth={6}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={38}
-                        height={38}
-                        x={56}
-                        y={56}
-                        fill={"#d9e4f1"}
-                        stroke={"#e9f1ff"}
-                        strokeWidth={6}
+                        strokeWidth={10}
                         lineJoin={"round"}
                     />
                     <Line
-                        points={[60, 10, 90, 40]}
-                        stroke={"white"}
-                        strokeWidth={8}
-                        lineCap={"round"}
+                        points={[19, 0, 50, 0, 50, 50, 281, 50]}
+                        x={10}
+                        y={110}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
                     />
-                </Group>
+                    <Line
+                        points={[0, 24, 0, 100, 100, 100, 100, 200, 0, 200, 0, 276]}
+                        x={160}
+                        y={10}
+                        stroke={"white"}
+                        strokeWidth={10}
+                        lineJoin={"round"}
+                    />
+                    <Line
+                        points={[0, 19, 0, 100, 100, 100, 100, 200, 0, 200, 0, 281]}
+                        x={160}
+                        y={10}
+                        stroke={"#0099FF"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                </Group> */}
+
             </Layer>
         </Stage>
     );
