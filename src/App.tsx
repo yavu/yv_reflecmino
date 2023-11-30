@@ -199,17 +199,17 @@ function Canvas({ width, height }: Canvas) {
                         height={250}
                         x={35}
                         y={35}
-                        fill={"#9ba5ad"}
-                        stroke={"#a6b0b8"}
+                        fill={"#48505e"}
+                        stroke={"#414958"}
                         strokeWidth={4}
-                        cornerRadius={2}
+                        lineJoin={"round"}
                     />
                     <Line
                         PreventDefault={false}
                         points={[0, 0, 250, 0]}
                         x={35}
                         y={85}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -217,7 +217,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 250, 0]}
                         x={35}
                         y={135}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -225,7 +225,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 250, 0]}
                         x={35}
                         y={185}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -233,7 +233,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 250, 0]}
                         x={35}
                         y={235}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -241,7 +241,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, 250]}
                         x={85}
                         y={35}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -249,7 +249,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, 250]}
                         x={135}
                         y={35}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -257,7 +257,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, 250]}
                         x={185}
                         y={35}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                     <Line
@@ -265,7 +265,7 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, 250]}
                         x={235}
                         y={35}
-                        stroke={"#a6b0b8"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                     />
                 </Group>
@@ -425,9 +425,9 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
                         x={-50}
                         y={50}
-                        fill={"#abb5bd"}
+                        fill={"#c2c8cc"}
                         closed={true}
-                        stroke={"white"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
@@ -479,9 +479,9 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, -150, 50, -150, 50, 0]}
                         x={-50}
                         y={50}
-                        fill={"#abb5bd"}
+                        fill={"#c2c8cc"}
                         closed={true}
-                        stroke={"white"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
@@ -542,9 +542,9 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
                         x={-50}
                         y={50}
-                        fill={"#abb5bd"}
+                        fill={"#c2c8cc"}
                         closed={true}
-                        stroke={"white"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
@@ -596,9 +596,9 @@ function Canvas({ width, height }: Canvas) {
                         points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
                         x={-50}
                         y={50}
-                        fill={"#abb5bd"}
+                        fill={"#c2c8cc"}
                         closed={true}
-                        stroke={"white"}
+                        stroke={"#414958"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
@@ -650,40 +650,40 @@ function Canvas({ width, height }: Canvas) {
                     />
                 </Group>
 
-                {/* <Group>
+                <Group>
                     <Line
                         points={[24, 0, 50, 0, 50, 50, 276, 50]}
                         x={10}
                         y={110}
-                        stroke={"white"}
-                        strokeWidth={10}
+                        stroke={"#ff7f1e"}
+                        strokeWidth={8}
                         lineJoin={"round"}
-                    />
+                        />
                     <Line
                         points={[19, 0, 50, 0, 50, 50, 281, 50]}
                         x={10}
                         y={110}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={4}
+                        stroke={"#ffffff"}
+                        strokeWidth={3}
                         lineJoin={"round"}
                     />
                     <Line
                         points={[0, 24, 0, 100, 100, 100, 100, 200, 0, 200, 0, 276]}
                         x={160}
                         y={10}
-                        stroke={"white"}
-                        strokeWidth={10}
+                        stroke={"#0099FF"}
+                        strokeWidth={8}
                         lineJoin={"round"}
-                    />
+                        />
                     <Line
                         points={[0, 19, 0, 100, 100, 100, 100, 200, 0, 200, 0, 281]}
                         x={160}
                         y={10}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
+                        stroke={"#ffffff"}
+                        strokeWidth={3}
                         lineJoin={"round"}
                     />
-                </Group> */}
+                </Group>
 
             </Layer>
         </Stage>
