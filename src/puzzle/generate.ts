@@ -221,7 +221,11 @@ export function generate(seed: number) {
         }
     };
 
-    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_pos: { x: number, y: number }[]]
+    type Mino = {
+        cell: { x: number, y: number, type: string }[],
+        vertex: number[]
+    };
+    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: Mino[]]
     // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
         const board = data[0];
@@ -260,17 +264,45 @@ export function generate(seed: number) {
         ].filter(e => e !== -1);
 
         if (placeable_mino.length > 0) {
-            const random_mino = placeable_mino[rnd.next_int(0, placeable_mino.length)];
+            const random_mino_id = placeable_mino[rnd.next_int(0, placeable_mino.length)];
+            const place_mino = mino_pattern[random_mino_id];
             const place_cell = [
-                { x: x + mino_pattern[random_mino][0].x, y: y + mino_pattern[random_mino][0].y, },
-                { x: x + mino_pattern[random_mino][1].x, y: y + mino_pattern[random_mino][1].y, }
+                { x: x + place_mino.protrusion[0].x, y: y + place_mino.protrusion[0].y, },
+                { x: x + place_mino.protrusion[1].x, y: y + place_mino.protrusion[1].y, }
             ]
-            const place_1 = replace_2d_array(board, x, y, `${random_mino}`);
-            const place_2 = replace_2d_array(place_1, place_cell[0].x, place_cell[0].y, `${random_mino}`);
-            const place_3 = replace_2d_array(place_2, place_cell[1].x, place_cell[1].y, `${random_mino}`);
+            const place_1 = replace_2d_array(board, x, y, `${random_mino_id}`);
+            const place_2 = replace_2d_array(place_1, place_cell[0].x, place_cell[0].y, `${random_mino_id}`);
+            const place_3 = replace_2d_array(place_2, place_cell[1].x, place_cell[1].y, `${random_mino_id}`);
             const laser_cells = data[1].filter(e => JSON.stringify(e) != JSON.stringify(random_pos) && JSON.stringify(e) != JSON.stringify(place_cell[0]) && JSON.stringify(e) != JSON.stringify(place_cell[1]));
-            const mino_pos = [...data[2], random_pos];
-            return [place_3, laser_cells, mino_pos];
+            const mino_data: Mino[] = [
+                ...data[2],
+                {
+                    cell: [
+                        {
+                            x: x,
+                            y: y,
+                            type:""
+                        },
+                        {
+                            x: place_mino.offset.x,
+                            y: place_mino.offset.y,
+                            type: board[y + place_mino.offset.y][x + place_mino.offset.x]
+                        },
+                        {
+                            x: place_mino.protrusion[0].x + place_mino.offset.x,
+                            y: place_mino.protrusion[0].y + place_mino.offset.y,
+                            type: board[y + place_mino.protrusion[0].y + place_mino.offset.y][x + place_mino.protrusion[0].x + place_mino.offset.x]
+                        },
+                        {
+                            x: place_mino.protrusion[1].x + place_mino.offset.x,
+                            y: place_mino.protrusion[1].y + place_mino.offset.y,
+                            type: board[y + place_mino.protrusion[1].y + place_mino.offset.y][x + place_mino.protrusion[1].x + place_mino.offset.x]
+                        }
+                    ],
+                    vertex: place_mino.vertex
+                }
+            ];
+            return [place_3, laser_cells, mino_data];
         }
         else {
             return data;
@@ -291,6 +323,7 @@ export function generate(seed: number) {
     });
     console.log(all_drawn_board);
     console.log(all_drawn_board[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    console.log(all_drawn_board[1][2][0].cell);
     console.log(all_drawn_board[1][0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
     console.log("======================");

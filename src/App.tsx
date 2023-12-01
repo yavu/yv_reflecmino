@@ -154,23 +154,31 @@ function Canvas({ width, height }: Canvas) {
 
     const [dragging, setDragging] = useState<boolean>(false);
 
-    const HandleDragStart = useCallback(() => { setDragging(true) }, [setDragging]);
-    const HandleDragEnd = useCallback(
+    const HandleMinoDragStart = useCallback(() => { setDragging(true) }, [setDragging]);
+    const HandleMinoDragEnd = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             setDragging(false);
-            const pointer_pos = e.target.getStage()?.getPointerPosition() ?? { x: 0, y: 0 };
-            if (pointer_pos.y < 318) {
+            // const pointer_pos = e.target.getStage()?.getPointerPosition() ?? { x: 0, y: 0 };
+            // if (pointer_pos.y < 318) {
+            const pos = e.target.position();
+            if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
                 e.target.position({
-                    x: (Math.round((e.target.position().x + 15) / 50) * 50) - 15,
-                    y: (Math.round((e.target.position().y + 15) / 50) * 50) - 15,
+                    x: (Math.round((pos.x + 40) / 50) * 50) - 40,
+                    y: (Math.round((pos.y + 40) / 50) * 50) - 40,
                 });
                 e.target.scale({ x: 1, y: 1 });
             }
             else {
+                const return_inside = (value: number, max: number) => {
+                    if (value < 0) { return 0; }
+                    else if (max < value) { return max; }
+                    else { return value; }
+                }
+                e.target.position({ x: return_inside(pos.x, parseInt(width.slice(0, -2))), y: return_inside(pos.y, parseInt(height.slice(0, -2))) });
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
             console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
-            console.log(`cur: ${Math.round(pointer_pos.x)} : ${Math.round(pointer_pos.y)}`);
+            // console.log(`cur: ${Math.round(pointer_pos.x)} : ${Math.round(pointer_pos.y)}`);
         }, [setDragging]
     );
 
@@ -181,96 +189,9 @@ function Canvas({ width, height }: Canvas) {
             height={parseInt(height.slice(0, -2))}
         >
             <Layer>
-                <Group>
-                    <Rect
-                        PreventDefault={false}
-                        width={316}
-                        height={316}
-                        x={2}
-                        y={2}
-                        fill={"#abb5bd"}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        cornerRadius={2}
-                    />
-                    <Rect
-                        PreventDefault={false}
-                        width={250}
-                        height={250}
-                        x={35}
-                        y={35}
-                        fill={"#48505e"}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 250, 0]}
-                        x={35}
-                        y={85}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 250, 0]}
-                        x={35}
-                        y={135}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 250, 0]}
-                        x={35}
-                        y={185}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 250, 0]}
-                        x={35}
-                        y={235}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 0, 250]}
-                        x={85}
-                        y={35}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 0, 250]}
-                        x={135}
-                        y={35}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 0, 250]}
-                        x={185}
-                        y={35}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[0, 0, 0, 250]}
-                        x={235}
-                        y={35}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                    />
-                </Group>
+                <Test />
 
-                <Group
+                {/* <Group
                     draggable
                     onDragStart={HandleDragStart}
                     onDragEnd={HandleDragEnd}
@@ -413,25 +334,30 @@ function Canvas({ width, height }: Canvas) {
                         strokeWidth={4}
                         lineCap={'square'}
                     />
-                </Group>
+                </Group> */}
 
 
                 <Group
                     draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
+                    onDragStart={HandleMinoDragStart}
+                    onDragEnd={HandleMinoDragEnd}
                 >
                     <Line
-                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
-                        x={-50}
-                        y={50}
+                        // points={[0, 50, 0, -50, 50, -50, 50, 0, 100, 0, 100, 50]}
+                        // points={[0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]}
+                        // points={[-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50]}
+                        points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
+                        // points={[-50, 0, 100, 0, 100, 50, -50, 50]}
+                        // points={[0, -50, 50, -50, 50, 100, 0, 100]}
+                        x={-25}
+                        y={-25}
                         fill={"#c2c8cc"}
                         closed={true}
                         stroke={"#414958"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
-                    <Rect
+                    {/* <Rect
                         width={34}
                         height={34}
                         x={-42}
@@ -468,9 +394,9 @@ function Canvas({ width, height }: Canvas) {
                         stroke={"white"}
                         strokeWidth={6}
                         lineCap={"round"}
-                    />
+                    /> */}
                 </Group>
-                <Group
+                {/* <Group
                     draggable
                     onDragStart={HandleDragStart}
                     onDragEnd={HandleDragEnd}
@@ -648,9 +574,9 @@ function Canvas({ width, height }: Canvas) {
                         strokeWidth={6}
                         lineCap={"round"}
                     />
-                </Group>
+                </Group> */}
 
-                <Group>
+                {/* <Group>
                     <Line
                         points={[24, 0, 50, 0, 50, 50, 276, 50]}
                         x={10}
@@ -658,7 +584,7 @@ function Canvas({ width, height }: Canvas) {
                         stroke={"#ff7f1e"}
                         strokeWidth={8}
                         lineJoin={"round"}
-                        />
+                    />
                     <Line
                         points={[19, 0, 50, 0, 50, 50, 281, 50]}
                         x={10}
@@ -674,7 +600,7 @@ function Canvas({ width, height }: Canvas) {
                         stroke={"#0099FF"}
                         strokeWidth={8}
                         lineJoin={"round"}
-                        />
+                    />
                     <Line
                         points={[0, 19, 0, 100, 100, 100, 100, 200, 0, 200, 0, 281]}
                         x={160}
@@ -683,9 +609,103 @@ function Canvas({ width, height }: Canvas) {
                         strokeWidth={3}
                         lineJoin={"round"}
                     />
-                </Group>
+                </Group> */}
 
             </Layer>
         </Stage>
     );
+}
+
+function Test(): JSX.Element {
+
+    return (
+        <Group>
+            <Rect
+                PreventDefault={false}
+                width={316}
+                height={316}
+                x={2}
+                y={2}
+                fill={"#abb5bd"}
+                stroke={"white"}
+                strokeWidth={4}
+                cornerRadius={2}
+            />
+            <Rect
+                PreventDefault={false}
+                width={250}
+                height={250}
+                x={35}
+                y={35}
+                fill={"#48505e"}
+                stroke={"#414958"}
+                strokeWidth={4}
+                lineJoin={"round"}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 250, 0]}
+                x={35}
+                y={85}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 250, 0]}
+                x={35}
+                y={135}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 250, 0]}
+                x={35}
+                y={185}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 250, 0]}
+                x={35}
+                y={235}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 0, 250]}
+                x={85}
+                y={35}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 0, 250]}
+                x={135}
+                y={35}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 0, 250]}
+                x={185}
+                y={35}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+            <Line
+                PreventDefault={false}
+                points={[0, 0, 0, 250]}
+                x={235}
+                y={35}
+                stroke={"#414958"}
+                strokeWidth={4}
+            />
+        </Group>
+    )
 }
