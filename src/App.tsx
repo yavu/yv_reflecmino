@@ -17,6 +17,7 @@ export default function App(): JSX.Element {
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
     };
+    // const [puzzle_data, setPuzzleData] = useState();
 
     return (
         <>
@@ -122,13 +123,13 @@ export default function App(): JSX.Element {
     )
 }
 
-type PropertyWrapper = {
+type Wrapper = {
     children: ReactNode;
     width: string;
     height: string;
 };
 
-function PropertyWrapper({ width, height, children }: PropertyWrapper): JSX.Element {
+function PropertyWrapper({ width, height, children }: Wrapper): JSX.Element {
     return (
         <Paper
             elevation={6}
@@ -144,22 +145,15 @@ function PropertyWrapper({ width, height, children }: PropertyWrapper): JSX.Elem
     )
 }
 
-type Canvas = {
+type Size = {
     width: string;
     height: string;
 };
 
-function Canvas({ width, height }: Canvas) {
+function Canvas({ width, height }: Size) {
     const stage_ref = useRef(null);
-
-    const [dragging, setDragging] = useState<boolean>(false);
-
-    const HandleMinoDragStart = useCallback(() => { setDragging(true) }, [setDragging]);
     const HandleMinoDragEnd = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
-            setDragging(false);
-            // const pointer_pos = e.target.getStage()?.getPointerPosition() ?? { x: 0, y: 0 };
-            // if (pointer_pos.y < 318) {
             const pos = e.target.position();
             if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
                 e.target.position({
@@ -178,8 +172,7 @@ function Canvas({ width, height }: Canvas) {
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
             console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
-            // console.log(`cur: ${Math.round(pointer_pos.x)} : ${Math.round(pointer_pos.y)}`);
-        }, [setDragging]
+        }, [width,height]
     );
 
     return (
@@ -339,7 +332,7 @@ function Canvas({ width, height }: Canvas) {
 
                 <Group
                     draggable
-                    onDragStart={HandleMinoDragStart}
+                    // onDragStart={HandleMinoDragStart}
                     onDragEnd={HandleMinoDragEnd}
                 >
                     <Line

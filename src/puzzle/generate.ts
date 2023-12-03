@@ -279,24 +279,19 @@ export function generate(seed: number) {
                 {
                     cell: [
                         {
-                            x: x,
-                            y: y,
-                            type:""
-                        },
-                        {
                             x: place_mino.offset.x,
                             y: place_mino.offset.y,
-                            type: board[y + place_mino.offset.y][x + place_mino.offset.x]
+                            type: board[y][x]
                         },
                         {
                             x: place_mino.protrusion[0].x + place_mino.offset.x,
                             y: place_mino.protrusion[0].y + place_mino.offset.y,
-                            type: board[y + place_mino.protrusion[0].y + place_mino.offset.y][x + place_mino.protrusion[0].x + place_mino.offset.x]
+                            type: board[y + place_mino.protrusion[0].y][x + place_mino.protrusion[0].x]
                         },
                         {
                             x: place_mino.protrusion[1].x + place_mino.offset.x,
                             y: place_mino.protrusion[1].y + place_mino.offset.y,
-                            type: board[y + place_mino.protrusion[1].y + place_mino.offset.y][x + place_mino.protrusion[1].x + place_mino.offset.x]
+                            type: board[y + place_mino.protrusion[1].y][x + place_mino.protrusion[1].x]
                         }
                     ],
                     vertex: place_mino.vertex
@@ -321,9 +316,8 @@ export function generate(seed: number) {
         const return_data: [string[][], PlaceMino] = [laser_drawn_board, place_4];
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length != 4, return_data];
     });
-    console.log(all_drawn_board);
     console.log(all_drawn_board[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
-    console.log(all_drawn_board[1][2][0].cell);
+    console.log(all_drawn_board[1][2]);
     console.log(all_drawn_board[1][0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
     console.log("======================");
