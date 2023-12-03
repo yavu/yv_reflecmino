@@ -187,8 +187,8 @@ export function generate(seed: number) {
         return new_data[0][new_data[0].length - 1];
     }
 
-    // レーザーを2本描画したボードを返す関数
-    const draw_two_laser = (): string[][] => {
+    // レーザーを2本描画したボードと開始地点、終了地点を返す関数
+    const draw_two_laser = (): [board: string[][], start: { x: number, y: number }[], end: { x: number, y: number }[]] => {
         const draw_one = (): DrawLaser => {
             const data = draw_random_laser(empty_board, laser[0]);
             if (data[1] !== laser[1].x || data[2] !== laser[1].y) {
@@ -213,7 +213,7 @@ export function generate(seed: number) {
                 const draw_2 = replace_2d_array(draw_1, draw_2_data[1], draw_2_data[2], "e");
                 return draw_2;
             })();
-            return all_drawn_board;
+            return [all_drawn_board, [{ x: laser[0].x, y: laser[0].y }, { x: laser[1].x, y: laser[1].y }], [{ x: draw_1_data[1], y: draw_1_data[2] }, { x: draw_2_data[1], y: draw_2_data[2] }]];
         }
         else {
             return draw_two_laser();
@@ -221,10 +221,7 @@ export function generate(seed: number) {
         }
     };
 
-    type Mino = {
-        cell: { x: number, y: number, type: string }[],
-        vertex: number[]
-    };
+    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
     type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: Mino[]]
     // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
@@ -304,22 +301,23 @@ export function generate(seed: number) {
         }
     }
 
-    const initial: [string[][], PlaceMino] = [[[]], [[[]], [], []]];
-    // レーザーが描画されたボード、ミノが描画されたボード、レーザーが通る何も設置されていないマスの座標、ミノの座標を返す関数
-    const all_drawn_board = while_f(initial, s => {
+    const initial: [board: string[][], mino_data: Mino[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [[[]], [], [], []];
+    // ボードの二次元配列、ミノのデータ、レーザーの開始地点、終了地点を返す関数
+    const puzzle_data = while_f(initial, s => {
         const laser_drawn_board = draw_two_laser();
-        const laser_cells: { x: number, y: number }[] = [...laser_drawn_board].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
-        const place_1 = place_random_mino([laser_drawn_board, laser_cells, []]);
+        const laser_cells: { x: number, y: number }[] = [...laser_drawn_board[0]].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
+        const place_1 = place_random_mino([laser_drawn_board[0], laser_cells, []]);
         const place_2 = place_random_mino(place_1);
         const place_3 = place_random_mino(place_2);
         const place_4 = place_random_mino(place_3);
-        const return_data: [string[][], PlaceMino] = [laser_drawn_board, place_4];
+        const return_data: [board: string[][], mino_data: Mino[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_4[2], laser_drawn_board[1], laser_drawn_board[2]];
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length != 4, return_data];
     });
-    console.log(all_drawn_board[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
-    console.log(all_drawn_board[1][2]);
-    console.log(all_drawn_board[1][0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
-    //    console.log(place_mino([laser_drawn_board, mirror_cell[0].x, mirror_cell[0].y]).join("\n").replace(/,/g, " "));
+
     console.log("======================");
+    console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    console.log(puzzle_data[1]);
+    console.log(puzzle_data[2]);
+    console.log(puzzle_data[3]);
 }
 
