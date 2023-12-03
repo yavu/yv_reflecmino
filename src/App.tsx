@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Stage, Layer, Rect, Image, Group, Line } from 'react-konva';
+import React, { useCallback, useRef, useState } from 'react';
+import { Stage, Layer, Rect, Group, Line } from 'react-konva';
 import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Button, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEvent, SxProps, TextField, Typography } from '@mui/material';
+import { Button, Divider, Paper, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
@@ -17,7 +17,8 @@ export default function App(): JSX.Element {
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
     };
-    // const [puzzle_data, setPuzzleData] = useState();
+    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
+    const [puzzle_data, setPuzzleData] = useState<[board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]]>();
 
     return (
         <>
@@ -109,7 +110,7 @@ export default function App(): JSX.Element {
                                         onChange={HandleTextChange}
                                     />
                                     <Button
-                                        onClick={() => generate(seed)}
+                                        onClick={() => setPuzzleData(generate(seed))}
                                     >
                                         Run
                                     </Button>
@@ -172,7 +173,7 @@ function Canvas({ width, height }: Size) {
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
             console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
-        }, [width,height]
+        }, [width, height]
     );
 
     return (
@@ -339,7 +340,7 @@ function Canvas({ width, height }: Size) {
                         // points={[0, 50, 0, -50, 50, -50, 50, 0, 100, 0, 100, 50]}
                         // points={[0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]}
                         // points={[-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50]}
-                        points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
+                        // points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
                         // points={[-50, 0, 100, 0, 100, 50, -50, 50]}
                         // points={[0, -50, 50, -50, 50, 100, 0, 100]}
                         x={-25}

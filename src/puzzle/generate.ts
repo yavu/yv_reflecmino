@@ -270,7 +270,7 @@ export function generate(seed: number) {
             const place_1 = replace_2d_array(board, x, y, `${random_mino_id}`);
             const place_2 = replace_2d_array(place_1, place_cell[0].x, place_cell[0].y, `${random_mino_id}`);
             const place_3 = replace_2d_array(place_2, place_cell[1].x, place_cell[1].y, `${random_mino_id}`);
-            const laser_cells = data[1].filter(e => JSON.stringify(e) != JSON.stringify(random_pos) && JSON.stringify(e) != JSON.stringify(place_cell[0]) && JSON.stringify(e) != JSON.stringify(place_cell[1]));
+            const laser_cells = data[1].filter(e => JSON.stringify(e) !== JSON.stringify(random_pos) && JSON.stringify(e) !== JSON.stringify(place_cell[0]) && JSON.stringify(e) !== JSON.stringify(place_cell[1]));
             const mino_data: Mino[] = [
                 ...data[2],
                 {
@@ -311,7 +311,7 @@ export function generate(seed: number) {
         const place_3 = place_random_mino(place_2);
         const place_4 = place_random_mino(place_3);
         const return_data: [board: string[][], mino_data: Mino[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_4[2], laser_drawn_board[1], laser_drawn_board[2]];
-        return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length != 4, return_data];
+        return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length !== 4, return_data];
     });
 
     console.log("======================");
@@ -319,5 +319,7 @@ export function generate(seed: number) {
     console.log(puzzle_data[1]);
     console.log(puzzle_data[2]);
     console.log(puzzle_data[3]);
+
+    return puzzle_data;
 }
 
