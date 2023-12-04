@@ -320,6 +320,7 @@ export function generate(seed: number) {
     console.log(puzzle_data[2]);
     console.log(puzzle_data[3]);
 
+    console.log(puzzle_data);
     return puzzle_data;
 }
 

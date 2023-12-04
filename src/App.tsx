@@ -10,15 +10,43 @@ import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 
-export default function App(): JSX.Element {
+type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
+type PuzzleData = [board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]];
 
+export default function App(): JSX.Element {
 
     const [seed, setSeed] = useState<number>(0);
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
     };
-    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
-    const [puzzle_data, setPuzzleData] = useState<[board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]]>();
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>([
+        [],
+        [
+            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
+            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
+            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
+            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
+        ],
+        [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }],
+        [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }]
+        // [
+        //     ["#", "#", "#", "#", "#", "e", "#"],
+        //     ["#", " ", " ", " ", " ", "￭", "#"],
+        //     ["#", " ", " ", "/", "\\", "￭", "#"],
+        //     ["e", "￭", "￭", "￭", "/", "￭", "#"],
+        //     ["#", " ", " ", "￭", "/", "￭", "s"],
+        //     ["#", " ", " ", "￭", "\\", "/", "#"],
+        //     ["#", "#", "#", "s", "#", "#", "#"]
+        // ],
+        // [
+        //     { "cell": [{ "x": -1, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 1, "type": "￭" }], "vertex": [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50] },
+        //     { "cell": [{ "x": 1, "y": 0, "type": "/" }, { "x": -1, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "\\" }], "vertex": [-50, 0, 100, 0, 100, 50, -50, 50] },
+        //     { "cell": [{ "x": -1, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "\\" }, { "x": 0, "y": 1, "type": "/" }], "vertex": [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50] },
+        //     { "cell": [{ "x": 0, "y": -1, "type": "￭" }, { "x": -1, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0] }
+        // ],
+        // [{ "x": 6, "y": 4 }, { "x": 3, "y": 6 }],
+        // [{ "x": 5, "y": 0 }, { "x": 0, "y": 3 }]
+    ]);
 
     return (
         <>
@@ -94,6 +122,7 @@ export default function App(): JSX.Element {
                                         <Canvas
                                             width={theme.spacing(20)}
                                             height={theme.spacing(32)}
+                                            puzzle_data={puzzle_data}
                                         />
                                     </Grid>
                                 </Paper>
@@ -146,13 +175,14 @@ function PropertyWrapper({ width, height, children }: Wrapper): JSX.Element {
     )
 }
 
-type Size = {
+type GameCanvas = {
     width: string;
     height: string;
+    puzzle_data: PuzzleData;
 };
 
-function Canvas({ width, height }: Size) {
-    const stage_ref = useRef(null);
+function Canvas({ width, height, puzzle_data }: GameCanvas) {
+
     const HandleMinoDragEnd = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             const pos = e.target.position();
@@ -172,446 +202,154 @@ function Canvas({ width, height }: Size) {
                 e.target.position({ x: return_inside(pos.x, parseInt(width.slice(0, -2))), y: return_inside(pos.y, parseInt(height.slice(0, -2))) });
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
-            console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
+            // console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
         }, [width, height]
     );
 
+    function cell(cell: { x: number, y: number, type: string }) {
+        switch (cell.type) {
+            case "￭":
+                return (
+                    <Rect
+                        width={34}
+                        height={34}
+                        x={8 + 50 * cell.x}
+                        y={8 + 50 * cell.y}
+                        fill={"#9ba5ad"}
+                        stroke={"#828c94"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                )
+            case "/":
+                return (
+                    <>
+                        <Rect
+                            width={34}
+                            height={34}
+                            x={8 + 50 * cell.x}
+                            y={8 + 50 * cell.y}
+                            fill={"#9ba5ad"}
+                            stroke={"#828c94"}
+                            strokeWidth={4}
+                            lineJoin={"round"}
+                        />
+                        <Line
+                            points={[24, 0, 0, 24]}
+                            x={13 + 50 * cell.x}
+                            y={13 + 50 * cell.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+            case "\\":
+                return (
+                    <>
+                        <Rect
+                            width={34}
+                            height={34}
+                            x={8 + 50 * cell.x}
+                            y={8 + 50 * cell.y}
+                            fill={"#9ba5ad"}
+                            stroke={"#828c94"}
+                            strokeWidth={4}
+                            lineJoin={"round"}
+                        />
+                        <Line
+                            points={[0, 0, 24, 24]}
+                            x={13 + 50 * cell.x}
+                            y={13 + 50 * cell.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+        }
+    };
+
+    function mino(i: number): JSX.Element {
+
+        return (
+            <Group
+                draggable
+                onDragEnd={HandleMinoDragEnd}
+                x={40 + 80 * i - (puzzle_data[1][i].cell[0].x + puzzle_data[1][i].cell[1].x + puzzle_data[1][i].cell[2].x) * 20}
+                y={390 + 62 * (i % 2) - (puzzle_data[1][i].cell[0].y + puzzle_data[1][i].cell[1].y + puzzle_data[1][i].cell[2].y) * 20}
+                offset={{ x: 25, y: 25 }}
+                scale={{ x: 0.75, y: 0.75 }}
+            >
+                <Line
+                    points={puzzle_data[1][i].vertex}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                {cell(puzzle_data[1][i].cell[0])}
+                {cell(puzzle_data[1][i].cell[1])}
+                {cell(puzzle_data[1][i].cell[2])}
+            </Group>
+        )
+    }
+
+    function start(i: number): JSX.Element {
+
+        return (
+            <Group
+                draggable
+                onDragEnd={HandleMinoDragEnd}
+                x={40 + 80 * i - (puzzle_data[1][i].cell[0].x + puzzle_data[1][i].cell[1].x + puzzle_data[1][i].cell[2].x) * 20}
+                y={390 + 62 * (i % 2) - (puzzle_data[1][i].cell[0].y + puzzle_data[1][i].cell[1].y + puzzle_data[1][i].cell[2].y) * 20}
+                offset={{ x: 25, y: 25 }}
+                scale={{ x: 0.75, y: 0.75 }}
+            >
+                <Line
+                    points={puzzle_data[1][i].vertex}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                {cell(puzzle_data[1][i].cell[0])}
+                {cell(puzzle_data[1][i].cell[1])}
+                {cell(puzzle_data[1][i].cell[2])}
+            </Group>
+        )
+    }
+
     return (
         <Stage
-            ref={stage_ref}
+            // ref={stage_ref}
             width={parseInt(width.slice(0, -2))}
             height={parseInt(height.slice(0, -2))}
         >
             <Layer>
                 <Test />
-
-                {/* <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                    rotation={90}
-                    x={100}
-                    y={100}
-                >
-                    <Rect
-                        width={50}
-                        height={33}
-                        fill={"#abb5bd"}
-                        closed={true}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={25}
-                        x={8}
-                        y={8}
-                        fill={"#9ba5ad"}
-                        stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 50, 0]}
-                        x={0}
-                        y={33}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineCap={'square'}
-                    />
-                </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                    rotation={0}
-                    x={100}
-                    y={100}
-                >
-                    <Rect
-                        width={50}
-                        height={33}
-                        fill={"#abb5bd"}
-                        closed={true}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={25}
-                        x={8}
-                        y={8}
-                        fill={"#9ba5ad"}
-                        stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 50, 0]}
-                        x={0}
-                        y={33}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineCap={'square'}
-                    />
-                </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                    rotation={270}
-                    x={100}
-                    y={100}
-                >
-                    <Rect
-                        width={50}
-                        height={33}
-                        fill={"#abb5bd"}
-                        closed={true}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={25}
-                        x={8}
-                        y={8}
-                        fill={"#ff9f56"}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 50, 0]}
-                        x={0}
-                        y={33}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineCap={'square'}
-                    />
-                </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                    rotation={180}
-                    x={100}
-                    y={100}
-                >
-                    <Rect
-                        width={50}
-                        height={33}
-                        fill={"#abb5bd"}
-                        closed={true}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={25}
-                        x={8}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 50, 0]}
-                        x={0}
-                        y={33}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineCap={'square'}
-                    />
-                </Group> */}
-
-
-                <Group
-                    draggable
-                    // onDragStart={HandleMinoDragStart}
-                    onDragEnd={HandleMinoDragEnd}
-                >
-                    <Line
-                        // points={[0, 50, 0, -50, 50, -50, 50, 0, 100, 0, 100, 50]}
-                        // points={[0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]}
-                        // points={[-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50]}
-                        // points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
-                        // points={[-50, 0, 100, 0, 100, 50, -50, 50]}
-                        // points={[0, -50, 50, -50, 50, 100, 0, 100]}
-                        x={-25}
-                        y={-25}
-                        fill={"#c2c8cc"}
-                        closed={true}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    {/* <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={-42}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={8}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 24, 24]}
-                        x={-37}
-                        y={13}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    /> */}
-                </Group>
-                {/* <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                >
-                    <Line
-                        points={[0, 0, 0, -150, 50, -150, 50, 0]}
-                        x={-50}
-                        y={50}
-                        fill={"#c2c8cc"}
-                        closed={true}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={-92}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={-42}
-                        fill={"#ffffff"}
-                        stroke={"#dddddd"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 24, 24]}
-                        x={-37}
-                        y={-87}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    />
-                    <Line
-                        points={[24, 0, 0, 24]}
-                        x={-37}
-                        y={13}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    />
-                </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                    rotation={90}
-                >
-                    <Line
-                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
-                        x={-50}
-                        y={50}
-                        fill={"#c2c8cc"}
-                        closed={true}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={-42}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={8}
-                        y={8}
-                        fill={"#14b3ff"}
-                        stroke={"#0099FF"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 24, 24]}
-                        x={-37}
-                        y={13}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    />
-                </Group>
-                <Group
-                    draggable
-                    onDragStart={HandleDragStart}
-                    onDragEnd={HandleDragEnd}
-                >
-                    <Line
-                        points={[0, 0, 0, -100, 50, -100, 50, -50, 100, -50, 100, 0]}
-                        x={-50}
-                        y={50}
-                        fill={"#c2c8cc"}
-                        closed={true}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={-42}
-                        fill={"#ff9f56"}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={-42}
-                        y={8}
-                        fill={"#ff9f56"}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={8}
-                        y={8}
-                        fill={"#ff9f56"}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 24, 24]}
-                        x={-37}
-                        y={-37}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    />
-                    <Line
-                        points={[0, 0, 24, 24]}
-                        x={-37}
-                        y={13}
-                        stroke={"white"}
-                        strokeWidth={6}
-                        lineCap={"round"}
-                    />
-                </Group> */}
-
-                {/* <Group>
-                    <Line
-                        points={[24, 0, 50, 0, 50, 50, 276, 50]}
-                        x={10}
-                        y={110}
-                        stroke={"#ff7f1e"}
-                        strokeWidth={8}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[19, 0, 50, 0, 50, 50, 281, 50]}
-                        x={10}
-                        y={110}
-                        stroke={"#ffffff"}
-                        strokeWidth={3}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 24, 0, 100, 100, 100, 100, 200, 0, 200, 0, 276]}
-                        x={160}
-                        y={10}
-                        stroke={"#0099FF"}
-                        strokeWidth={8}
-                        lineJoin={"round"}
-                    />
-                    <Line
-                        points={[0, 19, 0, 100, 100, 100, 100, 200, 0, 200, 0, 281]}
-                        x={160}
-                        y={10}
-                        stroke={"#ffffff"}
-                        strokeWidth={3}
-                        lineJoin={"round"}
-                    />
-                </Group> */}
-
+                {mino(0)}
+                {mino(1)}
+                {mino(2)}
+                {mino(3)}
+                {/* <Line
+                    offset={{ x: -35, y: -35 }}
+                    points={[0, 0, 50, 0]}
+                    x={-25}
+                    y={25}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                    lineCap={"butt"}
+                /> */}
             </Layer>
         </Stage>
     );
 }
 
 function Test(): JSX.Element {
-
     return (
         <Group>
             <Rect
