@@ -193,46 +193,50 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         }
     };
     function Cell({ data }: CellData): JSX.Element {
-        return (
-            <>
-                <Rect
-                    width={34}
-                    height={34}
-                    x={8 + 50 * data.x}
-                    y={8 + 50 * data.y}
-                    fill={"#9ba5ad"}
-                    stroke={"#828c94"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-                {(() => {
-                    if (data.type == "/") {
-                        return (
-                            <Line
-                                points={[24, 0, 0, 24]}
-                                x={13 + 50 * data.x}
-                                y={13 + 50 * data.y}
-                                stroke={"white"}
-                                strokeWidth={6}
-                                lineCap={"round"}
-                            />
-                        )
-                    }
-                    else if (data.type == "\\") {
-                        return (
-                            <Line
-                                points={[0, 0, 24, 24]}
-                                x={13 + 50 * data.x}
-                                y={13 + 50 * data.y}
-                                stroke={"white"}
-                                strokeWidth={6}
-                                lineCap={"round"}
-                            />
-                        )
-                    }
-                })()}
-            </>
-        )
+        const rect_props: Parameters<typeof Rect>[0] = {
+            width: 34,
+            height: 34,
+            x: 8 + 50 * data.x,
+            y: 8 + 50 * data.y,
+            fill: "#9ba5ad",
+            stroke: "#828c94",
+            strokeWidth: 4,
+            lineJoin: "round"
+        }
+        switch (data.type) {
+            case "/":
+                return (
+                    <>
+                        <Rect {...rect_props} />
+                        <Line
+                            points={[24, 0, 0, 24]}
+                            x={13 + 50 * data.x}
+                            y={13 + 50 * data.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+            case "\\":
+                return (
+                    <>
+                        <Rect {...rect_props} />
+                        <Line
+                            points={[0, 0, 24, 24]}
+                            x={13 + 50 * data.x}
+                            y={13 + 50 * data.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+            default:
+                return (
+                    <Rect {...rect_props} />
+                )
+        }
     };
 
     type MinoIndex = {
@@ -264,6 +268,99 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         )
     }
 
+    function Board(): JSX.Element {
+        return (
+            <Group>
+                <Rect
+                    PreventDefault={false}
+                    width={316}
+                    height={316}
+                    x={2}
+                    y={2}
+                    fill={"#abb5bd"}
+                    stroke={"white"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+                <Rect
+                    PreventDefault={false}
+                    width={250}
+                    height={250}
+                    x={35}
+                    y={35}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 250, 0]}
+                    x={35}
+                    y={85}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 250, 0]}
+                    x={35}
+                    y={135}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 250, 0]}
+                    x={35}
+                    y={185}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 250, 0]}
+                    x={35}
+                    y={235}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 0, 250]}
+                    x={85}
+                    y={35}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 0, 250]}
+                    x={135}
+                    y={35}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 0, 250]}
+                    x={185}
+                    y={35}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+                <Line
+                    PreventDefault={false}
+                    points={[0, 0, 0, 250]}
+                    x={235}
+                    y={35}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                />
+            </Group>
+        )
+    }
+
     return (
         <Stage
             width={parseInt(width.slice(0, -2))}
@@ -275,110 +372,19 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                 <Mino data={puzzle_data[1][1]} index={1} />
                 <Mino data={puzzle_data[1][2]} index={2} />
                 <Mino data={puzzle_data[1][3]} index={3} />
-                {/* <Line
-                offset={{ x: -35, y: -35 }}
-                points={[0, 0, 50, 0]}
-                x={-25}
-                y={25}
-                stroke={"#414958"}
-                strokeWidth={4}
-                lineJoin={"round"}
-                lineCap={"butt"}
-            /> */}
+                <Group>
+                    <Line
+                        offset={{ x: -35, y: -35 }}
+                        points={[0, 0, 50, 0]}
+                        x={-25}
+                        y={25}
+                        stroke={"#414958"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                        lineCap={"butt"}
+                    />
+                </Group>
             </Layer>
         </Stage>
     );
-}
-
-function Board(): JSX.Element {
-    return (
-        <Group>
-            <Rect
-                PreventDefault={false}
-                width={316}
-                height={316}
-                x={2}
-                y={2}
-                fill={"#abb5bd"}
-                stroke={"white"}
-                strokeWidth={4}
-                cornerRadius={2}
-            />
-            <Rect
-                PreventDefault={false}
-                width={250}
-                height={250}
-                x={35}
-                y={35}
-                fill={"#48505e"}
-                stroke={"#414958"}
-                strokeWidth={4}
-                lineJoin={"round"}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 250, 0]}
-                x={35}
-                y={85}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 250, 0]}
-                x={35}
-                y={135}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 250, 0]}
-                x={35}
-                y={185}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 250, 0]}
-                x={35}
-                y={235}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 0, 250]}
-                x={85}
-                y={35}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 0, 250]}
-                x={135}
-                y={35}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 0, 250]}
-                x={185}
-                y={35}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-            <Line
-                PreventDefault={false}
-                points={[0, 0, 0, 250]}
-                x={235}
-                y={35}
-                stroke={"#414958"}
-                strokeWidth={4}
-            />
-        </Group>
-    )
 }
