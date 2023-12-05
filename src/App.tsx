@@ -368,22 +368,107 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         >
             <Layer>
                 <Board />
+                <Group
+                    x={10}
+                    y={85}
+                >
+                    {/* <Rect
+                        PreventDefault={false}
+                        width={25}
+                        height={50}
+                        fill={"#414958"}
+                        stroke={"#414958"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    /> */}
+                    <Line
+                        points={[
+                            10, 0,
+                            25, 0,
+                            25, 50,
+                            10, 50,
+                            10, 40,
+                            19, 40,
+                            19, 10,
+                            10, 10,
+                        ]}
+                        width={25}
+                        height={50}
+                        closed={true}
+                        fill={"#48505e"}
+                        stroke={"#414958"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={16}
+                        height={16}
+                        x={-4}
+                        y={17}
+                        fill={"#9ba5ad"}
+                        stroke={"#828c94"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                </Group>
+                <Group
+                    x={310}
+                    y={185}
+                    rotation={180}
+                >
+                    {/* <Rect
+                        PreventDefault={false}
+                        width={25}
+                        height={50}
+                        fill={"#414958"}
+                        stroke={"#414958"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    /> */}
+                    <Line
+                        points={[
+                            10, 0,
+                            25, 0,
+                            25, 50,
+                            10, 50,
+                            10, 40,
+                            19, 40,
+                            19, 10,
+                            10, 10,
+                        ]}
+                        width={25}
+                        height={50}
+                        closed={true}
+                        fill={"#48505e"}
+                        stroke={"#414958"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                    <Rect
+                        width={16}
+                        height={16}
+                        x={-4}
+                        y={17}
+                        fill={"#9ba5ad"}
+                        stroke={"#828c94"}
+                        strokeWidth={4}
+                        lineJoin={"round"}
+                    />
+                </Group>
                 <Mino data={puzzle_data[1][0]} index={0} />
                 <Mino data={puzzle_data[1][1]} index={1} />
                 <Mino data={puzzle_data[1][2]} index={2} />
                 <Mino data={puzzle_data[1][3]} index={3} />
-                <Group>
                     <Line
                         offset={{ x: -35, y: -35 }}
-                        points={[0, 0, 50, 0]}
-                        x={-25}
-                        y={25}
-                        stroke={"#414958"}
+                        points={[-33, 0, 50, 0]}
+                        x={25}
+                        y={75}
+                        stroke={"white"}
                         strokeWidth={4}
                         lineJoin={"round"}
                         lineCap={"butt"}
                     />
-                </Group>
             </Layer>
         </Stage>
     );
