@@ -314,13 +314,13 @@ export function generate(seed: number) {
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length !== 4, return_data];
     });
 
-    console.log("======================");
-    console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
-    console.log(puzzle_data[1]);
-    console.log(puzzle_data[2]);
-    console.log(puzzle_data[3]);
+    console.log("==generate==");
+    // console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    // console.log(puzzle_data[1]);
+    // console.log(puzzle_data[2]);
+    // console.log(puzzle_data[3]);
 
-    console.log(puzzle_data);
+    // console.log(puzzle_data);
     return puzzle_data;
 }
 

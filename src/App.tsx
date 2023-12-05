@@ -19,7 +19,7 @@ export default function App(): JSX.Element {
     const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSeed(Number(event.target.value));
     };
-    const [puzzle_data, setPuzzleData] = useState<PuzzleData>([
+    const puzzle_initial: PuzzleData = [
         [],
         [
             { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
@@ -29,24 +29,8 @@ export default function App(): JSX.Element {
         ],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }]
-        // [
-        //     ["#", "#", "#", "#", "#", "e", "#"],
-        //     ["#", " ", " ", " ", " ", "￭", "#"],
-        //     ["#", " ", " ", "/", "\\", "￭", "#"],
-        //     ["e", "￭", "￭", "￭", "/", "￭", "#"],
-        //     ["#", " ", " ", "￭", "/", "￭", "s"],
-        //     ["#", " ", " ", "￭", "\\", "/", "#"],
-        //     ["#", "#", "#", "s", "#", "#", "#"]
-        // ],
-        // [
-        //     { "cell": [{ "x": -1, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 1, "type": "￭" }], "vertex": [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50] },
-        //     { "cell": [{ "x": 1, "y": 0, "type": "/" }, { "x": -1, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "\\" }], "vertex": [-50, 0, 100, 0, 100, 50, -50, 50] },
-        //     { "cell": [{ "x": -1, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "\\" }, { "x": 0, "y": 1, "type": "/" }], "vertex": [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50] },
-        //     { "cell": [{ "x": 0, "y": -1, "type": "￭" }, { "x": -1, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0] }
-        // ],
-        // [{ "x": 6, "y": 4 }, { "x": 3, "y": 6 }],
-        // [{ "x": 5, "y": 0 }, { "x": 0, "y": 3 }]
-    ]);
+    ];
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
 
     return (
         <>
@@ -154,9 +138,9 @@ export default function App(): JSX.Element {
 }
 
 type Wrapper = {
-    children: ReactNode;
-    width: string;
-    height: string;
+    width: string,
+    height: string,
+    children: ReactNode
 };
 
 function PropertyWrapper({ width, height, children }: Wrapper): JSX.Element {
@@ -175,11 +159,7 @@ function PropertyWrapper({ width, height, children }: Wrapper): JSX.Element {
     )
 }
 
-type GameCanvas = {
-    width: string;
-    height: string;
-    puzzle_data: PuzzleData;
-};
+type GameCanvas = { width: string, height: string, puzzle_data: PuzzleData };
 
 function Canvas({ width, height, puzzle_data }: GameCanvas) {
 
@@ -202,154 +182,115 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                 e.target.position({ x: return_inside(pos.x, parseInt(width.slice(0, -2))), y: return_inside(pos.y, parseInt(height.slice(0, -2))) });
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
-            // console.log(`pos: ${e.target.position().x} : ${e.target.position().y}`);
         }, [width, height]
     );
 
-    function cell(cell: { x: number, y: number, type: string }) {
-        switch (cell.type) {
-            case "￭":
-                return (
-                    <Rect
-                        width={34}
-                        height={34}
-                        x={8 + 50 * cell.x}
-                        y={8 + 50 * cell.y}
-                        fill={"#9ba5ad"}
-                        stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                )
-            case "/":
-                return (
-                    <>
-                        <Rect
-                            width={34}
-                            height={34}
-                            x={8 + 50 * cell.x}
-                            y={8 + 50 * cell.y}
-                            fill={"#9ba5ad"}
-                            stroke={"#828c94"}
-                            strokeWidth={4}
-                            lineJoin={"round"}
-                        />
-                        <Line
-                            points={[24, 0, 0, 24]}
-                            x={13 + 50 * cell.x}
-                            y={13 + 50 * cell.y}
-                            stroke={"white"}
-                            strokeWidth={6}
-                            lineCap={"round"}
-                        />
-                    </>
-                )
-            case "\\":
-                return (
-                    <>
-                        <Rect
-                            width={34}
-                            height={34}
-                            x={8 + 50 * cell.x}
-                            y={8 + 50 * cell.y}
-                            fill={"#9ba5ad"}
-                            stroke={"#828c94"}
-                            strokeWidth={4}
-                            lineJoin={"round"}
-                        />
-                        <Line
-                            points={[0, 0, 24, 24]}
-                            x={13 + 50 * cell.x}
-                            y={13 + 50 * cell.y}
-                            stroke={"white"}
-                            strokeWidth={6}
-                            lineCap={"round"}
-                        />
-                    </>
-                )
+    type CellData = {
+        data: {
+            x: number,
+            y: number,
+            type: string
         }
     };
-
-    function mino(i: number): JSX.Element {
-
+    function Cell({ data }: CellData): JSX.Element {
         return (
-            <Group
-                draggable
-                onDragEnd={HandleMinoDragEnd}
-                x={40 + 80 * i - (puzzle_data[1][i].cell[0].x + puzzle_data[1][i].cell[1].x + puzzle_data[1][i].cell[2].x) * 20}
-                y={390 + 62 * (i % 2) - (puzzle_data[1][i].cell[0].y + puzzle_data[1][i].cell[1].y + puzzle_data[1][i].cell[2].y) * 20}
-                offset={{ x: 25, y: 25 }}
-                scale={{ x: 0.75, y: 0.75 }}
-            >
-                <Line
-                    points={puzzle_data[1][i].vertex}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
+            <>
+                <Rect
+                    width={34}
+                    height={34}
+                    x={8 + 50 * data.x}
+                    y={8 + 50 * data.y}
+                    fill={"#9ba5ad"}
+                    stroke={"#828c94"}
                     strokeWidth={4}
                     lineJoin={"round"}
                 />
-                {cell(puzzle_data[1][i].cell[0])}
-                {cell(puzzle_data[1][i].cell[1])}
-                {cell(puzzle_data[1][i].cell[2])}
-            </Group>
+                {(() => {
+                    if (data.type == "/") {
+                        return (
+                            <Line
+                                points={[24, 0, 0, 24]}
+                                x={13 + 50 * data.x}
+                                y={13 + 50 * data.y}
+                                stroke={"white"}
+                                strokeWidth={6}
+                                lineCap={"round"}
+                            />
+                        )
+                    }
+                    else if (data.type == "\\") {
+                        return (
+                            <Line
+                                points={[0, 0, 24, 24]}
+                                x={13 + 50 * data.x}
+                                y={13 + 50 * data.y}
+                                stroke={"white"}
+                                strokeWidth={6}
+                                lineCap={"round"}
+                            />
+                        )
+                    }
+                })()}
+            </>
         )
+    };
+
+    type MinoIndex = {
+        data: Mino,
+        index: number
     }
-
-    function start(i: number): JSX.Element {
-
+    function Mino({ data, index }: MinoIndex): JSX.Element {
         return (
             <Group
                 draggable
                 onDragEnd={HandleMinoDragEnd}
-                x={40 + 80 * i - (puzzle_data[1][i].cell[0].x + puzzle_data[1][i].cell[1].x + puzzle_data[1][i].cell[2].x) * 20}
-                y={390 + 62 * (i % 2) - (puzzle_data[1][i].cell[0].y + puzzle_data[1][i].cell[1].y + puzzle_data[1][i].cell[2].y) * 20}
+                x={40 + 80 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 20}
+                y={390 + 62 * (index % 2) - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 20}
                 offset={{ x: 25, y: 25 }}
                 scale={{ x: 0.75, y: 0.75 }}
             >
                 <Line
-                    points={puzzle_data[1][i].vertex}
+                    points={data.vertex}
                     fill={"#c2c8cc"}
                     closed={true}
                     stroke={"#414958"}
                     strokeWidth={4}
                     lineJoin={"round"}
                 />
-                {cell(puzzle_data[1][i].cell[0])}
-                {cell(puzzle_data[1][i].cell[1])}
-                {cell(puzzle_data[1][i].cell[2])}
+                <Cell data={data.cell[0]} />
+                <Cell data={data.cell[1]} />
+                <Cell data={data.cell[2]} />
             </Group>
         )
     }
 
     return (
         <Stage
-            // ref={stage_ref}
             width={parseInt(width.slice(0, -2))}
             height={parseInt(height.slice(0, -2))}
         >
             <Layer>
-                <Test />
-                {mino(0)}
-                {mino(1)}
-                {mino(2)}
-                {mino(3)}
+                <Board />
+                <Mino data={puzzle_data[1][0]} index={0} />
+                <Mino data={puzzle_data[1][1]} index={1} />
+                <Mino data={puzzle_data[1][2]} index={2} />
+                <Mino data={puzzle_data[1][3]} index={3} />
                 {/* <Line
-                    offset={{ x: -35, y: -35 }}
-                    points={[0, 0, 50, 0]}
-                    x={-25}
-                    y={25}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                    lineCap={"butt"}
-                /> */}
+                offset={{ x: -35, y: -35 }}
+                points={[0, 0, 50, 0]}
+                x={-25}
+                y={25}
+                stroke={"#414958"}
+                strokeWidth={4}
+                lineJoin={"round"}
+                lineCap={"butt"}
+            /> */}
             </Layer>
         </Stage>
     );
 }
 
-function Test(): JSX.Element {
+function Board(): JSX.Element {
     return (
         <Group>
             <Rect
