@@ -167,10 +167,11 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         (e: KonvaEventObject<DragEvent>) => {
             const pos = e.target.position();
             if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
-                e.target.position({
+                const new_pos = {
                     x: (Math.round((pos.x + 40) / 50) * 50) - 40,
                     y: (Math.round((pos.y + 40) / 50) * 50) - 40,
-                });
+                };
+                e.target.position(new_pos);
                 e.target.scale({ x: 1, y: 1 });
             }
             else {
@@ -179,7 +180,11 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     else if (max < value) { return max; }
                     else { return value; }
                 }
-                e.target.position({ x: return_inside(pos.x, parseInt(width.slice(0, -2))), y: return_inside(pos.y, parseInt(height.slice(0, -2))) });
+                const new_pos = {
+                    x: return_inside(pos.x, parseInt(width.slice(0, -2))),
+                    y: return_inside(pos.y, parseInt(height.slice(0, -2)))
+                }
+                e.target.position(new_pos);
                 e.target.scale({ x: 0.75, y: 0.75 });
             }
         }, [width, height]
@@ -244,6 +249,7 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         index: number
     }
     function Mino({ data, index }: MinoIndex): JSX.Element {
+
         return (
             <Group
                 draggable
@@ -369,106 +375,134 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
             <Layer>
                 <Board />
                 <Group
-                    x={10}
+                    x={4}
                     y={85}
                 >
-                    {/* <Rect
+                    <Rect
                         PreventDefault={false}
                         width={25}
                         height={50}
-                        fill={"#414958"}
-                        stroke={"#414958"}
+                        x={2}
+                        fill={"#586270"}
+                        stroke={"#586270"}
                         strokeWidth={4}
-                        lineJoin={"round"}
-                    /> */}
+                    />
+                    <Rect
+                        PreventDefault={false}
+                        width={29}
+                        height={46}
+                        y={2}
+                        fill={"#c2c8cc"}
+                    />
+                    <Rect
+                        width={21}
+                        height={30}
+                        y={10}
+                        fill={"#fe9f56"}
+                    // fill={"#9ba5ad"}
+                    />
                     <Line
+                        PreventDefault={false}
                         points={[
-                            10, 0,
-                            25, 0,
-                            25, 50,
-                            10, 50,
-                            10, 40,
-                            19, 40,
-                            19, 10,
-                            10, 10,
+                            0, 8,
+                            23, 8,
+                            23, 42,
+                            0, 42
                         ]}
-                        width={25}
-                        height={50}
-                        closed={true}
-                        fill={"#48505e"}
-                        stroke={"#414958"}
+                        stroke={"#ff801e"}
+                        // stroke={"#828c94"}
                         strokeWidth={4}
                         lineJoin={"round"}
                     />
                     <Rect
-                        width={16}
-                        height={16}
-                        x={-4}
-                        y={17}
-                        fill={"#9ba5ad"}
-                        stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                </Group>
-                <Group
-                    x={310}
-                    y={185}
-                    rotation={180}
-                >
-                    {/* <Rect
-                        PreventDefault={false}
-                        width={25}
-                        height={50}
-                        fill={"#414958"}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    /> */}
-                    <Line
-                        points={[
-                            10, 0,
-                            25, 0,
-                            25, 50,
-                            10, 50,
-                            10, 40,
-                            19, 40,
-                            19, 10,
-                            10, 10,
-                        ]}
-                        width={25}
-                        height={50}
-                        closed={true}
-                        fill={"#48505e"}
-                        stroke={"#414958"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={16}
-                        height={16}
-                        x={-4}
-                        y={17}
-                        fill={"#9ba5ad"}
-                        stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
+                        width={15}
+                        height={18}
+                        y={16}
+                        fill={"#ffffff"}
                     />
                 </Group>
                 <Mino data={puzzle_data[1][0]} index={0} />
                 <Mino data={puzzle_data[1][1]} index={1} />
                 <Mino data={puzzle_data[1][2]} index={2} />
                 <Mino data={puzzle_data[1][3]} index={3} />
-                    <Line
-                        offset={{ x: -35, y: -35 }}
-                        points={[-33, 0, 50, 0]}
-                        x={25}
-                        y={75}
-                        stroke={"white"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                        lineCap={"butt"}
-                    />
+                {/* <Line
+                    offset={{ x: -35, y: -35 }}
+                    points={[
+                        -32, 0,
+                        50, 0,
+                        50, 50,
+                        200, 50,
+                        232, 50,
+                    ]}
+                    x={25}
+                    y={75}
+                    stroke={"#ff801e"}
+                    strokeWidth={10}
+                    lineJoin={"bevel"}
+                    lineCap={"butt"}
+                />
+                <Line
+                    offset={{ x: -12, y: -12 }}
+                    points={[
+                        -12, -12,
+                        -1, 1,
+                        12, 12,
+                        1, -1
+                    ]}
+                    x={98}
+                    y={98}
+                    closed={true}
+                    stroke={"#ffffff"}
+                    strokeWidth={5}
+                    lineJoin={"bevel"}
+                />
+                <Line
+                    offset={{ x: -12, y: -12 }}
+                    points={[
+                        -12, -12,
+                        -1, 1,
+                        12, 12,
+                        1, -1
+                    ]}
+                    x={98}
+                    y={148}
+                    closed={true}
+                    stroke={"#ffffff"}
+                    strokeWidth={5}
+                    lineJoin={"bevel"}
+                /> */}
+                <Line
+                    offset={{ x: -35, y: -35 }}
+                    points={[
+                        -32, 0,
+                        50, 0,
+                        50, 50,
+                        200, 50,
+                        232, 50,
+                    ]}
+                    x={25}
+                    y={75}
+                    stroke={"#ff801e"}
+                    strokeWidth={10}
+                    lineJoin={"bevel"}
+                    lineCap={"butt"}
+                />
+                <Line
+                    offset={{ x: -35, y: -35 }}
+                    points={[
+                        -41, 0,
+                        50, 0,
+                        50, 50,
+                        200, 50,
+                        241, 50,
+                    ]}
+                    x={25}
+                    y={75}
+                    stroke={"white"}
+                    strokeWidth={4}
+                    lineJoin={"miter"}
+                    lineCap={"butt"}
+                />
             </Layer>
         </Stage>
     );
