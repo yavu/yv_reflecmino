@@ -365,17 +365,61 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     strokeWidth={4}
                     cornerRadius={2}
                 />
-                <Rect
+                <Line
                     draggable
                     onDragMove={e => {
                         e.cancelBubble = true;
                     }}
-                    width={50}
-                    height={50}
+                    x={50}
+                    y={75}
+                    points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
                     fill={"#c2c8cc"}
+                    closed={true}
                     stroke={"#414958"}
                     strokeWidth={4}
-                    cornerRadius={2}
+                    lineJoin={"round"}
+                />
+                <Line
+                    draggable
+                    onDragMove={e => {
+                        e.cancelBubble = true;
+                    }}
+                    x={200}
+                    y={75}
+                    points={[0, -50, 50, -50, 50, 100, 0, 100]}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Line
+                    draggable
+                    onDragMove={e => {
+                        e.cancelBubble = true;
+                    }}
+                    x={350}
+                    y={75}
+                    points={[-50, 0, 100, 0, 100, 50, -50, 50]}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Line
+                    draggable
+                    onDragMove={e => {
+                        e.cancelBubble = true;
+                    }}
+                    x={500}
+                    y={75}
+                    points={[0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
                 />
             </Group>
         )
