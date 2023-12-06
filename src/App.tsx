@@ -4,11 +4,12 @@ import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Button, Divider, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, Divider, Paper, SxProps, TextField, Theme, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
+import Measure from 'react-measure'
 
 type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
 type PuzzleData = [board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]];
@@ -32,6 +33,22 @@ export default function App(): JSX.Element {
     ];
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
 
+    const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
+
+    const paper_sx: SxProps<Theme> | undefined = {
+        padding: theme.spacing(1),
+        marginBottom: theme.spacing(1)
+    }
+
+
+
+    const onResize = useCallback(
+        ({ bounds }: { bounds?: { width?: number, height?: number } }) =>
+            setSize({
+                x: bounds?.width ?? 0, y: (bounds?.height ?? 0)
+            }), []
+    );
+
     return (
         <>
             <header>
@@ -47,88 +64,58 @@ export default function App(): JSX.Element {
                         container
                         direction="row"
                         justifyContent="center"
-                        flexWrap="nowrap"
                         alignItems="flex-start"
-                        overflow="hidden"
-                        sx={{
-                            minWidth: theme.spacing(23)
-                        }}
+                        gap={theme.spacing(1)}
                     >
                         <Paper
-                            elevation={2}
+                            elevation={5}
                             sx={{
-                                height: "auto",
-                                width: theme.spacing(47),
-                                padding: theme.spacing(1),
-                                paddingBottom: "0",
-                                margin: theme.spacing(1),
-                                overflowX: "hidden",
-                                overflowY: "auto",
-                                "@media screen and (max-width:792px)": {
-                                    width: theme.spacing(24),
-                                    marginLeft: 0,
-                                    marginRight: 0
-                                }
+                                ...paper_sx,
+                                width: "100%",
+                                height: theme.spacing(36),
+                                maxWidth: theme.spacing(40),
+                                minWidth: theme.spacing(22),
                             }}
                         >
-                            <Typography
-                                variant="h5"
-                            >
-                                ReflecMino
-                            </Typography>
-                            <Divider
-                                sx={{
-                                    marginTop: theme.spacing(0.5),
-                                    marginBottom: theme.spacing(1)
-                                }}
-                            />
-                            <Grid
-                                container
-                                direction="row"
-                                justifyContent="center"
-                                alignItems="flex-start"
-                                gap={theme.spacing(1)}
-                            >
-                                <Paper
-                                    elevation={6}
-                                    sx={{
-                                        width: "100%",
-                                        height: "auto",
-                                        maxWidth: theme.spacing(22),
-                                        padding: theme.spacing(1),
-                                        marginBottom: theme.spacing(1)
-                                    }}
-                                >
-                                    <Grid
-                                        container
-                                        justifyContent="center"
+                            <Measure bounds onResize={onResize}>
+                                {({ measureRef }) => (
+                                    <Box
+                                        ref={measureRef}
+                                        sx={{
+                                            width: "100%",
+                                            height: "100%"
+                                        }}
                                     >
                                         <Canvas
-                                            width={theme.spacing(20)}
-                                            height={theme.spacing(32)}
+                                            width={size.x}
+                                            height={size.y}
                                             puzzle_data={puzzle_data}
                                         />
-                                    </Grid>
-                                </Paper>
-                                <PropertyWrapper
-                                    width={theme.spacing(22)}
-                                    height="auto"
-                                >
-                                    <TextField
-                                        label="Seed"
-                                        size="small"
-                                        margin="dense"
-                                        value={seed}
-                                        fullWidth
-                                        onChange={HandleTextChange}
-                                    />
-                                    <Button
-                                        onClick={() => setPuzzleData(generate(seed))}
-                                    >
-                                        Run
-                                    </Button>
-                                </PropertyWrapper>
-                            </Grid>
+                                    </Box>
+                                )}
+                            </Measure>
+                        </Paper>
+                        <Paper
+                            elevation={5}
+                            sx={{
+                                ...paper_sx,
+                                width: theme.spacing(22),
+                                height: "auto",
+                            }}
+                        >
+                            <TextField
+                                label="Seed"
+                                size="small"
+                                margin="dense"
+                                value={seed}
+                                fullWidth
+                                onChange={HandleTextChange}
+                            />
+                            <Button
+                                onClick={() => setPuzzleData(generate(seed))}
+                            >
+                                Run
+                            </Button>
                         </Paper>
                     </Grid>
                 </ThemeProvider >
@@ -137,29 +124,11 @@ export default function App(): JSX.Element {
     )
 }
 
-type Wrapper = {
-    width: string,
-    height: string,
-    children: ReactNode
+type GameCanvas = {
+    width: number,
+    height: number,
+    puzzle_data: PuzzleData
 };
-
-function PropertyWrapper({ width, height, children }: Wrapper): JSX.Element {
-    return (
-        <Paper
-            elevation={6}
-            sx={{
-                width: width,
-                height: height,
-                padding: theme.spacing(1),
-                marginBottom: theme.spacing(1)
-            }}
-        >
-            {children}
-        </Paper>
-    )
-}
-
-type GameCanvas = { width: string, height: string, puzzle_data: PuzzleData };
 
 function Canvas({ width, height, puzzle_data }: GameCanvas) {
 
@@ -181,8 +150,8 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     else { return value; }
                 }
                 const new_pos = {
-                    x: return_inside(pos.x, parseInt(width.slice(0, -2))),
-                    y: return_inside(pos.y, parseInt(height.slice(0, -2)))
+                    x: return_inside(pos.x, width),
+                    y: return_inside(pos.y, height)
                 }
                 e.target.position(new_pos);
                 e.target.scale({ x: 0.75, y: 0.75 });
@@ -190,99 +159,101 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         }, [width, height]
     );
 
-    type CellData = {
-        data: {
-            x: number,
-            y: number,
-            type: string
-        }
-    };
-    function Cell({ data }: CellData): JSX.Element {
-        const rect_props: Parameters<typeof Rect>[0] = {
-            width: 34,
-            height: 34,
-            x: 8 + 50 * data.x,
-            y: 8 + 50 * data.y,
-            fill: "#9ba5ad",
-            stroke: "#828c94",
-            strokeWidth: 4,
-            lineJoin: "round"
-        }
-        switch (data.type) {
-            case "/":
-                return (
-                    <>
-                        <Rect {...rect_props} />
-                        <Line
-                            points={[24, 0, 0, 24]}
-                            x={13 + 50 * data.x}
-                            y={13 + 50 * data.y}
-                            stroke={"white"}
-                            strokeWidth={6}
-                            lineCap={"round"}
-                        />
-                    </>
-                )
-            case "\\":
-                return (
-                    <>
-                        <Rect {...rect_props} />
-                        <Line
-                            points={[0, 0, 24, 24]}
-                            x={13 + 50 * data.x}
-                            y={13 + 50 * data.y}
-                            stroke={"white"}
-                            strokeWidth={6}
-                            lineCap={"round"}
-                        />
-                    </>
-                )
-            default:
-                return (
-                    <Rect {...rect_props} />
-                )
-        }
-    };
+    // type CellData = {
+    //     data: {
+    //         x: number,
+    //         y: number,
+    //         type: string
+    //     }
+    // };
+    // function Cell({ data }: CellData): JSX.Element {
+    //     const rect_props: Parameters<typeof Rect>[0] = {
+    //         width: 34,
+    //         height: 34,
+    //         x: 8 + 50 * data.x,
+    //         y: 8 + 50 * data.y,
+    //         fill: "#9ba5ad",
+    //         stroke: "#828c94",
+    //         strokeWidth: 4,
+    //         lineJoin: "round"
+    //     }
+    //     switch (data.type) {
+    //         case "/":
+    //             return (
+    //                 <>
+    //                     <Rect {...rect_props} />
+    //                     <Line
+    //                         points={[24, 0, 0, 24]}
+    //                         x={13 + 50 * data.x}
+    //                         y={13 + 50 * data.y}
+    //                         stroke={"white"}
+    //                         strokeWidth={6}
+    //                         lineCap={"round"}
+    //                     />
+    //                 </>
+    //             )
+    //         case "\\":
+    //             return (
+    //                 <>
+    //                     <Rect {...rect_props} />
+    //                     <Line
+    //                         points={[0, 0, 24, 24]}
+    //                         x={13 + 50 * data.x}
+    //                         y={13 + 50 * data.y}
+    //                         stroke={"white"}
+    //                         strokeWidth={6}
+    //                         lineCap={"round"}
+    //                     />
+    //                 </>
+    //             )
+    //         default:
+    //             return (
+    //                 <Rect {...rect_props} />
+    //             )
+    //     }
+    // };
 
-    type MinoIndex = {
-        data: Mino,
-        index: number
-    }
-    function Mino({ data, index }: MinoIndex): JSX.Element {
+    // type MinoIndex = {
+    //     data: Mino,
+    //     index: number
+    // }
+    // function Mino({ data, index }: MinoIndex): JSX.Element {
 
-        return (
-            <Group
-                draggable
-                onDragEnd={HandleMinoDragEnd}
-                x={40 + 80 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 20}
-                y={390 + 62 * (index % 2) - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 20}
-                offset={{ x: 25, y: 25 }}
-                scale={{ x: 0.75, y: 0.75 }}
-            >
-                <Line
-                    points={data.vertex}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-                <Cell data={data.cell[0]} />
-                <Cell data={data.cell[1]} />
-                <Cell data={data.cell[2]} />
-            </Group>
-        )
-    }
+    //     return (
+    //         <Group
+    //             draggable
+    //             onDragEnd={HandleMinoDragEnd}
+    //             x={40 + 80 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 20}
+    //             y={390 + 62 * (index % 2) - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 20}
+    //             offset={{ x: 25, y: 25 }}
+    //             scale={{ x: 0.75, y: 0.75 }}
+    //         >
+    //             <Line
+    //                 points={data.vertex}
+    //                 fill={"#c2c8cc"}
+    //                 closed={true}
+    //                 stroke={"#414958"}
+    //                 strokeWidth={4}
+    //                 lineJoin={"round"}
+    //             />
+    //             <Cell data={data.cell[0]} />
+    //             <Cell data={data.cell[1]} />
+    //             <Cell data={data.cell[2]} />
+    //         </Group>
+    //     )
+    // }
 
     function Board(): JSX.Element {
         return (
-            <Group>
+            <Group
+                offset={{ x: 158, y: 158 }}
+                x={width / 2}
+                y={160}
+            >
                 <Rect
                     PreventDefault={false}
                     width={316}
                     height={316}
-                    x={2}
-                    y={2}
                     fill={"#abb5bd"}
                     stroke={"white"}
                     strokeWidth={4}
@@ -292,8 +263,8 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     PreventDefault={false}
                     width={250}
                     height={250}
-                    x={35}
-                    y={35}
+                    x={33}
+                    y={33}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -302,64 +273,64 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={35}
-                    y={85}
+                    x={33}
+                    y={83}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={35}
-                    y={135}
+                    x={33}
+                    y={133}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={35}
-                    y={185}
+                    x={33}
+                    y={183}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={35}
-                    y={235}
+                    x={33}
+                    y={233}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={85}
-                    y={35}
+                    x={83}
+                    y={33}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={135}
-                    y={35}
+                    x={133}
+                    y={33}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={185}
-                    y={35}
+                    x={183}
+                    y={33}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={235}
-                    y={35}
+                    x={233}
+                    y={33}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
@@ -367,142 +338,57 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         )
     }
 
+    const HandleBoundsDragMove = useCallback(
+        (e: KonvaEventObject<DragEvent>) => {
+            e.target.y(342);
+            if (width >= 606 || e.target.x() > 0) {
+                e.target.x(2);
+            }
+            else if (e.target.x() < width - 606) {
+                e.target.x(width - 606);
+            }
+        }, [width]
+    );
+    function MinoBase(): JSX.Element {
+        return (
+            <Group
+                draggable
+                onDragMove={HandleBoundsDragMove}
+                x={2}
+                y={342}
+            >
+                <Rect
+                    width={604}
+                    height={200}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+                <Rect
+                    draggable
+                    onDragMove={e => {
+                        e.cancelBubble = true;
+                    }}
+                    width={50}
+                    height={50}
+                    fill={"#c2c8cc"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+            </Group>
+        )
+    }
+
     return (
         <Stage
-            width={parseInt(width.slice(0, -2))}
-            height={parseInt(height.slice(0, -2))}
+            width={width}
+            height={height}
         >
             <Layer>
                 <Board />
-                <Group
-                    x={4}
-                    y={85}
-                >
-                    <Rect
-                        PreventDefault={false}
-                        width={25}
-                        height={50}
-                        x={2}
-                        fill={"#586270"}
-                        stroke={"#586270"}
-                        strokeWidth={4}
-                    />
-                    <Rect
-                        PreventDefault={false}
-                        width={29}
-                        height={46}
-                        y={2}
-                        fill={"#c2c8cc"}
-                    />
-                    <Rect
-                        width={21}
-                        height={30}
-                        y={10}
-                        fill={"#fe9f56"}
-                    // fill={"#9ba5ad"}
-                    />
-                    <Line
-                        PreventDefault={false}
-                        points={[
-                            0, 8,
-                            23, 8,
-                            23, 42,
-                            0, 42
-                        ]}
-                        stroke={"#ff801e"}
-                        // stroke={"#828c94"}
-                        strokeWidth={4}
-                        lineJoin={"round"}
-                    />
-                    <Rect
-                        width={15}
-                        height={18}
-                        y={16}
-                        fill={"#ffffff"}
-                    />
-                </Group>
-                <Mino data={puzzle_data[1][0]} index={0} />
-                <Mino data={puzzle_data[1][1]} index={1} />
-                <Mino data={puzzle_data[1][2]} index={2} />
-                <Mino data={puzzle_data[1][3]} index={3} />
-                {/* <Line
-                    offset={{ x: -35, y: -35 }}
-                    points={[
-                        -32, 0,
-                        50, 0,
-                        50, 50,
-                        200, 50,
-                        232, 50,
-                    ]}
-                    x={25}
-                    y={75}
-                    stroke={"#ff801e"}
-                    strokeWidth={10}
-                    lineJoin={"bevel"}
-                    lineCap={"butt"}
-                />
-                <Line
-                    offset={{ x: -12, y: -12 }}
-                    points={[
-                        -12, -12,
-                        -1, 1,
-                        12, 12,
-                        1, -1
-                    ]}
-                    x={98}
-                    y={98}
-                    closed={true}
-                    stroke={"#ffffff"}
-                    strokeWidth={5}
-                    lineJoin={"bevel"}
-                />
-                <Line
-                    offset={{ x: -12, y: -12 }}
-                    points={[
-                        -12, -12,
-                        -1, 1,
-                        12, 12,
-                        1, -1
-                    ]}
-                    x={98}
-                    y={148}
-                    closed={true}
-                    stroke={"#ffffff"}
-                    strokeWidth={5}
-                    lineJoin={"bevel"}
-                /> */}
-                <Line
-                    offset={{ x: -35, y: -35 }}
-                    points={[
-                        -32, 0,
-                        50, 0,
-                        50, 50,
-                        200, 50,
-                        232, 50,
-                    ]}
-                    x={25}
-                    y={75}
-                    stroke={"#ff801e"}
-                    strokeWidth={10}
-                    lineJoin={"bevel"}
-                    lineCap={"butt"}
-                />
-                <Line
-                    offset={{ x: -35, y: -35 }}
-                    points={[
-                        -41, 0,
-                        50, 0,
-                        50, 50,
-                        200, 50,
-                        241, 50,
-                    ]}
-                    x={25}
-                    y={75}
-                    stroke={"white"}
-                    strokeWidth={4}
-                    lineJoin={"miter"}
-                    lineCap={"butt"}
-                />
+                <MinoBase />
             </Layer>
         </Stage>
     );
