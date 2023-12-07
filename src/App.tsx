@@ -70,6 +70,9 @@ export default function App(): JSX.Element {
                         }}>
                         <Typography
                             variant="h4"
+                            sx={{
+                                marginLeft: theme.spacing(0.5)
+                            }}
                         >
                             ReflecMino
                         </Typography>
@@ -96,10 +99,9 @@ export default function App(): JSX.Element {
                                 sx={{
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
-                                    height: theme.spacing(31),
+                                    height: theme.spacing(32.65),
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
-                                        height: theme.spacing(31),
                                         marginLeft: 0,
                                         marginRight: 0
                                     }
@@ -174,20 +176,19 @@ type GameCanvas = {
     height: number,
     puzzle_data: PuzzleData
 };
-
 function Canvas({ width, height, puzzle_data }: GameCanvas) {
 
     function Board(): JSX.Element {
         return (
             <Group
-                offset={{ x: 158, y: 158 }}
-                x={160}
-                y={160}
+                offset={{ x: -35, y: -35 }}
             >
                 <Rect
                     PreventDefault={false}
                     width={316}
                     height={316}
+                    x={-33}
+                    y={-33}
                     fill={"#abb5bd"}
                     stroke={"white"}
                     strokeWidth={4}
@@ -197,8 +198,8 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     PreventDefault={false}
                     width={250}
                     height={250}
-                    x={33}
-                    y={33}
+                    x={0}
+                    y={0}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -207,66 +208,130 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={33}
-                    y={83}
+                    x={0}
+                    y={50}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={33}
-                    y={133}
+                    x={0}
+                    y={100}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={33}
-                    y={183}
+                    x={0}
+                    y={150}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 250, 0]}
-                    x={33}
-                    y={233}
+                    x={0}
+                    y={200}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={83}
-                    y={33}
+                    x={50}
+                    y={0}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={133}
-                    y={33}
+                    x={100}
+                    y={0}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={183}
-                    y={33}
+                    x={150}
+                    y={0}
                     stroke={"#414958"}
                     strokeWidth={4}
                 />
                 <Line
                     PreventDefault={false}
                     points={[0, 0, 0, 250]}
-                    x={233}
-                    y={33}
+                    x={200}
+                    y={0}
                     stroke={"#414958"}
                     strokeWidth={4}
+                />
+            </Group>
+        )
+    }
+
+
+    const HandleBoundsDragMove = useCallback(
+        (e: KonvaEventObject<DragEvent>) => {
+            e.target.y(0);
+            if (width >= 656 || e.target.x() > 0) {
+                e.target.x(0);
+            }
+            else if (e.target.x() < width - 656) {
+                e.target.x(width - 656);
+            }
+        }, [width]
+    );
+
+    function Inventory(): JSX.Element {
+        return (
+            <Group
+                draggable
+                onDragMove={HandleBoundsDragMove}
+                offset={{ x: -35, y: -35 }}
+            >
+                <Rect
+                    width={150}
+                    height={150}
+                    x={-33}
+                    y={303}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+                <Rect
+                    width={150}
+                    height={150}
+                    x={134.3}
+                    y={303}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+                <Rect
+                    width={150}
+                    height={150}
+                    x={301.6}
+                    y={303}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                />
+                <Rect
+                    width={150}
+                    height={150}
+                    x={468.9}
+                    y={303}
+                    fill={"#48505e"}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    cornerRadius={2}
                 />
             </Group>
         )
@@ -279,17 +344,41 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         >
             <Layer>
                 <Board />
-                {/* <Rect
-                    PreventDefault={false}
-                    width={316}
-                    height={316}
-                    x={width-318}
-                    y={2}
-                    fill={"#abb5bd"}
-                    stroke={"white"}
-                    strokeWidth={4}
-                    cornerRadius={2}
-                /> */}
+                <Inventory />
+                <Group
+                    visible={width < height ? true : false}
+                >
+                    <Line
+                        points={[
+                            10, -10,
+                            0, 0,
+                            10, 10
+                        ]}
+                        x={2}
+                        y={413}
+                        closed
+                        fill={"#abb5bd"}
+                        stroke={"#abb5bd"}
+                        strokeWidth={4}
+                        lineJoin={'round'}
+                        opacity={0.5}
+                    />
+                    <Line
+                        points={[
+                            0, -10,
+                            10, 0,
+                            0, 10
+                        ]}
+                        x={308}
+                        y={413}
+                        closed
+                        fill={"#abb5bd"}
+                        stroke={"#abb5bd"}
+                        strokeWidth={4}
+                        lineJoin={'round'}
+                        opacity={0.5}
+                    />
+                </Group>
             </Layer>
         </Stage>
     );
