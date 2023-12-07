@@ -35,10 +35,10 @@ export default function App(): JSX.Element {
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
 
-    const paper_sx: SxProps<Theme> | undefined = {
-        padding: theme.spacing(1),
-        marginBottom: theme.spacing(1)
-    }
+    // const paper_sx: SxProps<Theme> | undefined = {
+    //     padding: theme.spacing(1),
+    //     marginBottom: theme.spacing(1)
+    // }
 
 
 
@@ -60,64 +60,109 @@ export default function App(): JSX.Element {
             <body>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <Grid
-                        container
-                        direction="row"
-                        justifyContent="center"
-                        alignItems="flex-start"
-                        gap={theme.spacing(1)}
-                    >
-                        <Paper
-                            elevation={5}
+                    <Box
+                        sx={{
+                            margin: `${theme.spacing(1)} auto`,
+                            width: theme.spacing(43),
+                            "@media screen and (max-width:704px)": {
+                                width: theme.spacing(22)
+                            }
+                        }}>
+                        <Typography
+                            variant="h4"
+                        >
+                            ReflecMino
+                        </Typography>
+                        <Divider
                             sx={{
-                                ...paper_sx,
+                                marginTop: theme.spacing(0.5),
+                                marginBottom: theme.spacing(1)
+                            }}
+                        />
+                        < Grid
+                            container
+                            direction="column"
+                            flex-wrap="nowrap"
+                            justifyContent="flex-start"
+                            alignItems="flex-end"
+                            alignContent="center"
+                            sx={{
                                 width: "100%",
-                                height: theme.spacing(36),
-                                maxWidth: theme.spacing(40),
-                                minWidth: theme.spacing(22),
+                                height: "100%"
                             }}
                         >
-                            <Measure bounds onResize={onResize}>
-                                {({ measureRef }) => (
-                                    <Box
-                                        ref={measureRef}
-                                        sx={{
-                                            width: "100%",
-                                            height: "100%"
-                                        }}
-                                    >
-                                        <Canvas
-                                            width={size.x}
-                                            height={size.y}
-                                            puzzle_data={puzzle_data}
-                                        />
-                                    </Box>
-                                )}
-                            </Measure>
-                        </Paper>
-                        <Paper
-                            elevation={5}
-                            sx={{
-                                ...paper_sx,
-                                width: theme.spacing(22),
-                                height: "auto",
-                            }}
-                        >
-                            <TextField
-                                label="Seed"
-                                size="small"
-                                margin="dense"
-                                value={seed}
-                                fullWidth
-                                onChange={HandleTextChange}
-                            />
-                            <Button
-                                onClick={() => setPuzzleData(generate(seed))}
+                            <Paper
+                                elevation={5}
+                                sx={{
+                                    padding: theme.spacing(1),
+                                    width: theme.spacing(43),
+                                    height: theme.spacing(31),
+                                    "@media screen and (max-width:704px)": {
+                                        width: theme.spacing(22),
+                                        height: theme.spacing(31),
+                                        marginLeft: 0,
+                                        marginRight: 0
+                                    }
+                                }}
                             >
-                                Run
-                            </Button>
-                        </Paper>
-                    </Grid>
+                                <Measure bounds onResize={onResize}>
+                                    {({ measureRef }) => (
+                                        <Box
+                                            ref={measureRef}
+                                            sx={{
+                                                width: "100%",
+                                                height: "100%"
+                                            }}
+                                        >
+                                            <Canvas
+                                                width={size.x}
+                                                height={size.y}
+                                                puzzle_data={puzzle_data}
+                                            />
+                                        </Box>
+                                    )}
+                                </Measure>
+                            </Paper>
+                            <Paper
+                                elevation={5}
+                                sx={{
+                                    padding: theme.spacing(1),
+                                    marginTop: theme.spacing(1),
+                                    marginRight: theme.spacing(1),
+                                    position: "absolute",
+                                    width: theme.spacing(20),
+                                    height: theme.spacing(20),
+                                    "@media screen and (max-width:704px)": {
+                                        position: "static",
+                                        width: theme.spacing(22),
+                                        height: theme.spacing(22),
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        marginBottom: theme.spacing(1),
+                                    }
+                                }}
+                            >
+                                <Typography
+                                    variant="h4"
+                                    sx={{
+                                        marginTop: theme.spacing(1),
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    2023/12/07
+                                </Typography>
+                                <Typography
+                                    variant="h3"
+                                    sx={{
+                                        marginTop: theme.spacing(1),
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    0:00
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Box>
                 </ThemeProvider >
             </body >
         </>
@@ -132,122 +177,11 @@ type GameCanvas = {
 
 function Canvas({ width, height, puzzle_data }: GameCanvas) {
 
-    const HandleMinoDragEnd = useCallback(
-        (e: KonvaEventObject<DragEvent>) => {
-            const pos = e.target.position();
-            if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
-                const new_pos = {
-                    x: (Math.round((pos.x + 40) / 50) * 50) - 40,
-                    y: (Math.round((pos.y + 40) / 50) * 50) - 40,
-                };
-                e.target.position(new_pos);
-                e.target.scale({ x: 1, y: 1 });
-            }
-            else {
-                const return_inside = (value: number, max: number) => {
-                    if (value < 0) { return 0; }
-                    else if (max < value) { return max; }
-                    else { return value; }
-                }
-                const new_pos = {
-                    x: return_inside(pos.x, width),
-                    y: return_inside(pos.y, height)
-                }
-                e.target.position(new_pos);
-                e.target.scale({ x: 0.75, y: 0.75 });
-            }
-        }, [width, height]
-    );
-
-    // type CellData = {
-    //     data: {
-    //         x: number,
-    //         y: number,
-    //         type: string
-    //     }
-    // };
-    // function Cell({ data }: CellData): JSX.Element {
-    //     const rect_props: Parameters<typeof Rect>[0] = {
-    //         width: 34,
-    //         height: 34,
-    //         x: 8 + 50 * data.x,
-    //         y: 8 + 50 * data.y,
-    //         fill: "#9ba5ad",
-    //         stroke: "#828c94",
-    //         strokeWidth: 4,
-    //         lineJoin: "round"
-    //     }
-    //     switch (data.type) {
-    //         case "/":
-    //             return (
-    //                 <>
-    //                     <Rect {...rect_props} />
-    //                     <Line
-    //                         points={[24, 0, 0, 24]}
-    //                         x={13 + 50 * data.x}
-    //                         y={13 + 50 * data.y}
-    //                         stroke={"white"}
-    //                         strokeWidth={6}
-    //                         lineCap={"round"}
-    //                     />
-    //                 </>
-    //             )
-    //         case "\\":
-    //             return (
-    //                 <>
-    //                     <Rect {...rect_props} />
-    //                     <Line
-    //                         points={[0, 0, 24, 24]}
-    //                         x={13 + 50 * data.x}
-    //                         y={13 + 50 * data.y}
-    //                         stroke={"white"}
-    //                         strokeWidth={6}
-    //                         lineCap={"round"}
-    //                     />
-    //                 </>
-    //             )
-    //         default:
-    //             return (
-    //                 <Rect {...rect_props} />
-    //             )
-    //     }
-    // };
-
-    // type MinoIndex = {
-    //     data: Mino,
-    //     index: number
-    // }
-    // function Mino({ data, index }: MinoIndex): JSX.Element {
-
-    //     return (
-    //         <Group
-    //             draggable
-    //             onDragEnd={HandleMinoDragEnd}
-    //             x={40 + 80 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 20}
-    //             y={390 + 62 * (index % 2) - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 20}
-    //             offset={{ x: 25, y: 25 }}
-    //             scale={{ x: 0.75, y: 0.75 }}
-    //         >
-    //             <Line
-    //                 points={data.vertex}
-    //                 fill={"#c2c8cc"}
-    //                 closed={true}
-    //                 stroke={"#414958"}
-    //                 strokeWidth={4}
-    //                 lineJoin={"round"}
-    //             />
-    //             <Cell data={data.cell[0]} />
-    //             <Cell data={data.cell[1]} />
-    //             <Cell data={data.cell[2]} />
-    //         </Group>
-    //     )
-    // }
-
     function Board(): JSX.Element {
         return (
             <Group
                 offset={{ x: 158, y: 158 }}
-                x={width / 2}
+                x={160}
                 y={160}
             >
                 <Rect
@@ -338,93 +272,6 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         )
     }
 
-    const HandleBoundsDragMove = useCallback(
-        (e: KonvaEventObject<DragEvent>) => {
-            e.target.y(342);
-            if (width >= 606 || e.target.x() > 0) {
-                e.target.x(2);
-            }
-            else if (e.target.x() < width - 606) {
-                e.target.x(width - 606);
-            }
-        }, [width]
-    );
-    function MinoBase(): JSX.Element {
-        return (
-            <Group
-                draggable
-                onDragMove={HandleBoundsDragMove}
-                x={2}
-                y={342}
-            >
-                <Rect
-                    width={604}
-                    height={200}
-                    fill={"#48505e"}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    cornerRadius={2}
-                />
-                <Line
-                    draggable
-                    onDragMove={e => {
-                        e.cancelBubble = true;
-                    }}
-                    x={50}
-                    y={75}
-                    points={[0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-                <Line
-                    draggable
-                    onDragMove={e => {
-                        e.cancelBubble = true;
-                    }}
-                    x={200}
-                    y={75}
-                    points={[0, -50, 50, -50, 50, 100, 0, 100]}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-                <Line
-                    draggable
-                    onDragMove={e => {
-                        e.cancelBubble = true;
-                    }}
-                    x={350}
-                    y={75}
-                    points={[-50, 0, 100, 0, 100, 50, -50, 50]}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-                <Line
-                    draggable
-                    onDragMove={e => {
-                        e.cancelBubble = true;
-                    }}
-                    x={500}
-                    y={75}
-                    points={[0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]}
-                    fill={"#c2c8cc"}
-                    closed={true}
-                    stroke={"#414958"}
-                    strokeWidth={4}
-                    lineJoin={"round"}
-                />
-            </Group>
-        )
-    }
-
     return (
         <Stage
             width={width}
@@ -432,7 +279,17 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         >
             <Layer>
                 <Board />
-                <MinoBase />
+                {/* <Rect
+                    PreventDefault={false}
+                    width={316}
+                    height={316}
+                    x={width-318}
+                    y={2}
+                    fill={"#abb5bd"}
+                    stroke={"white"}
+                    strokeWidth={4}
+                    cornerRadius={2}
+                /> */}
             </Layer>
         </Stage>
     );
