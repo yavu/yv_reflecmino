@@ -11,7 +11,7 @@ import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 import Measure from 'react-measure'
 
-type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
+type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[], pos: { x: number, y: number } | undefined };
 type PuzzleData = [board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]];
 
 export default function App(): JSX.Element {
@@ -23,10 +23,10 @@ export default function App(): JSX.Element {
     const puzzle_initial: PuzzleData = [
         [],
         [
-            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
-            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
-            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
-            { "cell": [{ "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }, { "x": 0, "y": 0, "type": "/" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50] },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
         ],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }]
@@ -34,13 +34,6 @@ export default function App(): JSX.Element {
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
-
-    // const paper_sx: SxProps<Theme> | undefined = {
-    //     padding: theme.spacing(1),
-    //     marginBottom: theme.spacing(1)
-    // }
-
-
 
     const onResize = useCallback(
         ({ bounds }: { bounds?: { width?: number, height?: number } }) =>
@@ -147,7 +140,7 @@ export default function App(): JSX.Element {
                                 <Typography
                                     variant="h4"
                                     sx={{
-                                        marginTop: theme.spacing(1),
+                                        marginTop: theme.spacing(2),
                                         textAlign: "center",
                                     }}
                                 >
@@ -156,13 +149,38 @@ export default function App(): JSX.Element {
                                 <Typography
                                     variant="h3"
                                     sx={{
-                                        marginTop: theme.spacing(1),
+                                        marginTop: theme.spacing(2.5),
                                         textAlign: "center",
                                     }}
                                 >
                                     0:00
                                 </Typography>
                             </Paper>
+                            {/* <Paper
+                                elevation={5}
+                                sx={{
+                                    padding: theme.spacing(1),
+                                    width: theme.spacing(43),
+                                    height: theme.spacing(32.65),
+                                    position: "absolute",
+                                    boxShadow:"none",
+                                    "@media screen and (max-width:704px)": {
+                                        width: theme.spacing(22),
+                                        marginLeft: 0,
+                                        marginRight: 0
+                                    }
+                                }}
+                            >
+                            <Typography
+                                variant="h3"
+                                sx={{
+                                    marginTop: theme.spacing(2.5),
+                                    textAlign: "center",
+                                }}
+                            >
+                                ReflecMino
+                            </Typography>
+                            </Paper> */}
                         </Grid>
                     </Box>
                 </ThemeProvider >
@@ -273,6 +291,7 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         )
     }
 
+    const [inventory_x, setInventoryX] = useState<number>(0);
 
     const HandleBoundsDragMove = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
@@ -291,7 +310,10 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
             <Group
                 draggable
                 onDragMove={HandleBoundsDragMove}
+                onDragEnd={(e) => setInventoryX(e.target.x())}
                 offset={{ x: -35, y: -35 }}
+                x={inventory_x}
+                y={0}
             >
                 <Rect
                     width={150}

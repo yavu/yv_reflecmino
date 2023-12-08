@@ -221,7 +221,7 @@ export function generate(seed: number) {
         }
     };
 
-    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[] };
+    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[], pos: { x: number, y: number } | undefined };
     type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: Mino[]]
     // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
@@ -291,7 +291,8 @@ export function generate(seed: number) {
                             type: board[y + place_mino.protrusion[1].y][x + place_mino.protrusion[1].x]
                         }
                     ],
-                    vertex: place_mino.vertex
+                    vertex: place_mino.vertex,
+                    pos: undefined
                 }
             ];
             return [place_3, laser_cells, mino_data];
