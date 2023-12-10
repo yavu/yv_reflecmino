@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Stage, Layer, Rect, Group, Line } from 'react-konva';
+import { Stage, Layer, Rect, Group, Line, KonvaNodeComponent } from 'react-konva';
 import { ReactNode } from 'react';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -10,6 +10,7 @@ import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 import Measure from 'react-measure'
+import Konva from 'konva';
 
 type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[], pos: { x: number, y: number } | undefined };
 type PuzzleData = [board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]];
@@ -181,6 +182,19 @@ export default function App(): JSX.Element {
                                 ReflecMino
                             </Typography>
                             </Paper> */}
+                            <TextField
+                                label="Seed"
+                                size="small"
+                                margin="dense"
+                                value={seed}
+                                fullWidth
+                                onChange={HandleTextChange}
+                            />
+                            <Button
+                                onClick={() => setPuzzleData(generate(seed))}
+                            >
+                                Run
+                            </Button>
                         </Grid>
                     </Box>
                 </ThemeProvider >
@@ -195,6 +209,120 @@ type GameCanvas = {
     puzzle_data: PuzzleData
 };
 function Canvas({ width, height, puzzle_data }: GameCanvas) {
+
+    // const HandleMinoDragEnd = useCallback(
+    //     (e: KonvaEventObject<DragEvent>) => {
+    //         const pos = e.target.position();
+    //         if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
+    //             const new_pos = {
+    //                 x: (Math.round((pos.x + 40) / 50) * 50) - 40,
+    //                 y: (Math.round((pos.y + 40) / 50) * 50) - 40,
+    //             };
+    //             e.target.position(new_pos);
+    //             e.target.scale({ x: 1, y: 1 });
+    //         }
+    //         else {
+    //             const return_inside = (value: number, max: number) => {
+    //                 if (value < 0) { return 0; }
+    //                 else if (max < value) { return max; }
+    //                 else { return value; }
+    //             }
+    //             const new_pos = {
+    //                 x: return_inside(pos.x, width),
+    //                 y: return_inside(pos.y, height)
+    //             }
+    //             e.target.position(new_pos);
+    //             e.target.scale({ x: 0.75, y: 0.75 });
+    //         }
+    //     }, [width, height]
+    // );
+
+    type CellData = {
+        data: {
+            x: number,
+            y: number,
+            type: string
+        }
+    };
+    function Cell({ data }: CellData): JSX.Element {
+        const rect_props: Parameters<typeof Rect>[0] = {
+            width: 34,
+            height: 34,
+            x: 8 + 50 * data.x,
+            y: 8 + 50 * data.y,
+            fill: "#9ba5ad",
+            stroke: "#828c94",
+            strokeWidth: 4,
+            lineJoin: "round"
+        }
+        switch (data.type) {
+            case "/":
+                return (
+                    <>
+                        <Rect {...rect_props} />
+                        <Line
+                            points={[24, 0, 0, 24]}
+                            x={13 + 50 * data.x}
+                            y={13 + 50 * data.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+            case "\\":
+                return (
+                    <>
+                        <Rect {...rect_props} />
+                        <Line
+                            points={[0, 0, 24, 24]}
+                            x={13 + 50 * data.x}
+                            y={13 + 50 * data.y}
+                            stroke={"white"}
+                            strokeWidth={6}
+                            lineCap={"round"}
+                        />
+                    </>
+                )
+            default:
+                return (
+                    <Rect {...rect_props} />
+                )
+        }
+    };
+
+    type MinoIndex = {
+        data: Mino,
+        index: number
+    }
+    function Mino({ data, index }: MinoIndex): JSX.Element {
+
+        return (
+            <Group
+                draggable
+                onDragMove={(e) => { e.cancelBubble = true }}
+                // onDragEnd={HandleMinoDragEnd}
+                onDragEnd={(e) => {e.cancelBubble = true}}
+                // onDragEnd={(e) => { e.target.moveTo(Board) }}
+                x={42 + 167.3 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 19}
+                y={378 - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 19}
+                offset={{ x: 25, y: 25 }}
+                scale={{ x: 0.75, y: 0.75 }}
+            >
+                <Line
+                    points={data.vertex}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Cell data={data.cell[0]} />
+                <Cell data={data.cell[1]} />
+                <Cell data={data.cell[2]} />
+            </Group>
+        )
+    }
 
     function Board(): JSX.Element {
         return (
@@ -305,6 +433,15 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         }, [width]
     );
 
+    const InventoryGroup = new Konva.Group({
+        draggable: true,
+        onDragMove: HandleBoundsDragMove,
+        onDragEnd: (e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()),
+        offset: { x: -35, y: -35 },
+        x: inventory_x,
+        y: 0
+    });
+
     function Inventory(): JSX.Element {
         return (
             <Group
@@ -355,6 +492,10 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     strokeWidth={4}
                     cornerRadius={2}
                 />
+                <Mino data={puzzle_data[1][0]} index={0} />
+                <Mino data={puzzle_data[1][1]} index={1} />
+                <Mino data={puzzle_data[1][2]} index={2} />
+                <Mino data={puzzle_data[1][3]} index={3} />
             </Group>
         )
     }
