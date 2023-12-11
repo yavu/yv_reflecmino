@@ -11,6 +11,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import Measure from 'react-measure'
 import { Mino, PuzzleData, empty_board } from './puzzle/const';
 import { replace_2d_array } from './utils/function';
+import { JsxElement } from 'typescript';
 
 export default function App(): JSX.Element {
 
@@ -192,11 +193,6 @@ export default function App(): JSX.Element {
                                 onClick={() => setPuzzleData(generate(seed))}
                             >
                                 Run
-                            </Button>
-                            <Button
-                                onClick={() => console.log([...puzzle_data[0]].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "))}
-                            >
-                                console.log
                             </Button>
                         </Grid>
                     </Box>
@@ -420,6 +416,18 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                     strokeWidth={4}
                     cornerRadius={2}
                 />
+                <Group
+                    offset={{ x: 50, y: 50 }}
+                    clipX={19}
+                    clipY={19}
+                    clipWidth={312}
+                    clipHeight={312}
+                >
+                    <ConnectionPoint type={"start"} index={0} />
+                    <ConnectionPoint type={"start"} index={1} />
+                    <ConnectionPoint type={"end"} index={0} />
+                    <ConnectionPoint type={"end"} index={1} />
+                </Group>
                 <Rect
                     PreventDefault={false}
                     width={250}
@@ -494,6 +502,65 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                     y={0}
                     stroke={"#414958"}
                     strokeWidth={4}
+                />
+            </Group>
+        )
+    }
+
+    type ConnectionPointData = {
+        type: string,
+        index: number
+    }
+    function ConnectionPoint({ type, index }: ConnectionPointData): JSX.Element {
+        const fill_color = (() => {
+            if (type === "start") {
+                return index === 1
+                    ? "#fe9f56"
+                    : "#14b3ff";
+            }
+            else {
+                return "#9ba5ad";
+            }
+        })();
+        const stroke_color = (() => {
+            if (type === "start") {
+                return index === 1
+                    ? "#ff801e"
+                    : "#0099ff";
+            }
+            else {
+                return "#828c94";
+            }
+        })();
+        return (
+            <Group
+                x={type === "start" ? puzzle_data[2][index].x * 50 : puzzle_data[3][index].x * 50}
+                y={type === "start" ? puzzle_data[2][index].y * 50 : puzzle_data[3][index].y * 50}
+            >
+                <Rect
+                    PreventDefault={false}
+                    width={50}
+                    height={50}
+                    fill={"#c2c8cc"}
+                    stroke={"#586270"}
+                    strokeWidth={4}
+                />
+                <Rect
+                    width={34}
+                    height={34}
+                    x={8}
+                    y={8}
+                    fill={fill_color}
+                    stroke={stroke_color}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Rect
+                    width={18}
+                    height={18}
+                    x={16}
+                    y={16}
+                    fill={"#ffffff"}
                 />
             </Group>
         )

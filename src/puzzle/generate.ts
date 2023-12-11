@@ -316,7 +316,7 @@ export function generate(seed: number): PuzzleData {
     });
 
     console.log("==generate==");
-    // console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+    console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
     // console.log(puzzle_data[1]);
     // console.log(puzzle_data[2]);
     // console.log(puzzle_data[3]);
