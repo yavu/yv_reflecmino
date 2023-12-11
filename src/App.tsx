@@ -27,7 +27,7 @@ export default function App(): JSX.Element {
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: { x: 1, y: 2 } },
         ],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }],
         [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }]
@@ -114,6 +114,7 @@ export default function App(): JSX.Element {
                                                 width={size.x}
                                                 height={size.y}
                                                 puzzle_data={puzzle_data}
+                                                setPuzzleData={setPuzzleData}
                                             />
                                         </Box>
                                     )}
@@ -197,8 +198,8 @@ export default function App(): JSX.Element {
                             </Button>
                         </Grid>
                     </Box>
-                </ThemeProvider >
-            </body >
+                </ThemeProvider>
+            </body>
         </>
     )
 }
@@ -206,36 +207,10 @@ export default function App(): JSX.Element {
 type GameCanvas = {
     width: number,
     height: number,
-    puzzle_data: PuzzleData
+    puzzle_data: PuzzleData,
+    setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>
 };
-function Canvas({ width, height, puzzle_data }: GameCanvas) {
-
-    // const HandleMinoDragEnd = useCallback(
-    //     (e: KonvaEventObject<DragEvent>) => {
-    //         const pos = e.target.position();
-    //         if (32 < pos.x && pos.x < 284 && 32 < pos.y && pos.y < 284) {
-    //             const new_pos = {
-    //                 x: (Math.round((pos.x + 40) / 50) * 50) - 40,
-    //                 y: (Math.round((pos.y + 40) / 50) * 50) - 40,
-    //             };
-    //             e.target.position(new_pos);
-    //             e.target.scale({ x: 1, y: 1 });
-    //         }
-    //         else {
-    //             const return_inside = (value: number, max: number) => {
-    //                 if (value < 0) { return 0; }
-    //                 else if (max < value) { return max; }
-    //                 else { return value; }
-    //             }
-    //             const new_pos = {
-    //                 x: return_inside(pos.x, width),
-    //                 y: return_inside(pos.y, height)
-    //             }
-    //             e.target.position(new_pos);
-    //             e.target.scale({ x: 0.75, y: 0.75 });
-    //         }
-    //     }, [width, height]
-    // );
+function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
 
     type CellData = {
         data: {
@@ -295,19 +270,85 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         data: Mino,
         index: number
     }
-    function Mino({ data, index }: MinoIndex): JSX.Element {
-
+    function InventoryMino({ data, index }: MinoIndex): JSX.Element {
         return (
             <Group
                 draggable
                 onDragMove={(e) => { e.cancelBubble = true }}
-                // onDragEnd={HandleMinoDragEnd}
-                onDragEnd={(e) => {e.cancelBubble = true}}
-                // onDragEnd={(e) => { e.target.moveTo(Board) }}
+                onDragEnd={(e) => {
+                    e.cancelBubble = true;
+                    const pos_on_board = {
+                        x: Math.round((e.target.x() + 25 + inventory_x) / 50),
+                        y: Math.round((e.target.y() + 25) / 50),
+                    };
+                    setPuzzleData((prev_data) => [
+                        prev_data[0],
+                        [
+                            ...prev_data[1].slice(0, index),
+                            {
+                                ...prev_data[1][index],
+                                pos: (0 < pos_on_board.x && pos_on_board.x < 6 && 0 < pos_on_board.y && pos_on_board.y < 6)
+                                    ? pos_on_board
+                                    : undefined
+                            },
+                            ...prev_data[1].slice(index + 1)
+                        ],
+                        prev_data[2],
+                        prev_data[3]
+                    ])
+                }}
                 x={42 + 167.3 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 19}
                 y={378 - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 19}
                 offset={{ x: 25, y: 25 }}
                 scale={{ x: 0.75, y: 0.75 }}
+                visible={data.pos ? false : true}
+            >
+                <Line
+                    points={data.vertex}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                />
+                <Cell data={data.cell[0]} />
+                <Cell data={data.cell[1]} />
+                <Cell data={data.cell[2]} />
+            </Group>
+        )
+    }
+
+    function BoardMino({ data, index }: MinoIndex): JSX.Element {
+        return (
+            <Group
+                draggable
+                onDragMove={(e) => { e.cancelBubble = true }}
+                onDragEnd={(e) => {
+                    e.cancelBubble = true;
+                    const pos_on_board = {
+                        x: Math.round((e.target.x() + 25) / 50),
+                        y: Math.round((e.target.y() + 25) / 50),
+                    };
+                    setPuzzleData((prev_data) => [
+                        prev_data[0],
+                        [
+                            ...prev_data[1].slice(0, index),
+                            {
+                                ...prev_data[1][index],
+                                pos: (0 < pos_on_board.x && pos_on_board.x < 6 && 0 < pos_on_board.y && pos_on_board.y < 6)
+                                    ? pos_on_board
+                                    : undefined
+                            },
+                            ...prev_data[1].slice(index + 1)
+                        ],
+                        prev_data[2],
+                        prev_data[3]
+                    ])
+                }}
+                x={((data.pos?.x ?? 0) - 1) * 50 + 25}
+                y={((data.pos?.y ?? 0) - 1) * 50 + 25}
+                offset={{ x: 25, y: 25 }}
+                visible={data.pos ? true : false}
             >
                 <Line
                     points={data.vertex}
@@ -433,15 +474,6 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
         }, [width]
     );
 
-    const InventoryGroup = new Konva.Group({
-        draggable: true,
-        onDragMove: HandleBoundsDragMove,
-        onDragEnd: (e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()),
-        offset: { x: -35, y: -35 },
-        x: inventory_x,
-        y: 0
-    });
-
     function Inventory(): JSX.Element {
         return (
             <Group
@@ -492,10 +524,10 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
                     strokeWidth={4}
                     cornerRadius={2}
                 />
-                <Mino data={puzzle_data[1][0]} index={0} />
-                <Mino data={puzzle_data[1][1]} index={1} />
-                <Mino data={puzzle_data[1][2]} index={2} />
-                <Mino data={puzzle_data[1][3]} index={3} />
+                <InventoryMino data={puzzle_data[1][0]} index={0} />
+                <InventoryMino data={puzzle_data[1][1]} index={1} />
+                <InventoryMino data={puzzle_data[1][2]} index={2} />
+                <InventoryMino data={puzzle_data[1][3]} index={3} />
             </Group>
         )
     }
@@ -508,6 +540,14 @@ function Canvas({ width, height, puzzle_data }: GameCanvas) {
             <Layer>
                 <Board />
                 <Inventory />
+                <Group
+                    offset={{ x: -35, y: -35 }}
+                >
+                    <BoardMino data={puzzle_data[1][0]} index={0} />
+                    <BoardMino data={puzzle_data[1][1]} index={1} />
+                    <BoardMino data={puzzle_data[1][2]} index={2} />
+                    <BoardMino data={puzzle_data[1][3]} index={3} />
+                </Group>
                 <Group
                     visible={width < height ? true : false}
                 >
