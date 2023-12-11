@@ -1,8 +1,9 @@
 import { compose_n, while_f, replace_2d_array } from "../utils/function";
 import { random } from "../utils/random"
 import { empty_board, mino_pattern } from "./const";
+import { Mino, PuzzleData } from "./const";
 
-export function generate(seed: number) {
+export function generate(seed: number): PuzzleData {
     const rnd = new random(seed);
     const insert = (base: string, index: number, other: string) => base.slice(0, index) + other + base.slice(index);
     const random_insert = (base: string) => insert(base, rnd.next_int(0, base.length + 2), "S");
@@ -221,7 +222,6 @@ export function generate(seed: number) {
         }
     };
 
-    type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[], pos: { x: number, y: number } | undefined };
     type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: Mino[]]
     // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
@@ -322,6 +322,6 @@ export function generate(seed: number) {
     // console.log(puzzle_data[3]);
 
     // console.log(puzzle_data);
-    return puzzle_data;
+    return [empty_board, puzzle_data[1], puzzle_data[2], puzzle_data[3]];
 }
 

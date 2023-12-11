@@ -34,3 +34,16 @@ export const mino_pattern: MinoPattern[] = [
     { protrusion: [{ x: -1, y: -1 }, { x: 0, y: -1 }], offset: { x: 0, y: 1 }, vertex: [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50] },
     { protrusion: [{ x: 1, y: -1 }, { x: 1, y: 0 }], offset: { x: -1, y: 0 }, vertex: [0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0] },
 ];
+
+export type Mino = {
+    cell: { x: number, y: number, type: string }[],
+    vertex: number[],
+    pos: { x: number, y: number } | undefined
+};
+
+export type PuzzleData = [
+    board: string[][],
+    mino_data: Mino[],
+    start: { x: number; y: number; }[],
+    end: { x: number; y: number; }[]
+];

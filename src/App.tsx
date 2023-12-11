@@ -10,10 +10,7 @@ import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 import Measure from 'react-measure'
-import Konva from 'konva';
-
-type Mino = { cell: { x: number, y: number, type: string }[], vertex: number[], pos: { x: number, y: number } | undefined };
-type PuzzleData = [board: string[][], mino_data: Mino[], start: { x: number; y: number; }[], end: { x: number; y: number; }[]];
+import { Mino, PuzzleData } from './puzzle/const';
 
 export default function App(): JSX.Element {
 
@@ -24,13 +21,13 @@ export default function App(): JSX.Element {
     const puzzle_initial: PuzzleData = [
         [],
         [
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [0, 0, 50, 0, 50, 50, 0, 50], pos: { x: 1, y: 2 } },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
+            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
         ],
-        [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }],
-        [{ "x": -10, "y": -10 }, { "x": -10, "y": -10 }]
+        [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }],
+        [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }]
     ];
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
 
@@ -266,6 +263,31 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
         }
     };
 
+    const HandleMinoPlace = useCallback(
+        (e: KonvaEventObject<DragEvent>, offset_x: number, offset_y: number, i: number) => {
+            e.cancelBubble = true
+            const pos = {
+                x: Math.round((e.target.x() + offset_x + 25) / 50),
+                y: Math.round((e.target.y() + offset_y + 25) / 50),
+            };
+            setPuzzleData((prev_data) => [
+                prev_data[0],
+                [
+                    ...prev_data[1].slice(0, i),
+                    {
+                        ...prev_data[1][i],
+                        pos: (0 < pos.x && pos.x < 6 && 0 < pos.y && pos.y < 6)
+                            ? pos
+                            : undefined
+                    },
+                    ...prev_data[1].slice(i + 1)
+                ],
+                prev_data[2],
+                prev_data[3]
+            ]);
+        }, []
+    );
+
     type MinoIndex = {
         data: Mino,
         index: number
@@ -275,30 +297,9 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
             <Group
                 draggable
                 onDragMove={(e) => { e.cancelBubble = true }}
-                onDragEnd={(e) => {
-                    e.cancelBubble = true;
-                    const pos_on_board = {
-                        x: Math.round((e.target.x() + 25 + inventory_x) / 50),
-                        y: Math.round((e.target.y() + 25) / 50),
-                    };
-                    setPuzzleData((prev_data) => [
-                        prev_data[0],
-                        [
-                            ...prev_data[1].slice(0, index),
-                            {
-                                ...prev_data[1][index],
-                                pos: (0 < pos_on_board.x && pos_on_board.x < 6 && 0 < pos_on_board.y && pos_on_board.y < 6)
-                                    ? pos_on_board
-                                    : undefined
-                            },
-                            ...prev_data[1].slice(index + 1)
-                        ],
-                        prev_data[2],
-                        prev_data[3]
-                    ])
-                }}
-                x={42 + 167.3 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 19}
-                y={378 - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 19}
+                onDragEnd={useCallback((e: KonvaEventObject<DragEvent>) => HandleMinoPlace(e, (width < height ? inventory_x - 33 : - 33), 303, index), [])}
+                x={75 + 167.3 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 19}
+                y={75 - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 19}
                 offset={{ x: 25, y: 25 }}
                 scale={{ x: 0.75, y: 0.75 }}
                 visible={data.pos ? false : true}
@@ -323,28 +324,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
             <Group
                 draggable
                 onDragMove={(e) => { e.cancelBubble = true }}
-                onDragEnd={(e) => {
-                    e.cancelBubble = true;
-                    const pos_on_board = {
-                        x: Math.round((e.target.x() + 25) / 50),
-                        y: Math.round((e.target.y() + 25) / 50),
-                    };
-                    setPuzzleData((prev_data) => [
-                        prev_data[0],
-                        [
-                            ...prev_data[1].slice(0, index),
-                            {
-                                ...prev_data[1][index],
-                                pos: (0 < pos_on_board.x && pos_on_board.x < 6 && 0 < pos_on_board.y && pos_on_board.y < 6)
-                                    ? pos_on_board
-                                    : undefined
-                            },
-                            ...prev_data[1].slice(index + 1)
-                        ],
-                        prev_data[2],
-                        prev_data[3]
-                    ])
-                }}
+                onDragEnd={(e) => HandleMinoPlace(e, 0, 0, index)}
                 x={((data.pos?.x ?? 0) - 1) * 50 + 25}
                 y={((data.pos?.y ?? 0) - 1) * 50 + 25}
                 offset={{ x: 25, y: 25 }}
@@ -462,9 +442,9 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
 
     const [inventory_x, setInventoryX] = useState<number>(0);
 
-    const HandleBoundsDragMove = useCallback(
+    const HandleInventoryDragMove = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
-            e.target.y(0);
+            e.target.y(338);
             if (width >= 656 || e.target.x() > 0) {
                 e.target.x(0);
             }
@@ -478,17 +458,17 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
         return (
             <Group
                 draggable
-                onDragMove={HandleBoundsDragMove}
+                onDragMove={HandleInventoryDragMove}
                 onDragEnd={(e) => setInventoryX(e.target.x())}
-                offset={{ x: -35, y: -35 }}
-                x={inventory_x}
-                y={0}
+                x={width < height ? inventory_x : 0}
+                y={338}
+                offsetX={-2}
             >
                 <Rect
                     width={150}
                     height={150}
-                    x={-33}
-                    y={303}
+                    x={0}
+                    y={0}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -497,8 +477,8 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 <Rect
                     width={150}
                     height={150}
-                    x={134.3}
-                    y={303}
+                    x={167.3}
+                    y={0}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -507,8 +487,8 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 <Rect
                     width={150}
                     height={150}
-                    x={301.6}
-                    y={303}
+                    x={334.6}
+                    y={0}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -517,8 +497,8 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 <Rect
                     width={150}
                     height={150}
-                    x={468.9}
-                    y={303}
+                    x={501.9}
+                    y={0}
                     fill={"#48505e"}
                     stroke={"#414958"}
                     strokeWidth={4}
@@ -550,6 +530,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 </Group>
                 <Group
                     visible={width < height ? true : false}
+                    y={413}
                 >
                     <Line
                         points={[
@@ -558,7 +539,6 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                             10, 10
                         ]}
                         x={2}
-                        y={413}
                         closed
                         fill={"#abb5bd"}
                         stroke={"#abb5bd"}
@@ -573,7 +553,6 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                             0, 10
                         ]}
                         x={308}
-                        y={413}
                         closed
                         fill={"#abb5bd"}
                         stroke={"#abb5bd"}
