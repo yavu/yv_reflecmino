@@ -1,16 +1,16 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { Stage, Layer, Rect, Group, Line, KonvaNodeComponent } from 'react-konva';
-import { ReactNode } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Stage, Layer, Rect, Group, Line } from 'react-konva';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Paper, SxProps, TextField, Theme, Typography } from '@mui/material';
+import { Box, Button, Divider, Paper, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import { KonvaEventObject } from 'konva/lib/Node';
 import Measure from 'react-measure'
-import { Mino, PuzzleData } from './puzzle/const';
+import { Mino, PuzzleData, empty_board } from './puzzle/const';
+import { replace_2d_array } from './utils/function';
 
 export default function App(): JSX.Element {
 
@@ -19,7 +19,7 @@ export default function App(): JSX.Element {
         setSeed(Number(event.target.value));
     };
     const puzzle_initial: PuzzleData = [
-        [],
+        empty_board,
         [
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
@@ -29,7 +29,7 @@ export default function App(): JSX.Element {
         [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }],
         [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }]
     ];
-    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(generate(seed));
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
 
@@ -265,27 +265,77 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
 
     const HandleMinoPlace = useCallback(
         (e: KonvaEventObject<DragEvent>, offset_x: number, offset_y: number, i: number) => {
-            e.cancelBubble = true
+            e.cancelBubble = true;
             const pos = {
                 x: Math.round((e.target.x() + offset_x + 25) / 50),
-                y: Math.round((e.target.y() + offset_y + 25) / 50),
+                y: Math.round((e.target.y() + offset_y + 25) / 50)
             };
+            const cell_pos = [
+                { x: pos.x + puzzle_data[1][i].cell[0].x, y: pos.y + puzzle_data[1][i].cell[0].y },
+                { x: pos.x + puzzle_data[1][i].cell[1].x, y: pos.y + puzzle_data[1][i].cell[1].y },
+                { x: pos.x + puzzle_data[1][i].cell[2].x, y: pos.y + puzzle_data[1][i].cell[2].y }
+            ];
+            const on_board = (
+                0 < cell_pos[0].x && cell_pos[0].x < 6 && 0 < cell_pos[0].y && cell_pos[0].y < 6 &&
+                0 < cell_pos[1].x && cell_pos[1].x < 6 && 0 < cell_pos[1].y && cell_pos[1].y < 6 &&
+                0 < cell_pos[2].x && cell_pos[2].x < 6 && 0 < cell_pos[2].y && cell_pos[2].y < 6
+            );
+            const clear_pos: { x: number, y: number } | undefined = puzzle_data[1][i].pos;
+            const prev_clear_board = (()=>{
+                if (clear_pos) {
+                    const clear_1 = replace_2d_array(puzzle_data[0], clear_pos.x + puzzle_data[1][i].cell[0].x, clear_pos.y + puzzle_data[1][i].cell[0].y, " ");
+                    const clear_2 = replace_2d_array(clear_1, clear_pos.x + puzzle_data[1][i].cell[1].x, clear_pos.y + puzzle_data[1][i].cell[1].y, " ");
+                    return replace_2d_array(clear_2, clear_pos.x + puzzle_data[1][i].cell[2].x, clear_pos.y + puzzle_data[1][i].cell[2].y, " ");
+                }
+            })();
+
+            const placeable = on_board
+                ? (
+                    prev_clear_board[cell_pos[0].y][cell_pos[0].x] === " " &&
+                    prev_clear_board[cell_pos[1].y][cell_pos[1].x] === " " &&
+                    prev_clear_board[cell_pos[2].y][cell_pos[2].x] === " "
+                )
+                : false;
+            const new_board = (() => {
+                if (placeable) {
+                    if (puzzle_data[1][i].pos !== undefined) {
+                        const place_1 = replace_2d_array(prev_clear_board, cell_pos[0].x, cell_pos[0].y, puzzle_data[1][i].cell[0].type);
+                        const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, puzzle_data[1][i].cell[1].type);
+                        return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, puzzle_data[1][i].cell[2].type);
+                    }
+                    else {
+                        const place_1 = replace_2d_array(puzzle_data[0], cell_pos[0].x, cell_pos[0].y, puzzle_data[1][i].cell[0].type);
+                        const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, puzzle_data[1][i].cell[1].type);
+                        return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, puzzle_data[1][i].cell[2].type);
+                    }
+                }
+                else {
+                    if (puzzle_data[1][i].pos !== undefined) {
+                        return replace_2d_array(prev_clear_board, clear_pos.x + puzzle_data[1][i].cell[2].x, clear_pos.y + puzzle_data[1][i].cell[2].y, " ");
+                    }
+                    else {
+                        return puzzle_data[0];
+                    }
+                }
+            })();
+            const new_pos = placeable
+                ? pos
+                : undefined;
+            console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
             setPuzzleData((prev_data) => [
-                prev_data[0],
+                new_board,
                 [
                     ...prev_data[1].slice(0, i),
                     {
                         ...prev_data[1][i],
-                        pos: (0 < pos.x && pos.x < 6 && 0 < pos.y && pos.y < 6)
-                            ? pos
-                            : undefined
+                        pos: new_pos
                     },
                     ...prev_data[1].slice(i + 1)
                 ],
                 prev_data[2],
                 prev_data[3]
             ]);
-        }, []
+        }, [puzzle_data, setPuzzleData]
     );
 
     type MinoIndex = {
@@ -297,7 +347,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
             <Group
                 draggable
                 onDragMove={(e) => { e.cancelBubble = true }}
-                onDragEnd={useCallback((e: KonvaEventObject<DragEvent>) => HandleMinoPlace(e, (width < height ? inventory_x - 33 : - 33), 303, index), [])}
+                onDragEnd={useCallback((e: KonvaEventObject<DragEvent>) => HandleMinoPlace(e, (width < height ? inventory_x - 33 : - 33), 303, index), [index])}
                 x={75 + 167.3 * index - (data.cell[0].x + data.cell[1].x + data.cell[2].x) * 19}
                 y={75 - (data.cell[0].y + data.cell[1].y + data.cell[2].y) * 19}
                 offset={{ x: 25, y: 25 }}
@@ -324,7 +374,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
             <Group
                 draggable
                 onDragMove={(e) => { e.cancelBubble = true }}
-                onDragEnd={(e) => HandleMinoPlace(e, 0, 0, index)}
+                onDragEnd={useCallback((e: KonvaEventObject<DragEvent>) => HandleMinoPlace(e, 0, 0, index), [index])}
                 x={((data.pos?.x ?? 0) - 1) * 50 + 25}
                 y={((data.pos?.y ?? 0) - 1) * 50 + 25}
                 offset={{ x: 25, y: 25 }}
