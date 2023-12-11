@@ -29,7 +29,7 @@ export default function App(): JSX.Element {
         [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }],
         [{ "x": 0, "y": 0 }, { "x": 0, "y": 0 }]
     ];
-    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(generate(seed));
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
 
@@ -193,6 +193,11 @@ export default function App(): JSX.Element {
                             >
                                 Run
                             </Button>
+                            <Button
+                                onClick={() => console.log([...puzzle_data[0]].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "))}
+                            >
+                                console.log
+                            </Button>
                         </Grid>
                     </Box>
                 </ThemeProvider>
@@ -263,6 +268,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
         }
     };
 
+
     const HandleMinoPlace = useCallback(
         (e: KonvaEventObject<DragEvent>, offset_x: number, offset_y: number, i: number) => {
             e.cancelBubble = true;
@@ -280,48 +286,50 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 0 < cell_pos[1].x && cell_pos[1].x < 6 && 0 < cell_pos[1].y && cell_pos[1].y < 6 &&
                 0 < cell_pos[2].x && cell_pos[2].x < 6 && 0 < cell_pos[2].y && cell_pos[2].y < 6
             );
-            const clear_pos: { x: number, y: number } | undefined = puzzle_data[1][i].pos;
-            const prev_clear_board = (()=>{
-                if (clear_pos) {
-                    const clear_1 = replace_2d_array(puzzle_data[0], clear_pos.x + puzzle_data[1][i].cell[0].x, clear_pos.y + puzzle_data[1][i].cell[0].y, " ");
-                    const clear_2 = replace_2d_array(clear_1, clear_pos.x + puzzle_data[1][i].cell[1].x, clear_pos.y + puzzle_data[1][i].cell[1].y, " ");
-                    return replace_2d_array(clear_2, clear_pos.x + puzzle_data[1][i].cell[2].x, clear_pos.y + puzzle_data[1][i].cell[2].y, " ");
+            function place_mino(board: string[][], i: number) {
+                const place_pos: { x: number, y: number } | undefined = puzzle_data[1][i].pos;
+                if (place_pos) {
+                    const place_1 = replace_2d_array(board, place_pos.x + puzzle_data[1][i].cell[0].x, place_pos.y + puzzle_data[1][i].cell[0].y, puzzle_data[1][i].cell[0].type);
+                    const place_2 = replace_2d_array(place_1, place_pos.x + puzzle_data[1][i].cell[1].x, place_pos.y + puzzle_data[1][i].cell[1].y, puzzle_data[1][i].cell[1].type);
+                    return replace_2d_array(place_2, place_pos.x + puzzle_data[1][i].cell[2].x, place_pos.y + puzzle_data[1][i].cell[2].y, puzzle_data[1][i].cell[2].type);
                 }
-            })();
+                else {
+                    return board;
+                }
+            }
+            const place_0 = i !== 0
+                ? place_mino(empty_board, 0)
+                : empty_board;
+            const place_1 = i !== 1
+                ? place_mino(place_0, 1)
+                : place_0;
+            const place_2 = i !== 2
+                ? place_mino(place_1, 2)
+                : place_1;
+            const place_3 = i !== 3
+                ? place_mino(place_2, 3)
+                : place_2;
 
             const placeable = on_board
                 ? (
-                    prev_clear_board[cell_pos[0].y][cell_pos[0].x] === " " &&
-                    prev_clear_board[cell_pos[1].y][cell_pos[1].x] === " " &&
-                    prev_clear_board[cell_pos[2].y][cell_pos[2].x] === " "
+                    place_3[cell_pos[0].y][cell_pos[0].x] === " " &&
+                    place_3[cell_pos[1].y][cell_pos[1].x] === " " &&
+                    place_3[cell_pos[2].y][cell_pos[2].x] === " "
                 )
                 : false;
             const new_board = (() => {
                 if (placeable) {
-                    if (puzzle_data[1][i].pos !== undefined) {
-                        const place_1 = replace_2d_array(prev_clear_board, cell_pos[0].x, cell_pos[0].y, puzzle_data[1][i].cell[0].type);
-                        const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, puzzle_data[1][i].cell[1].type);
-                        return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, puzzle_data[1][i].cell[2].type);
-                    }
-                    else {
-                        const place_1 = replace_2d_array(puzzle_data[0], cell_pos[0].x, cell_pos[0].y, puzzle_data[1][i].cell[0].type);
-                        const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, puzzle_data[1][i].cell[1].type);
-                        return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, puzzle_data[1][i].cell[2].type);
-                    }
+                    const place_1 = replace_2d_array(place_3, cell_pos[0].x, cell_pos[0].y, puzzle_data[1][i].cell[0].type);
+                    const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, puzzle_data[1][i].cell[1].type);
+                    return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, puzzle_data[1][i].cell[2].type);
                 }
                 else {
-                    if (puzzle_data[1][i].pos !== undefined) {
-                        return replace_2d_array(prev_clear_board, clear_pos.x + puzzle_data[1][i].cell[2].x, clear_pos.y + puzzle_data[1][i].cell[2].y, " ");
-                    }
-                    else {
-                        return puzzle_data[0];
-                    }
+                    return place_3;
                 }
             })();
             const new_pos = placeable
                 ? pos
                 : undefined;
-            console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
             setPuzzleData((prev_data) => [
                 new_board,
                 [
@@ -335,6 +343,7 @@ function Canvas({ width, height, puzzle_data, setPuzzleData }: GameCanvas) {
                 prev_data[2],
                 prev_data[3]
             ]);
+            console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
         }, [puzzle_data, setPuzzleData]
     );
 
