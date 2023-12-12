@@ -41,12 +41,15 @@ export type Mino = {
     pos: { x: number, y: number } | undefined
 };
 
+export type Laser = {
+    start: { x: number; y: number },
+    end: { x: number; y: number },
+    board: string[][],
+    vertex: number[]
+};
+
 export type PuzzleData = [
     board: string[][],
     mino_data: Mino[],
-    laser: {
-        start: { x: number; y: number },
-        end: { x: number; y: number },
-        board: string[][],
-    }[]
+    laser: Laser[]
 ];

@@ -8,7 +8,7 @@ import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import Measure from 'react-measure'
 import { PuzzleData, empty_board } from './puzzle/const';
-import { Canvas } from './components/Canvas';
+import Canvas from './components/Canvas';
 
 export default function App(): JSX.Element {
 
@@ -25,8 +25,8 @@ export default function App(): JSX.Element {
             { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
         ],
         [
-            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board },
-            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board }
+            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board, vertex: [] },
+            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board, vertex: [] }
         ]
     ];
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);

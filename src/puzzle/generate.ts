@@ -329,12 +329,14 @@ export function generate(seed: number): PuzzleData {
             {
                 start: puzzle_data[2][0],
                 end: puzzle_data[3][0],
-                board: empty_board
+                board: empty_board,
+                vertex:[]
             },
             {
                 start: puzzle_data[2][1],
                 end: puzzle_data[3][1],
-                board: empty_board
+                board: empty_board,
+                vertex:[]
             }
         ]
     ];

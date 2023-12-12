@@ -37,16 +37,16 @@ export function simulate_laser(board: string[][], start_pos: { x: number, y: num
                 return data[3];
             }
         })();
-        return [laser_board, x, y, move, data[4]];
+        return [laser_board, x, y, move, [...data[4], x * 50 - 25, y * 50 - 25]];
     }
     const initial: Laser = [
         empty_board,
         start_pos.x,
         start_pos.y,
         (() => {
-            if (start_pos.x == 0) { return [1, 0]; }
-            else if (start_pos.x == 6) { return [-1, 0]; }
-            else if (start_pos.y == 0) { return [0, 1]; }
+            if (start_pos.x === 0) { return [1, 0]; }
+            else if (start_pos.x === 6) { return [-1, 0]; }
+            else if (start_pos.y === 0) { return [0, 1]; }
             else { return [0, -1]; }
         })(),
         []
