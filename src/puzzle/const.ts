@@ -44,6 +44,9 @@ export type Mino = {
 export type PuzzleData = [
     board: string[][],
     mino_data: Mino[],
-    start: { x: number; y: number; }[],
-    end: { x: number; y: number; }[]
+    laser: {
+        start: { x: number; y: number },
+        end: { x: number; y: number },
+        board: string[][],
+    }[]
 ];

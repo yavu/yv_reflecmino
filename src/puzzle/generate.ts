@@ -322,6 +322,21 @@ export function generate(seed: number): PuzzleData {
     // console.log(puzzle_data[3]);
 
     // console.log(puzzle_data);
-    return [empty_board, puzzle_data[1], puzzle_data[2], puzzle_data[3]];
+    return [
+        empty_board,
+        puzzle_data[1],
+        [
+            {
+                start: puzzle_data[2][0],
+                end: puzzle_data[3][0],
+                board: empty_board
+            },
+            {
+                start: puzzle_data[2][1],
+                end: puzzle_data[3][1],
+                board: empty_board
+            }
+        ]
+    ];
 }
 
