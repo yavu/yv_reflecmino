@@ -1,40 +1,38 @@
 import React, { useCallback } from 'react';
-import { Laser, Mino, PuzzleData } from "../puzzle/const";
+import { PuzzleData } from "../puzzle/const";
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Group, Line } from 'react-konva';
 import Cell from './Cell';
-import useMinoPlace from '../hooks/useMinoPlace';
+import usePickupMino from '../hooks/usePickupMino';
+import useDropMino from '../hooks/useDropMino';
 
 type BoardMinoProp = {
-    layer: "bottom" | "top",
-    mino_data: Mino[],
+    overlay: boolean,
     index: number,
-    laser_data: Laser[]
-    setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>;
+    puzzle_data: PuzzleData,
+    setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
+    dragging_mino_index: number | undefined,
+    setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>
 };
 
-const BoardMino = ({ layer, mino_data, index, laser_data, setPuzzleData }: BoardMinoProp): JSX.Element => {
-
-    const onDragEnd = useMinoPlace(
-        "board",
-        mino_data,
-        index,
-        { x: 0, y: 0 },
-        laser_data,
-        setPuzzleData
-    );
-    const picked_mino = mino_data[index];
+const BoardMino = ({ overlay, index, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex }: BoardMinoProp): JSX.Element => {
+    const picked_mino = puzzle_data[1][index];
+    const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
+    const pos = {
+        x: ((picked_mino.pos?.x ?? -100) - 1) * 50 + 25,
+        y: ((picked_mino.pos?.y ?? -100) - 1) * 50 + 25
+    };
+    const onDragEnd = useDropMino(index, { x: 0, y: 0 }, setPuzzleData, setDraggingMinoIndex, pos);
 
     return (
         <Group
             draggable
+            onDragStart={onDragStart}
             onDragMove={useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, [])}
             onDragEnd={onDragEnd}
-            x={((picked_mino.pos?.x ?? 0) - 1) * 50 + 25}
-            y={((picked_mino.pos?.y ?? 0) - 1) * 50 + 25}
+            x={pos.x}
+            y={pos.y}
             offset={{ x: 25, y: 25 }}
-            visible={picked_mino.pos ? true : false}
-            opacity={layer === "bottom" ? 0 : 1}
         >
             <Line
                 points={picked_mino.vertex}
@@ -42,11 +40,13 @@ const BoardMino = ({ layer, mino_data, index, laser_data, setPuzzleData }: Board
                 closed={true}
                 stroke={"#414958"}
                 strokeWidth={4}
-                lineJoin={"round"} />
-            <Cell cell_data={picked_mino.cell[0]} mino_pos={picked_mino.pos} laser_data={laser_data} />
-            <Cell cell_data={picked_mino.cell[1]} mino_pos={picked_mino.pos} laser_data={laser_data} />
-            <Cell cell_data={picked_mino.cell[2]} mino_pos={picked_mino.pos} laser_data={laser_data} />
-        </Group>
+                lineJoin={"round"}
+                opacity={dragging_mino_index !== index && overlay ? 0 : 1}
+            />
+            <Cell cell_data={picked_mino.cell[0]} mino_pos={picked_mino.pos} laser_data={puzzle_data[2]} overlay={dragging_mino_index !== index && overlay} />
+            <Cell cell_data={picked_mino.cell[1]} mino_pos={picked_mino.pos} laser_data={puzzle_data[2]} overlay={dragging_mino_index !== index && overlay} />
+            <Cell cell_data={picked_mino.cell[2]} mino_pos={picked_mino.pos} laser_data={puzzle_data[2]} overlay={dragging_mino_index !== index && overlay} />
+        </Group >
     );
 }
 

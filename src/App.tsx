@@ -7,7 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from './theme/gh_dark';
 import { generate } from './puzzle/generate';
 import Measure from 'react-measure'
-import { PuzzleData, empty_board } from './puzzle/const';
+import { PuzzleData, puzzle_initial_data } from './puzzle/const';
 import Canvas from './components/Canvas';
 
 const App = (): JSX.Element => {
@@ -18,23 +18,9 @@ const App = (): JSX.Element => {
             setSeed(Number(event.target.value));
         }, []
     );
-    const puzzle_initial: PuzzleData = [
-        empty_board,
-        [
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-            { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-        ],
-        [
-            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board, vertex: [] },
-            { start: { "x": 0, "y": 0 }, end: { "x": 0, "y": 0 }, board: empty_board, vertex: [] }
-        ]
-    ];
-    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial);
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial_data);
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
-
     const onResize = useCallback(
         ({ bounds }: { bounds?: { width?: number, height?: number } }) =>
             setSize({

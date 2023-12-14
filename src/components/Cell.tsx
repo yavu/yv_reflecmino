@@ -5,9 +5,10 @@ import { Laser } from '../puzzle/const';
 type CellProp = {
     cell_data: { x: number; y: number; type: string; },
     mino_pos: { x: number, y: number } | undefined,
-    laser_data: Laser[]
+    laser_data: Laser[],
+    overlay: boolean
 };
-const Cell = ({ cell_data, mino_pos, laser_data }: CellProp): JSX.Element => {
+const Cell = ({ cell_data, mino_pos, laser_data, overlay }: CellProp): JSX.Element => {
     const rect_color = (() => {
         if (mino_pos) {
             const blue = laser_data[0].board[mino_pos.y + cell_data.y][mino_pos.x + cell_data.x] === "￭";
@@ -37,7 +38,8 @@ const Cell = ({ cell_data, mino_pos, laser_data }: CellProp): JSX.Element => {
         fill: rect_color.fill,
         stroke: rect_color.stroke,
         strokeWidth: 4,
-        lineJoin: "round"
+        lineJoin: "round",
+        visible: !overlay
     };
     switch (cell_data.type) {
         case "/":

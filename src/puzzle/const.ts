@@ -53,3 +53,17 @@ export type PuzzleData = [
     mino_data: Mino[],
     laser: Laser[]
 ];
+
+export const puzzle_initial_data: PuzzleData = [
+    empty_board,
+    [
+        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: { x: 3, y: 3 } },
+        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: { x: 3, y: 3 } },
+        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: { x: 3, y: 3 } },
+        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: { x: 3, y: 3 } },
+    ],
+    [
+        { start: { "x": 3, "y": 3 }, end: { "x": 3, "y": 3 }, board: empty_board, vertex: [] },
+        { start: { "x": 3, "y": 3 }, end: { "x": 3, "y": 3 }, board: empty_board, vertex: [] }
+    ]
+];
