@@ -4,7 +4,7 @@ import { replace_2d_array } from "../utils/function";
 import { Laser, Mino, PuzzleData, empty_board } from "../puzzle/const";
 import { simulate_laser } from "../puzzle/simulate_laser";
 
-const useMinoPlace = (mino_data: Mino[], index: number, offset: { x: number, y: number }, laser_data: Laser[], setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>) => {
+const useMinoPlace = (layer: "inventory" | "board", mino_data: Mino[], index: number, offset: { x: number, y: number }, laser_data: Laser[], setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>) => {
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
@@ -87,7 +87,7 @@ const useMinoPlace = (mino_data: Mino[], index: number, offset: { x: number, y: 
                 ]
             ]);
             e.target.position(
-                placeable
+                layer === "board"
                     ? {
                         x: ((picked_mino.pos?.x ?? 0) - 1) * 50 + 25,
                         y: ((picked_mino.pos?.y ?? 0) - 1) * 50 + 25
@@ -103,7 +103,7 @@ const useMinoPlace = (mino_data: Mino[], index: number, offset: { x: number, y: 
             console.log(simulate_laser(new_board, laser_data[0].start)[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
             console.log(simulate_laser(new_board, laser_data[1].start)[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
 
-        }, [mino_data, index, laser_data, offset, setPuzzleData]
+        }, [layer, mino_data, index, laser_data, offset, setPuzzleData]
     );
 }
 

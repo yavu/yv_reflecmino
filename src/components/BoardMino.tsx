@@ -16,6 +16,7 @@ type BoardMinoProp = {
 const BoardMino = ({ layer, mino_data, index, laser_data, setPuzzleData }: BoardMinoProp): JSX.Element => {
 
     const onDragEnd = useMinoPlace(
+        "board",
         mino_data,
         index,
         { x: 0, y: 0 },

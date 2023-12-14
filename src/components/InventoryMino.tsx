@@ -18,6 +18,7 @@ type InventoryMinoProp = {
 const InventoryMino = ({ mino_data, index, canvas_width, canvas_height, inventory_x, laser_data, setPuzzleData }: InventoryMinoProp): JSX.Element => {
 
     const onDragEnd = useMinoPlace(
+        "inventory",
         mino_data,
         index,
         { x: (canvas_width < canvas_height ? inventory_x - 33 : -33), y: 303 },
