@@ -55,3 +55,4 @@ const EndPoint = ({ pos, laser_data }: EndPointProp): JSX.Element => {
 }
 
 export default React.memo(EndPoint);
+// export default EndPoint;

@@ -18,3 +18,4 @@ const Laser = ({ index, laser_vertex }: LaserProp): JSX.Element => {
 }
 
 export default React.memo(Laser);
+// export default Laser;

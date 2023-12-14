@@ -10,12 +10,14 @@ import Measure from 'react-measure'
 import { PuzzleData, empty_board } from './puzzle/const';
 import Canvas from './components/Canvas';
 
-export default function App(): JSX.Element {
+const App = (): JSX.Element => {
 
     const [seed, setSeed] = useState<number>(0);
-    const HandleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSeed(Number(event.target.value));
-    };
+    const HandleTextChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            setSeed(Number(event.target.value));
+        }, []
+    );
     const puzzle_initial: PuzzleData = [
         empty_board,
         [
@@ -117,7 +119,7 @@ export default function App(): JSX.Element {
                                     )}
                                 </Measure>
                             </Paper>
-                            <Paper
+                            {/* <Paper
                                 elevation={5}
                                 sx={{
                                     padding: theme.spacing(1),
@@ -154,7 +156,7 @@ export default function App(): JSX.Element {
                                 >
                                     0:00
                                 </Typography>
-                            </Paper>
+                            </Paper> */}
                             {/* <Paper
                                 elevation={5}
                                 sx={{
@@ -189,7 +191,7 @@ export default function App(): JSX.Element {
                                 onChange={HandleTextChange}
                             />
                             <Button
-                                onClick={() => setPuzzleData(generate(seed))}
+                                onClick={useCallback(() => setPuzzleData(generate(seed)), [seed])}
                             >
                                 Run
                             </Button>
@@ -201,3 +203,5 @@ export default function App(): JSX.Element {
     )
 }
 
+export default React.memo(App);
+// export default App;

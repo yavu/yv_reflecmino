@@ -45,3 +45,4 @@ const StartPoint = ({ pos, color }: StartPointProp): JSX.Element => {
 }
 
 export default React.memo(StartPoint);
+// export default StartPoint;

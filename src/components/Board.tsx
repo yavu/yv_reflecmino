@@ -118,3 +118,4 @@ const Board = ({ laser_data }: BoardProp): JSX.Element => {
 }
 
 export default React.memo(Board);
+// export default Board;

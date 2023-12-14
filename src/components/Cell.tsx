@@ -74,3 +74,4 @@ const Cell = ({ cell_data, mino_pos, laser_data }: CellProp): JSX.Element => {
 };
 
 export default React.memo(Cell);
+// export default Cell;

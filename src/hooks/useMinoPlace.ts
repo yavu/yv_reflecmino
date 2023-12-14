@@ -1,21 +1,22 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { useCallback } from "react";
 import { replace_2d_array } from "../utils/function";
-import { Laser, PuzzleData, empty_board } from "../puzzle/const";
+import { Laser, Mino, PuzzleData, empty_board } from "../puzzle/const";
 import { simulate_laser } from "../puzzle/simulate_laser";
 
-const useMinoPlace = (mino_pos: { x: number; y: number; } | undefined, cell_data: { x: number; y: number; type: string; }[], index: number, laser_data: Laser[], offset: { x: number, y: number }, setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>) => {
+const useMinoPlace = (mino_data: Mino[], index: number, offset: { x: number, y: number }, laser_data: Laser[], setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>) => {
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
+            const picked_mino = mino_data[index];
             const pos = {
                 x: Math.round((e.target.x() + offset.x + 25) / 50),
                 y: Math.round((e.target.y() + offset.y + 25) / 50)
             };
             const cell_pos = [
-                { x: pos.x + cell_data[0].x, y: pos.y + cell_data[0].y },
-                { x: pos.x + cell_data[1].x, y: pos.y + cell_data[1].y },
-                { x: pos.x + cell_data[2].x, y: pos.y + cell_data[2].y }
+                { x: pos.x + picked_mino.cell[0].x, y: pos.y + picked_mino.cell[0].y },
+                { x: pos.x + picked_mino.cell[1].x, y: pos.y + picked_mino.cell[1].y },
+                { x: pos.x + picked_mino.cell[2].x, y: pos.y + picked_mino.cell[2].y }
             ];
             const on_board = (
                 0 < cell_pos[0].x && cell_pos[0].x < 6 && 0 < cell_pos[0].y && cell_pos[0].y < 6 &&
@@ -23,10 +24,11 @@ const useMinoPlace = (mino_pos: { x: number; y: number; } | undefined, cell_data
                 0 < cell_pos[2].x && cell_pos[2].x < 6 && 0 < cell_pos[2].y && cell_pos[2].y < 6
             );
             function place_mino(board: string[][], i: number) {
+                const mino_pos = mino_data[i].pos;
                 if (mino_pos) {
-                    const place_1 = replace_2d_array(board, mino_pos.x + cell_data[0].x, mino_pos.y + cell_data[0].y, cell_data[0].type);
-                    const place_2 = replace_2d_array(place_1, mino_pos.x + cell_data[1].x, mino_pos.y + cell_data[1].y, cell_data[1].type);
-                    return replace_2d_array(place_2, mino_pos.x + cell_data[2].x, mino_pos.y + cell_data[2].y, cell_data[2].type);
+                    const place_1 = replace_2d_array(board, mino_pos.x + mino_data[i].cell[0].x, mino_pos.y + mino_data[i].cell[0].y, mino_data[i].cell[0].type);
+                    const place_2 = replace_2d_array(place_1, mino_pos.x + mino_data[i].cell[1].x, mino_pos.y + mino_data[i].cell[1].y, mino_data[i].cell[1].type);
+                    return replace_2d_array(place_2, mino_pos.x + mino_data[i].cell[2].x, mino_pos.y + mino_data[i].cell[2].y, mino_data[i].cell[2].type);
                 }
                 else {
                     return board;
@@ -54,9 +56,9 @@ const useMinoPlace = (mino_pos: { x: number; y: number; } | undefined, cell_data
                 : false;
             const new_board = (() => {
                 if (placeable) {
-                    const place_1 = replace_2d_array(place_3, cell_pos[0].x, cell_pos[0].y, cell_data[0].type);
-                    const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, cell_data[1].type);
-                    return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, cell_data[2].type);
+                    const place_1 = replace_2d_array(place_3, cell_pos[0].x, cell_pos[0].y, picked_mino.cell[0].type);
+                    const place_2 = replace_2d_array(place_1, cell_pos[1].x, cell_pos[1].y, picked_mino.cell[1].type);
+                    return replace_2d_array(place_2, cell_pos[2].x, cell_pos[2].y, picked_mino.cell[2].type);
                 }
                 else {
                     return place_3;
@@ -84,12 +86,24 @@ const useMinoPlace = (mino_pos: { x: number; y: number; } | undefined, cell_data
                     { ...prev_data[2][1], board: new_laser[1][0], vertex: new_laser[1][4] }
                 ]
             ]);
+            e.target.position(
+                placeable
+                    ? {
+                        x: ((picked_mino.pos?.x ?? 0) - 1) * 50 + 25,
+                        y: ((picked_mino.pos?.y ?? 0) - 1) * 50 + 25
+                    }
+                    : {
+                        x: 75 + 167.3 * index - (picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 19,
+                        y: 75 - (picked_mino.cell[0].y + picked_mino.cell[1].y + picked_mino.cell[2].y) * 19
+                    }
+            );
+
             console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
 
             console.log(simulate_laser(new_board, laser_data[0].start)[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
             console.log(simulate_laser(new_board, laser_data[1].start)[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
 
-        }, [mino_pos, cell_data, index, laser_data, offset, setPuzzleData]
+        }, [mino_data, index, laser_data, offset, setPuzzleData]
     );
 }
 
