@@ -20,7 +20,7 @@ type CanvasProp = {
 const Canvas = ({ width, height, puzzle_data, setPuzzleData }: CanvasProp) => {
     const [dragging_mino_index, setDraggingMinoIndex] = useState<number | undefined>(undefined);
     const [inventory_x, setInventoryX] = useState<number>(0);
-    console.log(dragging_mino_index);
+    console.log(inventory_x);
     return (
         <Stage
             width={width}
@@ -30,7 +30,7 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData }: CanvasProp) => {
                 <Board laser_data={puzzle_data[2]} />
                 <Inventory
                     on_drag_move={useInventoryDrag(width)}
-                    on_drag_end={useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()), [setInventoryX])}
+                    on_drag_end={useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(width < height ? e.target.x() : 0), [width, height, setInventoryX])}
                     x={width < height ? inventory_x : 0}
                     children={
                         <>

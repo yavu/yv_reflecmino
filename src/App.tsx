@@ -24,10 +24,11 @@ const App = (): JSX.Element => {
     const onResize = useCallback(
         ({ bounds }: { bounds?: { width?: number, height?: number } }) =>
             setSize({
-                x: bounds?.width ?? 0, y: (bounds?.height ?? 0)
+                x: bounds?.width ?? 0,
+                y: bounds?.height ?? 0
             }), []
     );
-
+    console.log(size);
     return (
         <>
             <header>

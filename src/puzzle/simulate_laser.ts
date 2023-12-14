@@ -49,7 +49,7 @@ export function simulate_laser(board: string[][], start_pos: { x: number, y: num
             else if (start_pos.y === 0) { return [0, 1]; }
             else { return [0, -1]; }
         })(),
-        []
+        [start_pos.x * 50 - 25, start_pos.y * 50 - 25]
     ];
     return while_f(initial, s => {
         const result = move(s);

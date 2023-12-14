@@ -204,16 +204,10 @@ export function generate(seed: number): PuzzleData {
         const draw_2_data = draw_random_laser(draw_1_data[0], laser[1]);
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
         if (laser_cell_count > 11) {
-            const s_drawn_board = (() => {
-                const draw_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
-                const draw_2 = replace_2d_array(draw_1, laser[1].x, laser[1].y, "s");
-                return draw_2;
-            })();
-            const all_drawn_board = (() => {
-                const draw_1 = replace_2d_array(s_drawn_board, draw_1_data[1], draw_1_data[2], "e");
-                const draw_2 = replace_2d_array(draw_1, draw_2_data[1], draw_2_data[2], "e");
-                return draw_2;
-            })();
+            const draw_s_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
+            const draw_s_2 = replace_2d_array(draw_s_1, laser[1].x, laser[1].y, "s");
+            const draw_e_1 = replace_2d_array(draw_s_2, draw_1_data[1], draw_1_data[2], "e");
+            const all_drawn_board = replace_2d_array(draw_e_1, draw_2_data[1], draw_2_data[2], "e");
             return [all_drawn_board, [{ x: laser[0].x, y: laser[0].y }, { x: laser[1].x, y: laser[1].y }], [{ x: draw_1_data[1], y: draw_1_data[2] }, { x: draw_2_data[1], y: draw_2_data[2] }]];
         }
         else {
@@ -330,13 +324,13 @@ export function generate(seed: number): PuzzleData {
                 start: puzzle_data[2][0],
                 end: puzzle_data[3][0],
                 board: empty_board,
-                vertex:[]
+                vertex: []
             },
             {
                 start: puzzle_data[2][1],
                 end: puzzle_data[3][1],
                 board: empty_board,
-                vertex:[]
+                vertex: []
             }
         ]
     ];
