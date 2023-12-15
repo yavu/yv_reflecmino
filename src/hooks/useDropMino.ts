@@ -4,16 +4,20 @@ import { replace_2d_array } from "../utils/function";
 import { PuzzleData } from "../puzzle/const";
 import { simulate_laser } from "../puzzle/simulate_laser";
 
-const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>, setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>, pos: { x: number, y: number }) => {
+const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>, setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>, update_pos: { x: number, y: number } | undefined, visible: boolean) => {
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
+            // e.target.visible(visible);
             setDraggingMinoIndex(undefined);
             setPuzzleData((prev_data) => {
                 const mino_pos = {
                     x: Math.round((e.target.x() + offset.x + 25) / 50),
                     y: Math.round((e.target.y() + offset.y + 25) / 50)
                 };
+                console.log(`cunv p | ${e.target.x()} : ${e.target.y()}`);
+                console.log(`offset | ${offset.x} : ${offset.y}`);
+                console.log(`mino p | ${Math.round((e.target.x() + offset.x + 25) / 50)} : ${Math.round((e.target.y() + offset.y + 25) / 50)}`);
                 const picked_mino = prev_data[1][index];
                 const cell_pos = [
                     { x: mino_pos.x + picked_mino.cell[0].x, y: mino_pos.y + picked_mino.cell[0].y },
@@ -42,11 +46,16 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
                         return prev_data[0];
                     }
                 })();
-                console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+                // console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
                 const new_laser = [
                     simulate_laser(new_board, prev_data[2][0].start),
                     simulate_laser(new_board, prev_data[2][1].start)
                 ];
+                if (placeable) {
+                    if (update_pos) {
+                        e.target.position(update_pos);
+                    }
+                }
 
                 return [
                     new_board,
@@ -66,8 +75,10 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
                     ]
                 ]
             });
-            e.target.position(pos);
-        }, [index, offset, setPuzzleData, setDraggingMinoIndex, pos]
+            if (update_pos) {
+                e.target.position(update_pos);
+            }
+        }, [index, offset, setPuzzleData, setDraggingMinoIndex, update_pos]
     );
 }
 

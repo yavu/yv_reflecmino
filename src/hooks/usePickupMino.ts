@@ -21,7 +21,7 @@ const usePickupMino = (index: number, setPuzzleData: React.Dispatch<React.SetSta
                         return prev_data[0];
                     }
                 })();
-                console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
+                // console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
                 const new_laser = [
                     simulate_laser(new_board, prev_data[2][0].start),
                     simulate_laser(new_board, prev_data[2][1].start)
@@ -29,14 +29,15 @@ const usePickupMino = (index: number, setPuzzleData: React.Dispatch<React.SetSta
 
                 return [
                     new_board,
-                    [
-                        ...prev_data[1].slice(0, index),
-                        {
-                            ...prev_data[1][index],
-                            pos: undefined
-                        },
-                        ...prev_data[1].slice(index + 1)
-                    ],
+                    prev_data[1],
+                    // [
+                    //     ...prev_data[1].slice(0, index),
+                    //     {
+                    //         ...prev_data[1][index],
+                    //         pos: undefined
+                    //     },
+                    //     ...prev_data[1].slice(index + 1)
+                    // ],
                     [
                         { ...prev_data[2][0], board: new_laser[0][0], vertex: new_laser[0][4] },
                         { ...prev_data[2][1], board: new_laser[1][0], vertex: new_laser[1][4] }

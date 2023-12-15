@@ -6,33 +6,35 @@ import Cell from './Cell';
 import usePickupMino from '../hooks/usePickupMino';
 import useDropMino from '../hooks/useDropMino';
 
-type InventoryMinoProp = {
+type OverlayMinoProp = {
     index: number,
-    drop_offset: { x: number, y: number },
     puzzle_data: PuzzleData,
     setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
+    dragging_mino_index: number | undefined,
     setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>
 };
 
-const InventoryMino = ({ index, drop_offset, puzzle_data, setPuzzleData, setDraggingMinoIndex }: InventoryMinoProp): JSX.Element => {
+const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex }: OverlayMinoProp): JSX.Element => {
     const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
-    const pos = {
-        x: 75 + 167.3 * index - (picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 19,
-        y: 75 - (picked_mino.cell[0].y + picked_mino.cell[1].y + picked_mino.cell[2].y) * 19
-    };
-    const onDragEnd = useDropMino(index, drop_offset, setPuzzleData, setDraggingMinoIndex, pos, false);
+    const pos = picked_mino.pos
+        ? {
+            x: (picked_mino.pos.x - 1) * 50 + 25,
+            y: (picked_mino.pos.y - 1) * 50 + 25
+        }
+        : undefined;
+    const onDragEnd = useDropMino(index, { x: 0, y: 0 }, setPuzzleData, setDraggingMinoIndex, pos, false);
+
     return (
         <Group
             draggable
             onDragStart={onDragStart}
             onDragMove={useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, [])}
             onDragEnd={onDragEnd}
-            x={pos.x}
-            y={pos.y}
+            x={pos?.x}
+            y={pos?.y}
             offset={{ x: 25, y: 25 }}
-            scale={{ x: 0.75, y: 0.75 }}
-            visible={picked_mino.pos === undefined}
+            visible={picked_mino.pos !== undefined}
         >
             <Line
                 points={picked_mino.vertex}
@@ -41,13 +43,14 @@ const InventoryMino = ({ index, drop_offset, puzzle_data, setPuzzleData, setDrag
                 stroke={"#414958"}
                 strokeWidth={4}
                 lineJoin={"round"}
+                opacity={dragging_mino_index === index ? 1 : 0}
             />
-            <Cell data={picked_mino.cell[0]} color={undefined} rect_visible={true} />
-            <Cell data={picked_mino.cell[1]} color={undefined} rect_visible={true} />
-            <Cell data={picked_mino.cell[2]} color={undefined} rect_visible={true} />
-        </Group>
+            <Cell data={picked_mino.cell[0]} color={undefined} rect_visible={dragging_mino_index === index} />
+            <Cell data={picked_mino.cell[1]} color={undefined} rect_visible={dragging_mino_index === index} />
+            <Cell data={picked_mino.cell[2]} color={undefined} rect_visible={dragging_mino_index === index} />
+        </Group >
     );
 }
 
-export default React.memo(InventoryMino);
-// export default InventoryMino;
+export default React.memo(OverlayMino);
+// export default BoardMino;

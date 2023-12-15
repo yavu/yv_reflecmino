@@ -28,7 +28,7 @@ const App = (): JSX.Element => {
                 y: bounds?.height ?? 0
             }), []
     );
-    console.log(size);
+    // console.log(size);
     return (
         <>
             <header>
@@ -190,5 +190,5 @@ const App = (): JSX.Element => {
     )
 }
 
-export default React.memo(App);
-// export default App;
+// export default React.memo(App);
+export default App;

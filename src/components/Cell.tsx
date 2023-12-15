@@ -1,58 +1,36 @@
 import React from 'react';
 import { Rect, Line } from 'react-konva';
-import { Laser } from '../puzzle/const';
 
 type CellProp = {
-    cell_data: { x: number; y: number; type: string; },
-    mino_pos: { x: number, y: number } | undefined,
-    laser_data: Laser[],
-    overlay: boolean
+    data: { x: number; y: number; type: string; },
+    color: { fill: string, stroke: string } | undefined,
+    rect_visible: boolean
 };
-const Cell = ({ cell_data, mino_pos, laser_data, overlay }: CellProp): JSX.Element => {
-    const rect_color = (() => {
-        if (mino_pos) {
-            const blue = laser_data[0].board[mino_pos.y + cell_data.y][mino_pos.x + cell_data.x] === "￭";
-            const orange = laser_data[1].board[mino_pos.y + cell_data.y][mino_pos.x + cell_data.x] === "￭";
-            if (blue && orange) {
-                return { fill: "#ffffff", stroke: "#dddddd" };
-            }
-            else if (blue) {
-                return { fill: "#14b3ff", stroke: "#0099ff" };
-            }
-            else if (orange) {
-                return { fill: "#fe9f56", stroke: "#ff801e" };
-            }
-            else {
-                return { fill: "#9ba5ad", stroke: "#828c94" };
-            }
-        }
-        else {
-            return { fill: "#9ba5ad", stroke: "#828c94" };
-        }
-    })();
+const Cell = ({ data, color, rect_visible }: CellProp): JSX.Element => {
     const rect_props: Parameters<typeof Rect>[0] = {
         width: 34,
         height: 34,
-        x: 8 + 50 * cell_data.x,
-        y: 8 + 50 * cell_data.y,
-        fill: rect_color.fill,
-        stroke: rect_color.stroke,
+        x: 8 + 50 * data.x,
+        y: 8 + 50 * data.y,
+        fill: color ? color.fill : "#9ba5ad",
+        stroke: color ? color.stroke : "#828c94",
         strokeWidth: 4,
         lineJoin: "round",
-        visible: !overlay
+        visible: rect_visible
     };
-    switch (cell_data.type) {
+    switch (data.type) {
         case "/":
             return (
                 <>
                     <Rect {...rect_props} />
                     <Line
                         points={[24, 0, 0, 24]}
-                        x={13 + 50 * cell_data.x}
-                        y={13 + 50 * cell_data.y}
+                        x={13 + 50 * data.x}
+                        y={13 + 50 * data.y}
                         stroke={"white"}
                         strokeWidth={6}
-                        lineCap={"round"} />
+                        lineCap={"round"}
+                    />
                 </>
             );
         case "\\":
@@ -61,11 +39,12 @@ const Cell = ({ cell_data, mino_pos, laser_data, overlay }: CellProp): JSX.Eleme
                     <Rect {...rect_props} />
                     <Line
                         points={[0, 0, 24, 24]}
-                        x={13 + 50 * cell_data.x}
-                        y={13 + 50 * cell_data.y}
+                        x={13 + 50 * data.x}
+                        y={13 + 50 * data.y}
                         stroke={"white"}
                         strokeWidth={6}
-                        lineCap={"round"} />
+                        lineCap={"round"}
+                    />
                 </>
             );
         default:
