@@ -71,7 +71,7 @@ const EndPoint = ({ pos, laser_data }: EndPointProp): JSX.Element => {
                 height={18}
                 x={16}
                 y={16}
-                fill={"#ffffff"}
+                fill={blue || orange ? "#ffffff" : "#c2c8cc"}
             />
             <Line
                 points={laser_vertex}
