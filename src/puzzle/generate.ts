@@ -1,7 +1,8 @@
 import { compose_n, while_f, replace_2d_array } from "../utils/function";
 import { random } from "../utils/random"
 import { empty_board, mino_pattern } from "./const";
-import { Mino, PuzzleData } from "./const";
+import { MinoData, PuzzleData } from "./const";
+import { simulate_laser } from "./simulate_laser";
 
 export function generate(seed: number): PuzzleData {
     const rnd = new random(seed);
@@ -209,7 +210,7 @@ export function generate(seed: number): PuzzleData {
         const mirror_count = [...draw_2_data[0]].join().replace(/[^\\/]/g, "").length;
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
         if (laser_cell_count > 11 && mirror_count === 6) {
-        // if (laser_cell_count > 11) {
+            // if (laser_cell_count > 11) {
             const s_drawn_board = (() => {
                 const draw_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
                 const draw_2 = replace_2d_array(draw_1, laser[1].x, laser[1].y, "s");
@@ -228,7 +229,7 @@ export function generate(seed: number): PuzzleData {
         }
     };
 
-    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: Mino[]]
+    type PlaceMino = [board: string[][], laser_cells: { x: number, y: number }[], mino_data: MinoData[]]
     // レーザーが通るマスのランダムな位置にミノを1つ置く関数　置けなかった場合は引数をそのまま返す
     const place_random_mino = (data: PlaceMino): PlaceMino => {
         const board = data[0];
@@ -277,7 +278,7 @@ export function generate(seed: number): PuzzleData {
             const place_2 = replace_2d_array(place_1, place_cell[0].x, place_cell[0].y, `${random_mino_id}`);
             const place_3 = replace_2d_array(place_2, place_cell[1].x, place_cell[1].y, `${random_mino_id}`);
             const laser_cells = data[1].filter(e => JSON.stringify(e) !== JSON.stringify(random_pos) && JSON.stringify(e) !== JSON.stringify(place_cell[0]) && JSON.stringify(e) !== JSON.stringify(place_cell[1]));
-            const mino_data: Mino[] = [
+            const mino_data: MinoData[] = [
                 ...data[2],
                 {
                     cell: [
@@ -308,7 +309,7 @@ export function generate(seed: number): PuzzleData {
         }
     }
 
-    const initial: [board: string[][], mino_data: Mino[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [[[]], [], [], []];
+    const initial: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [[[]], [], [], []];
     // ボードの二次元配列、ミノのデータ、レーザーの開始地点、終了地点を返す関数
     const puzzle_data = while_f(initial, s => {
         const laser_drawn_board = draw_two_laser();
@@ -317,7 +318,7 @@ export function generate(seed: number): PuzzleData {
         const place_2 = place_random_mino(place_1);
         const place_3 = place_random_mino(place_2);
         const place_4 = place_random_mino(place_3);
-        const return_data: [board: string[][], mino_data: Mino[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_4[2], laser_drawn_board[1], laser_drawn_board[2]];
+        const return_data: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_4[2], laser_drawn_board[1], laser_drawn_board[2]];
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length !== 4, return_data];
     });
 
@@ -326,8 +327,12 @@ export function generate(seed: number): PuzzleData {
     // console.log(puzzle_data[1]);
     // console.log(puzzle_data[2]);
     // console.log(puzzle_data[3]);
-
     // console.log(puzzle_data);
+
+    const laser_board = [
+        simulate_laser(empty_board, { x: laser[0].x, y: laser[0].y }),
+        simulate_laser(empty_board, { x: laser[1].x, y: laser[1].y })
+    ]
     return [
         empty_board,
         puzzle_data[1],
@@ -335,14 +340,14 @@ export function generate(seed: number): PuzzleData {
             {
                 start: puzzle_data[2][0],
                 end: puzzle_data[3][0],
-                board: empty_board,
-                vertex: []
+                board: laser_board[0][0],
+                vertex: laser_board[0][4]
             },
             {
                 start: puzzle_data[2][1],
                 end: puzzle_data[3][1],
-                board: empty_board,
-                vertex: []
+                board: laser_board[1][0],
+                vertex: laser_board[1][4]
             }
         ]
     ];

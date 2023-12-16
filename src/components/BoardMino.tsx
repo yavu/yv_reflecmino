@@ -1,5 +1,5 @@
 import React from 'react';
-import { Laser, PuzzleData } from "../puzzle/const";
+import { LaserData, PuzzleData } from "../puzzle/const";
 import { Group, Line } from 'react-konva';
 import Cell from './Cell';
 
@@ -17,7 +17,7 @@ const BoardMino = ({ index, puzzle_data, dragging_mino_index }: BoardMinoProp): 
             y: (mino.pos.y - 1) * 50 + 25
         }
         : undefined;
-    const get_cell_color = (pos: { x: number, y: number } | undefined, x: number, y: number, laser_data: Laser[]) => {
+    const get_cell_color = (pos: { x: number, y: number } | undefined, x: number, y: number, laser_data: LaserData[]) => {
         if (pos) {
             const blue = laser_data[0].board[pos.y + y][pos.x + x] === "￭";
             const orange = laser_data[1].board[pos.y + y][pos.x + x] === "￭";

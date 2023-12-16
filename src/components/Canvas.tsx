@@ -32,13 +32,13 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData }: CanvasProp) => {
                 <Inventory
                     on_drag_move={useInventoryDrag(width)}
                     on_drag_end={useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()), [setInventoryX])}
-                    x={inventory_x}
+                    x={width < height ? inventory_x : 0}
                     children={
                         <>
-                            <InventoryMino index={0} drop_offset={{ x: inventory_x - 33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={1} drop_offset={{ x: inventory_x - 33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={2} drop_offset={{ x: inventory_x - 33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={3} drop_offset={{ x: inventory_x - 33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={0} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={1} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={2} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={3} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
                         </>
                     }
                 />
@@ -49,8 +49,8 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData }: CanvasProp) => {
                     <BoardMino index={1} puzzle_data={puzzle_data} dragging_mino_index={dragging_mino_index} />
                     <BoardMino index={2} puzzle_data={puzzle_data} dragging_mino_index={dragging_mino_index} />
                     <BoardMino index={3} puzzle_data={puzzle_data} dragging_mino_index={dragging_mino_index} />
-                    <Laser index={0} laser_vertex={puzzle_data[2][0].vertex} />
-                    <Laser index={1} laser_vertex={puzzle_data[2][1].vertex} />
+                    <Laser index={0} laser_data={puzzle_data[2]} />
+                    <Laser index={1} laser_data={puzzle_data[2]} />
                     <OverlayMino index={0} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
                     <OverlayMino index={1} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
                     <OverlayMino index={2} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />

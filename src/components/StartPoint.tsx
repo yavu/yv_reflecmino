@@ -1,5 +1,5 @@
 import React from "react";
-import { Group, Rect } from "react-konva";
+import { Group, Line, Rect } from "react-konva";
 
 type StartPointProp = {
     pos: { x: number; y: number; },
@@ -7,12 +7,13 @@ type StartPointProp = {
 };
 
 const StartPoint = ({ pos, color }: StartPointProp): JSX.Element => {
-    // const fill_color = index === 1
-    //     ? "#fe9f56"
-    //     : "#14b3ff";
-    // const stroke_color = index === 1
-    //     ? "#ff801e"
-    //     : "#0099ff";
+    const laser_vertex = (() => {
+        if (pos.x === 0) { return [0, 0, 25, 0]; }
+        else if (pos.x === 6) { return [0, 0, -25, 0]; }
+        else if (pos.y === 0) { return [0, 0, 0, 25]; }
+        else { return [0, 0, 0, -25]; }
+    })();
+
     return (
         <Group
             x={pos.x * 50}
@@ -24,7 +25,16 @@ const StartPoint = ({ pos, color }: StartPointProp): JSX.Element => {
                 height={50}
                 fill={"#c2c8cc"}
                 stroke={"#586270"}
-                strokeWidth={4} />
+                strokeWidth={4}
+            />
+            <Line
+                points={laser_vertex}
+                stroke={color.stroke}
+                x={25}
+                y={25}
+                strokeWidth={8}
+                lineJoin={"bevel"}
+            />
             <Rect
                 width={34}
                 height={34}
@@ -33,13 +43,23 @@ const StartPoint = ({ pos, color }: StartPointProp): JSX.Element => {
                 fill={color.fill}
                 stroke={color.stroke}
                 strokeWidth={4}
-                lineJoin={"round"} />
+                lineJoin={"round"}
+            />
             <Rect
                 width={18}
                 height={18}
                 x={16}
                 y={16}
-                fill={"#ffffff"} />
+                fill={"#ffffff"}
+            />
+            <Line
+                points={laser_vertex}
+                stroke={"#ffffff"}
+                x={25}
+                y={25}
+                strokeWidth={3}
+                lineJoin={"round"}
+            />
         </Group>
     );
 }

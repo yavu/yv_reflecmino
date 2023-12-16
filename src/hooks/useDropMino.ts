@@ -8,6 +8,8 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
+            const hoge = e.target.position();
+            e.target.position(hoge);
             // e.target.visible(visible);
             setDraggingMinoIndex(undefined);
             setPuzzleData((prev_data) => {
@@ -15,9 +17,9 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
                     x: Math.round((e.target.x() + offset.x + 25) / 50),
                     y: Math.round((e.target.y() + offset.y + 25) / 50)
                 };
-                console.log(`cunv p | ${e.target.x()} : ${e.target.y()}`);
+                console.log(`pos    | ${e.target.x()} : ${e.target.y()}`);
                 console.log(`offset | ${offset.x} : ${offset.y}`);
-                console.log(`mino p | ${Math.round((e.target.x() + offset.x + 25) / 50)} : ${Math.round((e.target.y() + offset.y + 25) / 50)}`);
+                // console.log(`mino p | ${Math.round((e.target.x() + offset.x + 25) / 50)} : ${Math.round((e.target.y() + offset.y + 25) / 50)}`);
                 const picked_mino = prev_data[1][index];
                 const cell_pos = [
                     { x: mino_pos.x + picked_mino.cell[0].x, y: mino_pos.y + picked_mino.cell[0].y },
@@ -43,7 +45,7 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
                         return replace_2d_array(place_2, mino_pos.x + picked_mino.cell[2].x, mino_pos.y + picked_mino.cell[2].y, picked_mino.cell[2].type);
                     }
                     else {
-                        return prev_data[0];
+                        return structuredClone(prev_data[0]);
                     }
                 })();
                 // console.log([...new_board].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));

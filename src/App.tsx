@@ -9,6 +9,7 @@ import { generate } from './puzzle/generate';
 import Measure from 'react-measure'
 import { PuzzleData, puzzle_initial_data } from './puzzle/const';
 import Canvas from './components/Canvas';
+import icon from './images/icon.png';
 
 const App = (): JSX.Element => {
 
@@ -27,9 +28,9 @@ const App = (): JSX.Element => {
                 x: bounds?.width ?? 0,
                 y: bounds?.height ?? 0
             });
-        }, [setSize]
+        }, []
     );
-    // console.log(size);
+
     return (
         <>
             <header>
@@ -70,10 +71,6 @@ const App = (): JSX.Element => {
                             justifyContent="flex-start"
                             alignItems="flex-end"
                             alignContent="center"
-                            sx={{
-                                width: "100%",
-                                height: "100%"
-                            }}
                         >
                             <Paper
                                 elevation={5}
@@ -107,7 +104,7 @@ const App = (): JSX.Element => {
                                     )}
                                 </Measure>
                             </Paper>
-                            {/* <Paper
+                            <Paper
                                 elevation={5}
                                 sx={{
                                     padding: theme.spacing(1),
@@ -144,7 +141,7 @@ const App = (): JSX.Element => {
                                 >
                                     0:00
                                 </Typography>
-                            </Paper> */}
+                            </Paper>
                             {/* <Paper
                                 elevation={5}
                                 sx={{
@@ -152,7 +149,7 @@ const App = (): JSX.Element => {
                                     width: theme.spacing(43),
                                     height: theme.spacing(32.65),
                                     position: "absolute",
-                                    boxShadow:"none",
+                                    boxShadow: "none",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -160,15 +157,59 @@ const App = (): JSX.Element => {
                                     }
                                 }}
                             >
-                            <Typography
-                                variant="h3"
-                                sx={{
-                                    marginTop: theme.spacing(2.5),
-                                    textAlign: "center",
-                                }}
-                            >
-                                ReflecMino
-                            </Typography>
+                                < Grid
+                                    container
+                                    direction="column"
+                                    justifyContent="flex-start"
+                                    alignItems="center"
+                                >
+                                    <Box
+                                        sx={{
+                                            width: theme.spacing(5),
+                                            height: theme.spacing(5),
+                                            marginTop: theme.spacing(4),
+                                        }}
+                                    >
+                                        <img src={icon} alt={"icon"} width={"100%"} height={"100%"} />
+                                    </Box>
+                                    <Typography
+                                        variant="h3"
+                                        sx={{
+                                            marginTop: theme.spacing(3),
+                                        }}
+                                    >
+                                        ReflecMino
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        size="large"
+                                        sx={{
+                                            width: theme.spacing(10),
+                                            marginTop: theme.spacing(4),
+                                            backgroundColor: "#ffffff",
+                                            "&:hover": {
+                                                backgroundColor: "#40c0ff",
+                                            }
+                                        }}
+                                    >
+                                        Play
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        size="large"
+                                        sx={{
+                                            width: theme.spacing(10),
+                                            marginTop: theme.spacing(2),
+                                            color:"#ffffff",
+                                            borderColor:"#ffffff",
+                                            "&:hover": {
+                                                color: "#40c0ff",
+                                            }
+                                        }}
+                                    >
+                                        How to play
+                                    </Button>
+                                </Grid>
                             </Paper> */}
                             <TextField
                                 label="Seed"
@@ -191,5 +232,5 @@ const App = (): JSX.Element => {
     )
 }
 
-// export default React.memo(App);
-export default App;
+export default React.memo(App);
+// export default App;

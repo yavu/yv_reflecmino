@@ -1,36 +1,31 @@
 import React from "react";
 import { Group, Line } from "react-konva";
+import { LaserData } from "../puzzle/const";
 
 type LaserProp = {
     index: number,
-    laser_vertex: number[]
+    laser_data: LaserData[]
 };
 
-const Laser = ({ index, laser_vertex }: LaserProp): JSX.Element => {
+const Laser = ({ index, laser_data }: LaserProp): JSX.Element => {
+    const color = index === 0 ? "#0099ff" : "#ff801e";
+    const same = `${laser_data[0].board}` === `${laser_data[1].board}`;
     return (
         <>
             <Group
-                clipX={-10}
-                clipY={-10}
-                clipWidth={270}
-                clipHeight={270}
+                clipX={-2}
+                clipY={-2}
+                clipWidth={254}
+                clipHeight={254}
             >
                 <Line
-                    points={laser_vertex}
-                    stroke={index === 0 ? "#0099ff" : "#ff801e"}
+                    points={laser_data[index].vertex}
+                    stroke={same ? "#dddddd" : color}
                     strokeWidth={8}
                     lineJoin={"bevel"}
                 />
-            </Group>
-            <Group
-                clipX={-16}
-                clipY={-16}
-                clipWidth={282}
-                clipHeight={282}
-            >
                 <Line
-                    points={laser_vertex}
-                    // stroke={index === 0 ? "#14b3ff" : "#fe9f56"}
+                    points={laser_data[index].vertex}
                     stroke={"#ffffff"}
                     strokeWidth={3}
                     lineJoin={"round"}

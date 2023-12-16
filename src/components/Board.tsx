@@ -1,13 +1,13 @@
 import { Group, Line, Rect } from "react-konva";
 import StartPoint from "./StartPoint";
 import EndPoint from "./EndPoint";
-import { Laser } from "../puzzle/const";
+import { LaserData } from "../puzzle/const";
 import React from "react";
 
 
 
 type BoardProp = {
-    laser_data: Laser[]
+    laser_data: LaserData[]
 }
 
 const Board = ({ laser_data }: BoardProp): JSX.Element => {
