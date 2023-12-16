@@ -201,9 +201,15 @@ export function generate(seed: number): PuzzleData {
             }
         };
         const draw_1_data = draw_one();
+        console.log("==1==");
+        console.log(draw_1_data);
         const draw_2_data = draw_random_laser(draw_1_data[0], laser[1]);
+        console.log("==2==");
+        console.log(draw_2_data);
+        const mirror_count = [...draw_2_data[0]].join().replace(/[^\\/]/g, "").length;
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
-        if (laser_cell_count > 11) {
+        if (laser_cell_count > 11 && mirror_count === 6) {
+        // if (laser_cell_count > 11) {
             const s_drawn_board = (() => {
                 const draw_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
                 const draw_2 = replace_2d_array(draw_1, laser[1].x, laser[1].y, "s");

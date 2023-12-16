@@ -40,7 +40,7 @@ export function simulate_laser(board: string[][], start_pos: { x: number, y: num
         return [laser_board, x, y, move, [...data[4], x * 50 - 25, y * 50 - 25]];
     }
     const initial: Laser = [
-        empty_board,
+        replace_2d_array(empty_board, start_pos.x, start_pos.y, "￭"),
         start_pos.x,
         start_pos.y,
         (() => {

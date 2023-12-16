@@ -22,11 +22,12 @@ const App = (): JSX.Element => {
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
     const onResize = useCallback(
-        ({ bounds }: { bounds?: { width?: number, height?: number } }) =>
+        ({ bounds }: { bounds?: { width?: number, height?: number } }) => {
             setSize({
                 x: bounds?.width ?? 0,
                 y: bounds?.height ?? 0
-            }), []
+            });
+        }, [setSize]
     );
     // console.log(size);
     return (
