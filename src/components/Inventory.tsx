@@ -24,8 +24,8 @@ const Inventory = ({ on_drag_move, on_drag_end, x, children }: InventoryProp): J
                 height={150}
                 x={0}
                 y={0}
-                fill={"#48505e"}
-                stroke={"#414958"}
+                fill={"#3a414b"}
+                stroke={"#48505e"}
                 strokeWidth={4}
                 cornerRadius={2}
             />
@@ -34,8 +34,8 @@ const Inventory = ({ on_drag_move, on_drag_end, x, children }: InventoryProp): J
                 height={150}
                 x={167.3}
                 y={0}
-                fill={"#48505e"}
-                stroke={"#414958"}
+                fill={"#3a414b"}
+                stroke={"#48505e"}
                 strokeWidth={4}
                 cornerRadius={2}
             />
@@ -44,8 +44,8 @@ const Inventory = ({ on_drag_move, on_drag_end, x, children }: InventoryProp): J
                 height={150}
                 x={334.6}
                 y={0}
-                fill={"#48505e"}
-                stroke={"#414958"}
+                fill={"#3a414b"}
+                stroke={"#48505e"}
                 strokeWidth={4}
                 cornerRadius={2}
             />
@@ -54,8 +54,8 @@ const Inventory = ({ on_drag_move, on_drag_end, x, children }: InventoryProp): J
                 height={150}
                 x={501.9}
                 y={0}
-                fill={"#48505e"}
-                stroke={"#414958"}
+                fill={"#3a414b"}
+                stroke={"#48505e"}
                 strokeWidth={4}
                 cornerRadius={2}
             />

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Fab, IconButton, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, Divider, Fab, Paper, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
@@ -15,7 +15,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { format, isBefore } from 'date-fns';
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import shadows from '@mui/material/styles/shadows';
 
 const ReflecMino = (): JSX.Element => {
 
@@ -31,7 +30,7 @@ const ReflecMino = (): JSX.Element => {
         (value: Date | null) => {
             if (!Number.isNaN(value?.getTime()) && value !== null) {
                 const new_date = isBefore(value, new Date()) ? value : new Date();
-                console.log(format(new_date, "yyyyMMdd"));
+                // console.log(format(new_date, "yyyyMMdd"));
                 setDate(new_date);
                 // setSeed(Number(format(new_date, "yyyyMMdd")));
             }
@@ -197,7 +196,8 @@ const ReflecMino = (): JSX.Element => {
                                 sx={{
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
-                                    height: theme.spacing(32.65),
+                                    height: complete ? theme.spacing(22) : theme.spacing(32.65),
+                                    transition: "height 1s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -314,6 +314,21 @@ const ReflecMino = (): JSX.Element => {
                                         How to play
                                     </Button>
                                 </Grid>
+                            </Paper>
+                            <Paper
+                                elevation={5}
+                                sx={{
+                                    width: theme.spacing(43),
+                                    marginBottom: theme.spacing(1),
+                                    padding: complete ? theme.spacing(1) : "0px",
+                                    height: complete ? theme.spacing(9.6) : "0px",
+                                    marginTop: complete ? theme.spacing(1) : "0px",
+                                    transition: "height 1s, padding 1s, margin-top 1s",
+                                    "@media screen and (max-width:704px)": {
+                                        width: theme.spacing(22),
+                                    }
+                                }}
+                            >
                             </Paper>
                         </Grid>
                     </Box>

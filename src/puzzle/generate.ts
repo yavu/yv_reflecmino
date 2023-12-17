@@ -202,11 +202,11 @@ export function generate(seed: number): PuzzleData {
             }
         };
         const draw_1_data = draw_one();
-        console.log("==1==");
-        console.log(draw_1_data);
+        // console.log("==1==");
+        // console.log(draw_1_data);
         const draw_2_data = draw_random_laser(draw_1_data[0], laser[1]);
-        console.log("==2==");
-        console.log(draw_2_data);
+        // console.log("==2==");
+        // console.log(draw_2_data);
         const mirror_count = [...draw_2_data[0]].join().replace(/[^\\/]/g, "").length;
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
         if (laser_cell_count > 11 && mirror_count === 6) {
@@ -322,8 +322,8 @@ export function generate(seed: number): PuzzleData {
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length !== 4, return_data];
     });
 
-    console.log("==generate==");
-    console.log(puzzle_data[0].map(y => y.map(e => e.length === 1 ? ` ${e}` : e)).join("\n").replace(/,/g, " "));
+    // console.log("==generate==");
+    // console.log(puzzle_data[0].map(y => y.map(e => e.length === 1 ? ` ${e}` : e)).join("\n").replace(/,/g, " "));
 
     const laser_board = [
         simulate_laser(empty_board, { x: laser[0].x, y: laser[0].y }),

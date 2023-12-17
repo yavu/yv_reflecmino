@@ -8,17 +8,14 @@ const useDropMino = (index: number, offset: { x: number, y: number }, setPuzzleD
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
-            const hoge = e.target.position();
-            e.target.position(hoge);
-            // e.target.visible(visible);
             setDraggingMinoIndex(undefined);
             setPuzzleData((prev_data) => {
                 const mino_pos = {
                     x: Math.round((e.target.x() + offset.x + 25) / 50),
                     y: Math.round((e.target.y() + offset.y + 25) / 50)
                 };
-                console.log(`pos    | ${e.target.x()} : ${e.target.y()}`);
-                console.log(`offset | ${offset.x} : ${offset.y}`);
+                // console.log(`pos    | ${e.target.x()} : ${e.target.y()}`);
+                // console.log(`offset | ${offset.x} : ${offset.y}`);
                 // console.log(`mino p | ${Math.round((e.target.x() + offset.x + 25) / 50)} : ${Math.round((e.target.y() + offset.y + 25) / 50)}`);
                 const picked_mino = prev_data[1][index];
                 const cell_pos = [
