@@ -54,13 +54,11 @@ export const gh_dark = createTheme({
         },
         MuiButton: {
             styleOverrides: {
-                root: ({ ownerState }) => ({
-                    ...(ownerState.size === "medium" && {
-                        boxSizing: "border-box",
-                        height: "40px",
-                        paddingTop: "8px",
-                    })
-                })
+                root: {
+                    boxSizing: "border-box",
+                    height: "40px",
+                    paddingTop: "8px",
+                }
             }
         },
         MuiToggleButtonGroup: {

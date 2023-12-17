@@ -1,16 +1,13 @@
 import { Group, Line, Rect } from "react-konva";
-import StartPoint from "./StartPoint";
-import EndPoint from "./EndPoint";
-import { LaserData } from "../puzzle/const";
 import React from "react";
 
 
 
 type BoardProp = {
-    laser_data: LaserData[]
+    children: JSX.Element
 }
 
-const Board = ({ laser_data }: BoardProp): JSX.Element => {
+const Board = ({ children }: BoardProp): JSX.Element => {
     return (
         <Group
             offset={{ x: -35, y: -35 }}
@@ -33,10 +30,7 @@ const Board = ({ laser_data }: BoardProp): JSX.Element => {
                 clipWidth={312}
                 clipHeight={312}
             >
-                <StartPoint pos={laser_data[0].start} color={{ fill: "#14b3ff", stroke: "#0099ff" }} />
-                <StartPoint pos={laser_data[1].start} color={{ fill: "#fe9f56", stroke: "#ff801e" }} />
-                <EndPoint pos={laser_data[0].end} laser_data={laser_data} />
-                <EndPoint pos={laser_data[1].end} laser_data={laser_data} />
+                {children}
             </Group>
             <Rect
                 PreventDefault={false}

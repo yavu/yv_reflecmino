@@ -313,7 +313,7 @@ export function generate(seed: number): PuzzleData {
     // ボードの二次元配列、ミノのデータ、レーザーの開始地点、終了地点を返す関数
     const puzzle_data = while_f(initial, s => {
         const laser_drawn_board = draw_two_laser();
-        const laser_cells: { x: number, y: number }[] = [...laser_drawn_board[0]].map((y, y_index) => y.map((x, x_index) => x === "\\" || x === "/" || x === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
+        const laser_cells: { x: number, y: number }[] = [...laser_drawn_board[0]].map((y, y_index) => y.map((e, x_index) => e === "\\" || e === "/" || e === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
         const place_1 = place_random_mino([laser_drawn_board[0], laser_cells, []]);
         const place_2 = place_random_mino(place_1);
         const place_3 = place_random_mino(place_2);
@@ -323,18 +323,14 @@ export function generate(seed: number): PuzzleData {
     });
 
     console.log("==generate==");
-    console.log(puzzle_data[0].map(y => y.map(x => x.length === 1 ? ` ${x}` : x)).join("\n").replace(/,/g, " "));
-    // console.log(puzzle_data[1]);
-    // console.log(puzzle_data[2]);
-    // console.log(puzzle_data[3]);
-    // console.log(puzzle_data);
+    console.log(puzzle_data[0].map(y => y.map(e => e.length === 1 ? ` ${e}` : e)).join("\n").replace(/,/g, " "));
 
     const laser_board = [
         simulate_laser(empty_board, { x: laser[0].x, y: laser[0].y }),
         simulate_laser(empty_board, { x: laser[1].x, y: laser[1].y })
     ]
     return [
-        empty_board,
+        [...puzzle_data[0]].map(y => y.map(e => (e !== "#" && e !== "s" && e !== "e") ? " " : e)),
         puzzle_data[1],
         [
             {
