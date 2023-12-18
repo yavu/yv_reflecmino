@@ -1,20 +1,22 @@
 import { Group, Rect } from "react-konva";
-import React from "react";
+import React, { useCallback } from "react";
+import useInventoryDrag from "../hooks/useInventoryDrag";
 import { KonvaEventObject } from "konva/lib/Node";
 
 type InventoryProp = {
-    on_drag_move: (e: KonvaEventObject<DragEvent>) => void,
-    on_drag_end: (e: KonvaEventObject<DragEvent>) => void,
+    canvas_width: number,
     x: number,
-    children: JSX.Element
+    children: JSX.Element,
+    setInventoryX: React.Dispatch<React.SetStateAction<number>>
 }
 
-const Inventory = ({ on_drag_move, on_drag_end, x, children }: InventoryProp): JSX.Element => {
+const Inventory = ({ canvas_width, x, setInventoryX, children }: InventoryProp): JSX.Element => {
+    const onDragEnd = useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()), [setInventoryX]);
     return (
         <Group
             draggable
-            onDragMove={on_drag_move}
-            onDragEnd={on_drag_end}
+            onDragMove={useInventoryDrag(canvas_width)}
+            onDragEnd={onDragEnd}
             x={x}
             y={338}
             offsetX={-2}

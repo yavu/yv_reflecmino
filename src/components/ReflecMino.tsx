@@ -62,9 +62,12 @@ const ReflecMino = (): JSX.Element => {
 
     const return_to_top = useCallback(
         () => {
-            setPuzzleData(puzzle_initial_data);
             setPlaying(false);
-            setTimerEnabled(false);
+            window.setTimeout(() => {
+                setPuzzleData(puzzle_initial_data);
+                setSolved(false);
+                setTimerEnabled(false);
+            }, 500);
         }, []
     )
 
@@ -143,16 +146,17 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
+                                    zIndex: "3",
                                     padding: theme.spacing(1),
                                     marginTop: theme.spacing(1),
                                     marginRight: theme.spacing(1),
                                     position: "absolute",
                                     width: theme.spacing(20),
                                     height: theme.spacing(20),
-                                    display: playing ? "block" : "none",
+                                    display: solved ? "block" : "none",
+                                    boxShadow: solved ? undefined : "none",
                                     backgroundImage: "linear-gradient(135deg, rgba(255, 128, 30, 1) 15%, rgba(119, 131, 149, 1) 50%, rgba(0, 153, 255, 1) 85%)",
                                     "@media screen and (max-width:704px)": {
-                                        position: "static",
                                         width: theme.spacing(22),
                                         height: theme.spacing(16),
                                         marginLeft: 0,
@@ -164,17 +168,19 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
+                                    zIndex: "3",
                                     padding: theme.spacing(1),
                                     marginTop: theme.spacing(1),
                                     marginRight: theme.spacing(1),
                                     position: "absolute",
                                     width: theme.spacing(20),
                                     height: theme.spacing(20),
-                                    display: playing ? "block" : "none",
-                                    boxShadow: "none",
+                                    display: playing || solved ? "block" : "none",
+                                    boxShadow: solved ? "none" : undefined,
                                     backgroundColor: solved ? "#00000000" : undefined,
                                     transition: "background-color 1s",
                                     "@media screen and (max-width:704px)": {
+                                        position: "static",
                                         width: theme.spacing(22),
                                         height: theme.spacing(16),
                                         marginLeft: 0,
@@ -199,6 +205,7 @@ const ReflecMino = (): JSX.Element => {
                                         variant={"extended"}
                                         color={"primary"}
                                         sx={{
+                                            zIndex: "1",
                                             display: solved ? "none" : "inline-flex",
                                             height: theme.spacing(2),
                                             padding: "0",
@@ -260,8 +267,8 @@ const ReflecMino = (): JSX.Element => {
                                 sx={{
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
-                                    height: solved ? theme.spacing(22) : theme.spacing(32.65),
-                                    transition: playing ? "height 1s" : undefined,
+                                    height: playing && solved ? theme.spacing(22) : theme.spacing(32.65),
+                                    transition: "height 1s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -276,6 +283,13 @@ const ReflecMino = (): JSX.Element => {
                                             width={"100%"}
                                             height={"100%"}
                                         >
+                                            <Box
+                                                zIndex={2}
+                                                position={"absolute"}
+                                                width={size.x}
+                                                height={size.y}
+                                                display={solved ? "block" : "none"}
+                                            />
                                             <Canvas
                                                 width={size.x}
                                                 height={size.y}
@@ -291,13 +305,15 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
-                                    zIndex: "2",
+                                    zIndex: "4",
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
                                     height: theme.spacing(32.65),
                                     position: "absolute",
                                     boxShadow: "none",
-                                    display: playing ? "none" : "block",
+                                    visibility: playing ? "hidden" : "visible",
+                                    opacity: playing ? "0" : "1",
+                                    transition: "opacity 0.8s, visibility 0.8s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -330,6 +346,7 @@ const ReflecMino = (): JSX.Element => {
                                     </Typography>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
+                                            disabled={playing || solved}
                                             format={"yyyy/MM/dd"}
                                             slotProps={{
                                                 textField: {
@@ -347,6 +364,7 @@ const ReflecMino = (): JSX.Element => {
                                         />
                                     </LocalizationProvider>
                                     <Button
+                                        disabled={playing || solved}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
@@ -362,6 +380,7 @@ const ReflecMino = (): JSX.Element => {
                                         Play
                                     </Button>
                                     <Button
+                                        disabled={playing || solved}
                                         variant={"outlined"}
                                         size={"large"}
                                         sx={{
@@ -383,14 +402,14 @@ const ReflecMino = (): JSX.Element => {
                                 sx={{
                                     overflow: "hidden",
                                     width: theme.spacing(43),
-                                    padding: `${solved ? theme.spacing(1) : "0px"} ${theme.spacing(1)}`,
-                                    height: solved ? theme.spacing(4.5) : "0px",
+                                    padding: `${playing && solved ? theme.spacing(1) : "0px"} ${theme.spacing(1)}`,
+                                    height: playing && solved ? theme.spacing(4.5) : "0px",
                                     marginTop: theme.spacing(1),
-                                    marginBottom: solved ? theme.spacing(1) : "0px",
-                                    transition: playing ?  "height 1s, padding 1s, margin-bottom 1s" : undefined,
+                                    marginBottom: playing && solved ? theme.spacing(1) : "0px",
+                                    transition: playing ? "height 1s, padding 1s, margin-bottom 1s" : "height 0.6s, padding 0.6s, margin-bottom 0.6s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
-                                        height: solved ? theme.spacing(8) : "0px",
+                                        height: playing && solved ? theme.spacing(8) : "0px",
                                     }
                                 }}
                             >

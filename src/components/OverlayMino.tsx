@@ -5,6 +5,7 @@ import { Group, Line } from 'react-konva';
 import Cell from './Cell';
 import usePickupMino from '../hooks/usePickupMino';
 import useDropMino from '../hooks/useDropMino';
+import { Portal } from 'react-konva-utils';
 
 type OverlayMinoProp = {
     index: number,
@@ -23,32 +24,38 @@ const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, s
             y: (picked_mino.pos.y - 1) * 50 + 25
         }
         : undefined;
-    const onDragEnd = useDropMino(index, { x: 0, y: 0 }, setPuzzleData, setDraggingMinoIndex, pos, false);
+    const onDragMove = useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, []);
+    const onDragEnd = useDropMino(index, { x: 0, y: 0 }, setPuzzleData, setDraggingMinoIndex, pos);
 
     return (
-        <Group
-            draggable
-            onDragStart={onDragStart}
-            onDragMove={useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, [])}
-            onDragEnd={onDragEnd}
-            x={pos?.x}
-            y={pos?.y}
-            offset={{ x: 25, y: 25 }}
-            visible={picked_mino.pos !== undefined}
+        <Portal
+            selector={".board_picked"}
+            enabled={dragging_mino_index === index}
         >
-            <Line
-                points={picked_mino.vertex}
-                fill={"#c2c8cc"}
-                closed={true}
-                stroke={"#414958"}
-                strokeWidth={4}
-                lineJoin={"round"}
-                opacity={dragging_mino_index === index ? 1 : 0}
-            />
-            <Cell data={picked_mino.cell[0]} color={undefined} rect_visible={dragging_mino_index === index} />
-            <Cell data={picked_mino.cell[1]} color={undefined} rect_visible={dragging_mino_index === index} />
-            <Cell data={picked_mino.cell[2]} color={undefined} rect_visible={dragging_mino_index === index} />
-        </Group >
+            <Group
+                draggable
+                onDragStart={onDragStart}
+                onDragMove={onDragMove}
+                onDragEnd={onDragEnd}
+                x={pos?.x}
+                y={pos?.y}
+                offset={{ x: 25, y: 25 }}
+                visible={picked_mino.pos !== undefined}
+            >
+                <Line
+                    points={picked_mino.vertex}
+                    fill={"#c2c8cc"}
+                    closed={true}
+                    stroke={"#414958"}
+                    strokeWidth={4}
+                    lineJoin={"round"}
+                    opacity={dragging_mino_index === index ? 1 : 0}
+                />
+                <Cell data={picked_mino.cell[0]} color={undefined} rect_visible={dragging_mino_index === index} />
+                <Cell data={picked_mino.cell[1]} color={undefined} rect_visible={dragging_mino_index === index} />
+                <Cell data={picked_mino.cell[2]} color={undefined} rect_visible={dragging_mino_index === index} />
+            </Group >
+        </Portal>
     );
 }
 

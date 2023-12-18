@@ -15,14 +15,14 @@ const Timer = ({ enabled, theme, solved, playing }: TimerProp): JSX.Element => {
     React.useEffect(() => {
         if (enabled) {
             const id = setInterval(() => {
-                setTime(t => t + 1);
+                setTime(t => t < 5999 ? t + 1 : t);
             }, 1000);
             return () => clearInterval(id);
         }
-        else if (!playing) {
+        else if (!playing && !solved) {
             setTime(0);
         }
-    }, [enabled, playing]);
+    }, [enabled, playing, solved]);
 
     const m = Math.floor(time / 60);
     const s = time % 60;

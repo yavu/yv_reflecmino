@@ -25,6 +25,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-konva": "^18.2.10",
+    "react-konva-utils": "^1.0.5",
     "react-measure": "^2.5.2",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",

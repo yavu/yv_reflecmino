@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Stage, Layer, Group, Line } from 'react-konva';
 import { PuzzleData } from '../puzzle/const';
 import Laser from './Laser';
@@ -6,8 +6,6 @@ import BoardMino from './BoardMino';
 import Board from './Board';
 import Inventory from './Inventory';
 import InventoryMino from './InventoryMino';
-import useInventoryDrag from '../hooks/useInventoryDrag';
-import { KonvaEventObject } from 'konva/lib/Node';
 import OverlayMino from './OverlayMino';
 import StartPoint from "./StartPoint";
 import EndPoint from "./EndPoint";
@@ -52,17 +50,17 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                     }
                 />
                 <Inventory
-                    on_drag_move={useInventoryDrag(width)}
-                    on_drag_end={useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()), [setInventoryX])}
-                    x={width < height ? inventory_x : 0}
+                    canvas_width={width}
+                    x={width > height ? 0 : inventory_x}
+                    setInventoryX={setInventoryX}
                     children={
                         <Group
                             visible={timer_enabled}
                         >
-                            <InventoryMino index={0} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={1} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={2} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={3} drop_offset={{ x: width < height ? inventory_x - 33 : -33, y: 303 }} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={0} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={1} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={2} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
+                            <InventoryMino index={3} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
                         </Group>
                     }
                 />
@@ -105,6 +103,14 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                         opacity={0.5} />
                 </Group>
             </Layer>
+            <Layer
+                name={"inventory_picked"}
+                offset={{ x: width > height ? 0 : -inventory_x, y: -338 }}
+            />
+            <Layer
+                name={"board_picked"}
+                offset={{ x: -35, y: -35 }}
+            />
         </Stage>
     );
 }
