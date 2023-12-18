@@ -17,14 +17,14 @@ type CanvasProp = {
     height: number,
     puzzle_data: PuzzleData,
     setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
-    setComplete: React.Dispatch<React.SetStateAction<boolean>>,
+    setSolved: React.Dispatch<React.SetStateAction<boolean>>,
     timer_enabled: boolean
 };
-const Canvas = ({ width, height, puzzle_data, setPuzzleData, setComplete, timer_enabled }: CanvasProp) => {
+const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_enabled }: CanvasProp) => {
     const [dragging_mino_index, setDraggingMinoIndex] = useState<number | undefined>(undefined);
     const [inventory_x, setInventoryX] = useState<number>(0);
     const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
-    setComplete(
+    setSolved(
         !non_activated_cells.flat().includes("￭") &&
         puzzle_data[1][0].pos !== undefined &&
         puzzle_data[1][1].pos !== undefined &&

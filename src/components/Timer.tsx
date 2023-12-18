@@ -3,10 +3,12 @@ import React from 'react';
 
 type TimerProp = {
     enabled: boolean,
-    theme: Theme
+    theme: Theme,
+    solved: boolean,
+    playing: boolean
 }
 
-const Timer = ({ enabled, theme }: TimerProp): JSX.Element => {
+const Timer = ({ enabled, theme, solved, playing }: TimerProp): JSX.Element => {
 
     const [time, setTime] = React.useState(0);
 
@@ -17,14 +19,18 @@ const Timer = ({ enabled, theme }: TimerProp): JSX.Element => {
             }, 1000);
             return () => clearInterval(id);
         }
-    }, [enabled]);
+        else if (!playing) {
+            setTime(0);
+        }
+    }, [enabled, playing]);
 
     const m = Math.floor(time / 60);
     const s = time % 60;
 
     return (
         <Typography
-            variant="h3"
+            id={"timer"}
+            variant={"h3"}
             sx={{
                 width: theme.spacing(12),
                 height: theme.spacing(5),
@@ -32,7 +38,9 @@ const Timer = ({ enabled, theme }: TimerProp): JSX.Element => {
                 margin: `${theme.spacing(3)} auto 0 auto`,
                 textAlign: "center",
                 borderRadius: "4px 4px 0 0",
-                border: "1px solid #ffffff55",
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: solved ? "#ffffff" : "#d9dde0",
                 borderBottomWidth: "0",
                 "@media screen and (max-width:704px)": {
                     marginTop: theme.spacing(1)

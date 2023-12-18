@@ -15,29 +15,23 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { format, isBefore } from 'date-fns';
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import ShareIcon from '@mui/icons-material/Share'
+import HomeIcon from '@mui/icons-material/Home'
 
 const ReflecMino = (): JSX.Element => {
-
-    // const [seed, setSeed] = useState<number>(Number(format(new Date(), "yyyyMMdd")));
-    // const HandleTextChange = useCallback(
-    //     (event: React.ChangeEvent<HTMLInputElement>) => {
-    //         setSeed(Number(event.target.value));
-    //     }, []
-    // );
 
     const [date, setDate] = useState<Date>(new Date());
     const HandleDayChange = useCallback(
         (value: Date | null) => {
             if (!Number.isNaN(value?.getTime()) && value !== null) {
                 const new_date = isBefore(value, new Date()) ? value : new Date();
-                // console.log(format(new_date, "yyyyMMdd"));
+                console.log(format(new_date, "yyyyMMdd"));
                 setDate(new_date);
-                // setSeed(Number(format(new_date, "yyyyMMdd")));
             }
         }, []
     );
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial_data);
-    const [complete, setComplete] = useState<boolean>(false);
+    const [solved, setSolved] = useState<boolean>(false);
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
     const onResize = useCallback(
@@ -48,6 +42,31 @@ const ReflecMino = (): JSX.Element => {
             });
         }, []
     );
+
+    const copy_result_to_clipboard = useCallback(
+        () => {
+            const text = [
+                `ReflecMino ${format(date, "yyyy/MM/dd")}`,
+                `Solved in ${document.getElementById("timer")?.textContent}`,
+                `${[...puzzle_data[1]].map(mino => mino.cell.map(cell => cell.type)).flat().filter(e => e !== "￭").join(" ")}`,
+                `https://yavu.github.io/yv_reflecmino/`
+            ].join("\n");
+            navigator.clipboard.writeText(text)
+                .then(function () {
+                    console.log("Async: Copying to clipboard was successful");
+                }, function (err) {
+                    console.error("Async: Could not copy text: ", err);
+                });
+        }, [date, puzzle_data]
+    );
+
+    const return_to_top = useCallback(
+        () => {
+            setPuzzleData(puzzle_initial_data);
+            setPlaying(false);
+            setTimerEnabled(false);
+        }, []
+    )
 
     const [playing, setPlaying] = useState<boolean>(false);
     const [timer_enabled, setTimerEnabled] = useState<boolean>(false);
@@ -71,18 +90,16 @@ const ReflecMino = (): JSX.Element => {
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     <Box
+                        width={theme.spacing(43)}
+                        margin={`${theme.spacing(1)} auto`}
                         sx={{
-                            margin: `${theme.spacing(1)} auto`,
-                            width: theme.spacing(43),
                             "@media screen and (max-width:704px)": {
                                 width: theme.spacing(22)
                             }
                         }}>
                         <Typography
-                            variant="h4"
-                            sx={{
-                                marginLeft: theme.spacing(0.5)
-                            }}
+                            variant={"h4"}
+                            marginLeft={theme.spacing(0.5)}
                         >
                             ReflecMino
                         </Typography>
@@ -94,12 +111,35 @@ const ReflecMino = (): JSX.Element => {
                         />
                         < Grid
                             container
-                            direction="column"
-                            flex-wrap="nowrap"
-                            justifyContent="flex-start"
-                            alignItems="flex-end"
-                            alignContent="center"
+                            direction={"column"}
+                            flex-wrap={"nowrap"}
+                            justifyContent={"flex-start"}
+                            alignItems={"flex-end"}
+                            alignContent={"center"}
                         >
+                            <Typography
+                                zIndex={"1"}
+                                variant={"h4"}
+                                color={"#ffffff"}
+                                textAlign={"center"}
+                                display={timer_enabled ? "none" : "block"}
+                                height={"46px"}
+                                width={"146px"}
+                                paddingTop={"4px"}
+                                marginTop={"153.4px"}
+                                marginRight={"439px"}
+                                borderRadius={"2px"}
+                                position={"absolute"}
+                                sx={{
+                                    backgroundColor: "#32373f",
+                                    "@media screen and (max-width:704px)": {
+                                        marginTop: "441.2px",
+                                        marginRight: "103px"
+                                    }
+                                }}
+                            >
+                                Pause
+                            </Typography>
                             <Paper
                                 elevation={5}
                                 sx={{
@@ -110,10 +150,31 @@ const ReflecMino = (): JSX.Element => {
                                     width: theme.spacing(20),
                                     height: theme.spacing(20),
                                     display: playing ? "block" : "none",
-                                    backgroundColor: complete ? theme.palette.primary.main : undefined,
-                                    transition: "background-color 1s",
+                                    backgroundImage: "linear-gradient(135deg, rgba(255, 128, 30, 1) 15%, rgba(119, 131, 149, 1) 50%, rgba(0, 153, 255, 1) 85%)",
                                     "@media screen and (max-width:704px)": {
                                         position: "static",
+                                        width: theme.spacing(22),
+                                        height: theme.spacing(16),
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        marginBottom: theme.spacing(1),
+                                    },
+                                }}
+                            />
+                            <Paper
+                                elevation={5}
+                                sx={{
+                                    padding: theme.spacing(1),
+                                    marginTop: theme.spacing(1),
+                                    marginRight: theme.spacing(1),
+                                    position: "absolute",
+                                    width: theme.spacing(20),
+                                    height: theme.spacing(20),
+                                    display: playing ? "block" : "none",
+                                    boxShadow: "none",
+                                    backgroundColor: solved ? "#00000000" : undefined,
+                                    transition: "background-color 1s",
+                                    "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         height: theme.spacing(16),
                                         marginLeft: 0,
@@ -124,16 +185,21 @@ const ReflecMino = (): JSX.Element => {
                             >
                                 < Grid
                                     container
-                                    direction="column"
-                                    justifyContent="flex-start"
-                                    alignItems="center"
+                                    direction={"column"}
+                                    justifyContent={"flex-start"}
+                                    alignItems={"center"}
                                 >
-                                    <Timer enabled={timer_enabled && !complete} theme={theme} />
+                                    <Timer
+                                        enabled={timer_enabled && !solved}
+                                        theme={theme}
+                                        solved={solved}
+                                        playing={playing}
+                                    />
                                     <Fab
-                                        variant="extended"
-                                        color="primary"
+                                        variant={"extended"}
+                                        color={"primary"}
                                         sx={{
-                                            display: complete ? "none" : "inline-flex",
+                                            display: solved ? "none" : "inline-flex",
                                             height: theme.spacing(2),
                                             padding: "0",
                                             backgroundColor: "#d9dde0",
@@ -162,25 +228,23 @@ const ReflecMino = (): JSX.Element => {
                                         />
                                     </Fab>
                                     <Typography
-                                        variant="h6"
-                                        color="primary"
-                                        textAlign="center"
+                                        variant={"h6"}
+                                        color={"#778395FF"}
+                                        textAlign={"center"}
+                                        display={solved ? "block" : "none"}
+                                        height={theme.spacing(2)}
+                                        width={theme.spacing(12)}
+                                        padding={"auto"}
+                                        borderRadius={"0 0 4px 4px"}
                                         sx={{
-                                            display: complete ? "block" : "none",
-                                            height: theme.spacing(2),
-                                            width: theme.spacing(12),
-                                            padding: "auto",
-                                            backgroundColor: "#ffffff",
-                                            borderRadius: "0 0 4px 4px"
+                                            backgroundColor: "#ffffff"
                                         }}
                                     >
                                         Solved
                                     </Typography>
                                     <Typography
                                         variant="h6"
-                                        sx={{
-                                            marginTop: theme.spacing(1),
-                                        }}
+                                        marginTop={theme.spacing(1)}
                                     >
                                         Challenge for
                                     </Typography>
@@ -196,8 +260,8 @@ const ReflecMino = (): JSX.Element => {
                                 sx={{
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
-                                    height: complete ? theme.spacing(22) : theme.spacing(32.65),
-                                    transition: "height 1s",
+                                    height: solved ? theme.spacing(22) : theme.spacing(32.65),
+                                    transition: playing ? "height 1s" : undefined,
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -209,17 +273,15 @@ const ReflecMino = (): JSX.Element => {
                                     {({ measureRef }) => (
                                         <Box
                                             ref={measureRef}
-                                            sx={{
-                                                width: "100%",
-                                                height: "100%"
-                                            }}
+                                            width={"100%"}
+                                            height={"100%"}
                                         >
                                             <Canvas
                                                 width={size.x}
                                                 height={size.y}
                                                 puzzle_data={puzzle_data}
                                                 setPuzzleData={setPuzzleData}
-                                                setComplete={setComplete}
+                                                setSolved={setSolved}
                                                 timer_enabled={timer_enabled}
                                             />
                                         </Box>
@@ -229,6 +291,7 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
+                                    zIndex: "2",
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
                                     height: theme.spacing(32.65),
@@ -244,30 +307,30 @@ const ReflecMino = (): JSX.Element => {
                             >
                                 < Grid
                                     container
-                                    direction="column"
-                                    justifyContent="flex-start"
-                                    alignItems="center"
+                                    direction={"column"}
+                                    justifyContent={"flex-start"}
+                                    alignItems={"center"}
                                 >
                                     <Box
-                                        sx={{
-                                            width: theme.spacing(5),
-                                            height: theme.spacing(5),
-                                            marginTop: theme.spacing(3),
-                                        }}
+                                        width={theme.spacing(5)}
+                                        height={theme.spacing(5)}
+                                        marginTop={theme.spacing(3)}
                                     >
-                                        <img src={icon} alt={"icon"} width={"100%"} height={"100%"} />
+                                        <img
+                                            src={icon}
+                                            alt={"icon"}
+                                            width={"100%"}
+                                            height={"100%"} />
                                     </Box>
                                     <Typography
                                         variant="h3"
-                                        sx={{
-                                            marginTop: theme.spacing(2),
-                                        }}
+                                        marginTop={theme.spacing(2)}
                                     >
                                         ReflecMino
                                     </Typography>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
-                                            format="yyyy/MM/dd"
+                                            format={"yyyy/MM/dd"}
                                             slotProps={{
                                                 textField: {
                                                     variant: 'outlined',
@@ -284,8 +347,8 @@ const ReflecMino = (): JSX.Element => {
                                         />
                                     </LocalizationProvider>
                                     <Button
-                                        variant="contained"
-                                        size="large"
+                                        variant={"contained"}
+                                        size={"large"}
                                         sx={{
                                             width: theme.spacing(10),
                                             marginTop: theme.spacing(3),
@@ -299,8 +362,8 @@ const ReflecMino = (): JSX.Element => {
                                         Play
                                     </Button>
                                     <Button
-                                        variant="outlined"
-                                        size="large"
+                                        variant={"outlined"}
+                                        size={"large"}
                                         sx={{
                                             width: theme.spacing(10),
                                             marginTop: theme.spacing(1),
@@ -318,17 +381,74 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
+                                    overflow: "hidden",
                                     width: theme.spacing(43),
-                                    marginBottom: theme.spacing(1),
-                                    padding: complete ? theme.spacing(1) : "0px",
-                                    height: complete ? theme.spacing(9.6) : "0px",
-                                    marginTop: complete ? theme.spacing(1) : "0px",
-                                    transition: "height 1s, padding 1s, margin-top 1s",
+                                    padding: `${solved ? theme.spacing(1) : "0px"} ${theme.spacing(1)}`,
+                                    height: solved ? theme.spacing(4.5) : "0px",
+                                    marginTop: theme.spacing(1),
+                                    marginBottom: solved ? theme.spacing(1) : "0px",
+                                    transition: playing ?  "height 1s, padding 1s, margin-bottom 1s" : undefined,
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
+                                        height: solved ? theme.spacing(8) : "0px",
                                     }
                                 }}
                             >
+                                < Grid
+                                    container
+                                    flexDirection={"row"}
+                                    flexWrap={"nowrap"}
+                                    justifyContent={"space-between"}
+                                    alignItems={"center"}
+                                    alignContent={"center"}
+                                    width={"100%"}
+                                    height={"100%"}
+                                    sx={{
+                                        "@media screen and (max-width:704px)": {
+                                            flexDirection: "column",
+                                            gap: theme.spacing(1)
+                                        }
+                                    }}
+                                >
+                                    <Button
+                                        variant={"outlined"}
+                                        size={"large"}
+                                        sx={{
+                                            width: theme.spacing(20),
+                                            color: "#ffffff",
+                                            borderColor: "#ffffff",
+                                            "@media screen and (max-width:704px)": {
+                                                width: theme.spacing(12)
+                                            },
+                                            "&:hover": {
+                                                color: "#40c0ff",
+                                            }
+                                        }}
+                                        onClick={copy_result_to_clipboard}
+                                        endIcon={<ShareIcon />}
+                                    >
+                                        Share
+                                    </Button>
+                                    <Button
+                                        variant={"outlined"}
+                                        size={"large"}
+                                        sx={{
+                                            width: theme.spacing(20),
+                                            color: "#ffffff",
+                                            borderColor: "#ffffff",
+                                            "@media screen and (max-width:704px)": {
+                                                width: theme.spacing(12)
+                                            },
+                                            "&:hover": {
+                                                color: "#40c0ff",
+                                            }
+                                        }}
+                                        onClick={return_to_top}
+                                        endIcon={<HomeIcon />}
+                                    >
+                                        Top
+                                    </Button>
+                                </Grid>
                             </Paper>
                         </Grid>
                     </Box>
