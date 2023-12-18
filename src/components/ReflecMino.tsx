@@ -8,7 +8,8 @@ import { generate } from '../puzzle/generate';
 import Measure from 'react-measure'
 import { PuzzleData, puzzle_initial_data } from '../puzzle/const';
 import Canvas from './Canvas';
-import icon from '../images/icon.png';
+import icon_img from '../images/icon.png';
+import h2p1_img from '../images/howtoplay_1.png';
 import Timer from './Timer';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -46,10 +47,9 @@ const ReflecMino = (): JSX.Element => {
     const copy_result_to_clipboard = useCallback(
         () => {
             const text = [
-                `ReflecMino ${format(date, "yyyy/MM/dd")}`,
-                `Solved in ${document.getElementById("timer")?.textContent}`,
-                `${[...puzzle_data[1]].map(mino => mino.cell.map(cell => cell.type)).flat().filter(e => e !== "￭").join(" ")}`,
-                `https://yavu.github.io/yv_reflecmino/`
+                `⬛🟧⬛ ReflecMino ${format(date, "yyyy/MM/dd")}`,
+                `🟧⬜🟦 https://yavu.github.io/yv_reflecmino/`,
+                `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
             ].join("\n");
             navigator.clipboard.writeText(text)
                 .then(function () {
@@ -57,18 +57,24 @@ const ReflecMino = (): JSX.Element => {
                 }, function (err) {
                     console.error("Async: Could not copy text: ", err);
                 });
-        }, [date, puzzle_data]
+        }, [date]
     );
 
     const return_to_top = useCallback(
         () => {
-            setPlaying(false);
-            window.setTimeout(() => {
-                setPuzzleData(puzzle_initial_data);
-                setSolved(false);
-                setTimerEnabled(false);
-            }, 500);
-        }, []
+            if (size.x > size.y) {
+
+                setPlaying(false);
+                window.setTimeout(() => {
+                    setPuzzleData(puzzle_initial_data);
+                    setSolved(false);
+                    setTimerEnabled(false);
+                }, 600);
+            }
+            else {
+                window.location.reload();
+            }
+        }, [size]
     )
 
     const [playing, setPlaying] = useState<boolean>(false);
@@ -79,6 +85,13 @@ const ReflecMino = (): JSX.Element => {
             setPlaying(true);
             setTimerEnabled(true);
         }, [date]
+    );
+
+    const [how2play_visible, setHow2PlayVisible] = useState<boolean>(false);
+    const toggle_how2play = useCallback(
+        () => {
+            setHow2PlayVisible(!how2play_visible);
+        }, [how2play_visible]
     );
 
     return (
@@ -305,6 +318,93 @@ const ReflecMino = (): JSX.Element => {
                             <Paper
                                 elevation={5}
                                 sx={{
+                                    zIndex: "5",
+                                    padding: theme.spacing(1),
+                                    width: theme.spacing(43),
+                                    height: theme.spacing(32.65),
+                                    position: "absolute",
+                                    boxShadow: "none",
+                                    visibility: how2play_visible ? "visible" : "hidden",
+                                    opacity: how2play_visible ? "1" : "0",
+                                    transition: "opacity 0.6s, visibility 0.6s",
+                                    "@media screen and (max-width:704px)": {
+                                        width: theme.spacing(22),
+                                        marginLeft: 0,
+                                        marginRight: 0
+                                    }
+                                }}
+                            >
+                                < Grid
+                                    container
+                                    direction={"column"}
+                                    justifyContent={"flex-start"}
+                                    alignItems={"center"}
+                                >
+                                    <Typography
+                                        variant="h3"
+                                        marginTop={theme.spacing(2)}
+                                    >
+                                        HowToPlay
+                                    </Typography>
+                                    < Grid
+                                        container
+                                        direction={"column"}
+                                        flexWrap={"nowrap"}
+                                        justifyContent={"flex-start"}
+                                        alignItems={"center"}
+                                        width={theme.spacing(18)}
+                                        height={theme.spacing(20)}
+                                        sx={{
+                                            overflowY:"scroll"
+                                        }}
+                                    >
+                                        <Box
+                                            width={theme.spacing(17)}
+                                            minHeight={theme.spacing(8.5)}
+                                            overflow={"hidden"}
+                                        >
+                                            <img
+                                                src={h2p1_img}
+                                                alt={""}
+                                                width={theme.spacing(17)}
+                                                style={{
+                                                    borderRadius:"2px"
+                                                }}
+                                            />
+                                        </Box>
+                                        <Typography
+                                            variant="h6"
+                                            marginTop={theme.spacing(1)}
+                                        >
+                                            Reflect the laser to illminate all the boxes.<br />
+                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
+                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
+                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
+                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
+                                        </Typography>
+                                    </Grid>
+                                    <Button
+                                        disabled={playing || solved}
+                                        variant={"outlined"}
+                                        size={"large"}
+                                        sx={{
+                                            width: theme.spacing(10),
+                                            marginTop: theme.spacing(1),
+                                            color: "#ffffff",
+                                            borderColor: "#ffffff",
+                                            "&:hover": {
+                                                color: "#40c0ff",
+                                            }
+                                        }}
+                                        onClick={toggle_how2play}
+                                    >
+                                        Close
+                                    </Button>
+                                </Grid>
+                            </Paper>
+                            <Paper
+                                elevation={5}
+                                sx={{
                                     zIndex: "4",
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
@@ -313,7 +413,7 @@ const ReflecMino = (): JSX.Element => {
                                     boxShadow: "none",
                                     visibility: playing ? "hidden" : "visible",
                                     opacity: playing ? "0" : "1",
-                                    transition: "opacity 0.8s, visibility 0.8s",
+                                    transition: "opacity 0.6s, visibility 0.6s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         marginLeft: 0,
@@ -333,10 +433,11 @@ const ReflecMino = (): JSX.Element => {
                                         marginTop={theme.spacing(3)}
                                     >
                                         <img
-                                            src={icon}
+                                            src={icon_img}
                                             alt={"icon"}
                                             width={"100%"}
-                                            height={"100%"} />
+                                            height={"100%"}
+                                            />
                                     </Box>
                                     <Typography
                                         variant="h3"
@@ -392,6 +493,7 @@ const ReflecMino = (): JSX.Element => {
                                                 color: "#40c0ff",
                                             }
                                         }}
+                                        onClick={toggle_how2play}
                                     >
                                         How to play
                                     </Button>

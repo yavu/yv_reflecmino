@@ -43,7 +43,7 @@ const InventoryMino = ({ index, inventory_x, puzzle_data, setPuzzleData, draggin
                 x={pos.x}
                 y={pos.y}
                 offset={{ x: 25, y: 25 }}
-                scale={{ x: 0.75, y: 0.75 }}
+                scale={{ x: 0.8, y: 0.8 }}
                 visible={picked_mino.pos === undefined}
             >
                 <Line
