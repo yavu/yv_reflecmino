@@ -25,7 +25,7 @@ const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, s
         }
         : undefined;
     const onDragMove = useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, []);
-    const onDragEnd = useDropMino(index, { x: 0, y: 0 }, setPuzzleData, setDraggingMinoIndex, pos);
+    const onDragEnd = useDropMino(index, setPuzzleData, setDraggingMinoIndex, pos, undefined);
 
     return (
         <Portal

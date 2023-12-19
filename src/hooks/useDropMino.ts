@@ -4,15 +4,15 @@ import { replace_2d_array } from "../utils/function";
 import { PuzzleData } from "../puzzle/const";
 import { simulate_laser } from "../puzzle/simulate_laser";
 
-const useDropMino = (index: number, drop_offset: { x: number, y: number }, setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>, setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>, update_pos: { x: number, y: number } | undefined) => {
+const useDropMino = (index: number, setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>, setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>, update_pos: { x: number, y: number } | undefined, update_scale: { x: number, y: number } | undefined) => {
     return useCallback(
         (e: KonvaEventObject<DragEvent>) => {
             e.cancelBubble = true;
             setDraggingMinoIndex(undefined);
             setPuzzleData((prev_data) => {
                 const mino_pos = {
-                    x: Math.round((e.target.x() + drop_offset.x + 25) / 50),
-                    y: Math.round((e.target.y() + drop_offset.y + 25) / 50)
+                    x: Math.round((e.target.x() + 25) / 50),
+                    y: Math.round((e.target.y() + 25) / 50)
                 };
                 // console.log(`pos    | ${e.target.x()} : ${e.target.y()}`);
                 // console.log(`offset | ${offset.x} : ${offset.y}`);
@@ -71,7 +71,10 @@ const useDropMino = (index: number, drop_offset: { x: number, y: number }, setPu
             if (update_pos) {
                 e.target.position(update_pos);
             }
-        }, [index, drop_offset, setPuzzleData, setDraggingMinoIndex, update_pos]
+            if (update_scale) {
+                e.target.scale(update_scale);
+            }
+        }, [index, setPuzzleData, setDraggingMinoIndex, update_pos, update_scale]
     );
 }
 

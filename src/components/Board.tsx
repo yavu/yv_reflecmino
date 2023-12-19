@@ -9,9 +9,7 @@ type BoardProp = {
 
 const Board = ({ children }: BoardProp): JSX.Element => {
     return (
-        <Group
-            offset={{ x: -35, y: -35 }}
-        >
+        <>
             <Rect
                 PreventDefault={false}
                 width={316}
@@ -107,7 +105,7 @@ const Board = ({ children }: BoardProp): JSX.Element => {
                 stroke={"#414958"}
                 strokeWidth={4}
             />
-        </Group>
+        </>
     );
 }
 

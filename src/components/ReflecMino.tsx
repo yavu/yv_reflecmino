@@ -19,6 +19,8 @@ import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import ShareIcon from '@mui/icons-material/Share'
 import HomeIcon from '@mui/icons-material/Home'
+import DoneIcon from '@mui/icons-material/Done'
+import TimerIcon from '@mui/icons-material/Timer'
 
 const ReflecMino = (): JSX.Element => {
 
@@ -61,6 +63,11 @@ const ReflecMino = (): JSX.Element => {
         }, [date]
     );
 
+    const reload_page = useCallback(
+        () => {
+            window.location.reload();
+        }, []
+    );
     const return_to_top = useCallback(
         () => {
             if (size.x > size.y) {
@@ -73,9 +80,9 @@ const ReflecMino = (): JSX.Element => {
                 }, 600);
             }
             else {
-                window.location.reload();
+                reload_page();
             }
-        }, [size]
+        }, [size, reload_page]
     )
 
     const [playing, setPlaying] = useState<boolean>(false);
@@ -117,6 +124,12 @@ const ReflecMino = (): JSX.Element => {
                         <Typography
                             variant={"h4"}
                             marginLeft={theme.spacing(0.5)}
+                            onClick={reload_page}
+                            sx={{
+                                "&:hover": {
+                                    cursor:"pointer"
+                                }
+                            }}
                         >
                             ReflecMino
                         </Typography>
@@ -263,12 +276,12 @@ const ReflecMino = (): JSX.Element => {
                                     >
                                         Solved
                                     </Typography>
-                                    <Typography
+                                    {/* <Typography
                                         variant="h6"
                                         marginTop={theme.spacing(1)}
                                     >
                                         Challenge for
-                                    </Typography>
+                                    </Typography> */}
                                     <Typography
                                         variant="h4"
                                     >
@@ -282,9 +295,10 @@ const ReflecMino = (): JSX.Element => {
                                     padding: theme.spacing(1),
                                     width: theme.spacing(43),
                                     height: playing && solved ? theme.spacing(22) : theme.spacing(32.65),
-                                    transition: "height 1s",
+                                    transition: solved ? "height 1s" : undefined,
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
+                                        height: playing && solved ? theme.spacing(22) : theme.spacing(27.75),
                                         marginLeft: 0,
                                         marginRight: 0
                                     }
@@ -361,20 +375,6 @@ const ReflecMino = (): JSX.Element => {
                                             overflowX: "hidden"
                                         }}
                                     >
-                                        <Typography
-                                            variant="h6"
-                                            marginTop={theme.spacing(1)}
-                                        >
-                                            This is a puzzle that makes all tiles illuminate by reflecting lasers.
-                                        </Typography>
-                                        <Divider
-                                            sx={{
-                                                zIndex: "100",
-                                                borderColor: "#abb5bd",
-                                                width:"100%",
-                                                marginTop: theme.spacing(1),
-                                            }}
-                                        />
                                         <img
                                             src={h2p1_img}
                                             alt={"example"}
@@ -393,7 +393,7 @@ const ReflecMino = (): JSX.Element => {
                                             bottom={"140px"}
                                             left={"180px"}
                                         >
-                                            ⯇ Board
+                                            ← Board
                                         </Typography>
                                         <Typography
                                             variant="h6"
@@ -402,53 +402,19 @@ const ReflecMino = (): JSX.Element => {
                                             bottom={"106px"}
                                             left={"188px"}
                                         >
-                                            ⯆ Mino
+                                            ↓ Mino
                                         </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            height={"0"}
-                                            marginTop={theme.spacing(1.2)}
+                                        < Grid
+                                            container
+                                            direction={"row"}
+                                            justifyContent={"space-around"}
+                                            width={"100%"}
+                                            minHeight={theme.spacing(1.5)}
+                                            marginTop={theme.spacing(2.5)}
                                         >
-                                            •
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            paddingLeft={theme.spacing(1)}
-                                        >
-                                            There are 4 Minos, place them all on the board.
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            height={"0"}
-                                            marginTop={theme.spacing(1)}
-                                        >
-                                            •
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            paddingLeft={theme.spacing(1)}
-                                        >
-                                            When the laser passes over Mino, the tile inside Mino will glow.
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            height={"0"}
-                                            marginTop={theme.spacing(1)}
-                                        >
-                                            •
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            paddingLeft={theme.spacing(1)}
-                                        >
-                                            Use the mirror attached to the Mino to illuminate all the tiles.
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            marginTop={theme.spacing(1)}
-                                        >
-                                            Examples
-                                        </Typography>
+                                            <TimerIcon /><DoneIcon
+                                            />
+                                        </Grid>
                                         <img
                                             src={h2p2_img}
                                             alt={"example"}
@@ -460,21 +426,6 @@ const ReflecMino = (): JSX.Element => {
                                                 borderRadius: "2px"
                                             }}
                                         />
-                                        <Divider
-                                            sx={{
-                                                zIndex: "100",
-                                                borderColor: "#abb5bd",
-                                                width:"100%",
-                                                marginTop: theme.spacing(1),
-                                            }}
-                                        />
-                                        <Typography
-                                            variant="h6"
-                                            marginTop={theme.spacing(1)}
-                                        >
-                                            New puzzles are released daily.<br />
-                                            You can try puzzles from the past by specifying the date.
-                                        </Typography>
                                     </Grid>
                                     <Button
                                         disabled={playing || solved}
@@ -537,7 +488,7 @@ const ReflecMino = (): JSX.Element => {
                                     </Typography>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
-                                            disabled={playing || solved}
+                                            disabled={playing || solved || how2play_visible}
                                             format={"yyyy/MM/dd"}
                                             slotProps={{
                                                 textField: {
@@ -555,7 +506,7 @@ const ReflecMino = (): JSX.Element => {
                                         />
                                     </LocalizationProvider>
                                     <Button
-                                        disabled={playing || solved}
+                                        disabled={playing || solved || how2play_visible}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
@@ -571,7 +522,7 @@ const ReflecMino = (): JSX.Element => {
                                         Play
                                     </Button>
                                     <Button
-                                        disabled={playing || solved}
+                                        disabled={playing || solved || how2play_visible}
                                         variant={"outlined"}
                                         size={"large"}
                                         sx={{
@@ -622,6 +573,7 @@ const ReflecMino = (): JSX.Element => {
                                     }}
                                 >
                                     <Button
+                                        disabled={!solved}
                                         variant={"outlined"}
                                         size={"large"}
                                         sx={{
@@ -641,6 +593,7 @@ const ReflecMino = (): JSX.Element => {
                                         Share
                                     </Button>
                                     <Button
+                                        disabled={!solved}
                                         variant={"outlined"}
                                         size={"large"}
                                         sx={{

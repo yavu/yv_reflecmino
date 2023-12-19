@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Stage, Layer, Group, Line } from 'react-konva';
+import { Stage, Layer, Group } from 'react-konva';
 import { PuzzleData } from '../puzzle/const';
 import Laser from './Laser';
 import BoardMino from './BoardMino';
 import Board from './Board';
-import Inventory from './Inventory';
 import InventoryMino from './InventoryMino';
 import OverlayMino from './OverlayMino';
 import StartPoint from "./StartPoint";
 import EndPoint from "./EndPoint";
+import PortraitInventory from './PortraitInventory';
+import LandscapeInventory from './LandscapeInventory';
 
 type CanvasProp = {
     width: number,
@@ -20,7 +21,6 @@ type CanvasProp = {
 };
 const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_enabled }: CanvasProp) => {
     const [dragging_mino_index, setDraggingMinoIndex] = useState<number | undefined>(undefined);
-    const [inventory_x, setInventoryX] = useState<number>(0);
     const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
     setSolved(
         !non_activated_cells.flat().includes("￭") &&
@@ -36,7 +36,9 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
             width={width}
             height={height}
         >
-            <Layer>
+            <Layer
+                offset={{ x: -35, y: -35 }}
+            >
                 <Board
                     children={
                         <Group
@@ -49,24 +51,18 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                         </Group>
                     }
                 />
-                <Inventory
-                    canvas_width={width}
-                    x={width > height ? 0 : inventory_x}
-                    setInventoryX={setInventoryX}
-                    children={
-                        <Group
-                            visible={timer_enabled}
-                        >
-                            <InventoryMino index={0} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={1} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={2} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
-                            <InventoryMino index={3} inventory_x={inventory_x} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
-                        </Group>
-                    }
+                <LandscapeInventory
+                    x={-33}
+                    y={303}
+                    visible={width > height}
+                />
+                <PortraitInventory
+                    x={-33}
+                    y={296}
+                    visible={width < height}
                 />
                 <Group
                     visible={timer_enabled}
-                    offset={{ x: -35, y: -35 }}
                 >
                     <BoardMino index={0} puzzle_data={puzzle_data} dragging_mino_index={dragging_mino_index} />
                     <BoardMino index={1} puzzle_data={puzzle_data} dragging_mino_index={dragging_mino_index} />
@@ -80,33 +76,22 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                     <OverlayMino index={3} puzzle_data={puzzle_data} setPuzzleData={setPuzzleData} dragging_mino_index={dragging_mino_index} setDraggingMinoIndex={setDraggingMinoIndex} />
                 </Group>
                 <Group
-                    visible={width < height ? true : false}
-                    y={413}
+                    visible={timer_enabled && width > height}
                 >
-                    <Line
-                        points={[10, -10, 0, 0, 10, 10]}
-                        x={2}
-                        closed
-                        fill={"#abb5bd"}
-                        stroke={"#abb5bd"}
-                        strokeWidth={4}
-                        lineJoin={'round'}
-                        opacity={0.5} />
-                    <Line
-                        points={[0, -10, 10, 0, 0, 10]}
-                        x={308}
-                        closed
-                        fill={"#abb5bd"}
-                        stroke={"#abb5bd"}
-                        strokeWidth={4}
-                        lineJoin={'round'}
-                        opacity={0.5} />
+                    <InventoryMino index={0} x={42 + 0} y={378} scale={{ x: 0.8, y: 0.8 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={1} x={42 + 167.3} y={378} scale={{ x: 0.8, y: 0.8 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={2} x={42 + 334.6} y={378} scale={{ x: 0.8, y: 0.8 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={3} x={42 + 501.9} y={378} scale={{ x: 0.8, y: 0.8 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                </Group>
+                <Group
+                    visible={timer_enabled && width < height}
+                >
+                    <InventoryMino index={0} x={6.5 + 0} y={335.5} scale={{ x: 0.45, y: 0.45 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={1} x={6.5 + 79} y={335.5} scale={{ x: 0.45, y: 0.45 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={2} x={6.5 + 158} y={335.5} scale={{ x: 0.45, y: 0.45 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
+                    <InventoryMino index={3} x={6.5 + 237} y={335.5} scale={{ x: 0.45, y: 0.45 }} mino_data={puzzle_data[1]} setPuzzleData={setPuzzleData} setDraggingMinoIndex={setDraggingMinoIndex} />
                 </Group>
             </Layer>
-            <Layer
-                name={"inventory_picked"}
-                offset={{ x: width > height ? 0 : -inventory_x, y: -338 }}
-            />
             <Layer
                 name={"board_picked"}
                 offset={{ x: -35, y: -35 }}

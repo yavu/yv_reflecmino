@@ -1,25 +1,18 @@
 import { Group, Rect } from "react-konva";
-import React, { useCallback } from "react";
-import useInventoryDrag from "../hooks/useInventoryDrag";
-import { KonvaEventObject } from "konva/lib/Node";
+import React from "react";
 
-type InventoryProp = {
-    canvas_width: number,
+type Prop = {
     x: number,
-    children: JSX.Element,
-    setInventoryX: React.Dispatch<React.SetStateAction<number>>
+    y: number,
+    visible: boolean
 }
 
-const Inventory = ({ canvas_width, x, setInventoryX, children }: InventoryProp): JSX.Element => {
-    const onDragEnd = useCallback((e: KonvaEventObject<DragEvent>) => setInventoryX(e.target.x()), [setInventoryX]);
+const LandscapeInventory = ({ x, y, visible }: Prop): JSX.Element => {
     return (
         <Group
-            draggable
-            onDragMove={useInventoryDrag(canvas_width)}
-            onDragEnd={onDragEnd}
             x={x}
-            y={338}
-            offsetX={-2}
+            y={y}
+            visible={visible}
         >
             <Rect
                 width={150}
@@ -61,10 +54,8 @@ const Inventory = ({ canvas_width, x, setInventoryX, children }: InventoryProp):
                 strokeWidth={4}
                 cornerRadius={2}
             />
-            {children}
         </Group>
     );
 }
 
-export default React.memo(Inventory);
-// export default Inventory;
+export default React.memo(LandscapeInventory);
