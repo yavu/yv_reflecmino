@@ -127,7 +127,7 @@ const ReflecMino = (): JSX.Element => {
                             onClick={reload_page}
                             sx={{
                                 "&:hover": {
-                                    cursor:"pointer"
+                                    cursor: "pointer"
                                 }
                             }}
                         >
@@ -276,17 +276,19 @@ const ReflecMino = (): JSX.Element => {
                                     >
                                         Solved
                                     </Typography>
-                                    {/* <Typography
-                                        variant="h6"
-                                        marginTop={theme.spacing(1)}
-                                    >
-                                        Challenge for
-                                    </Typography> */}
                                     <Typography
+                                        marginTop={theme.spacing(2)}
                                         variant="h4"
                                     >
                                         {format(date, "yyyy/MM/dd")}
                                     </Typography>
+                                    <Divider
+                                        sx={{
+                                            marginTop: theme.spacing(0.4),
+                                            width: theme.spacing(12),
+                                            borderBottomColor: "#ffffff"
+                                        }}
+                                    />
                                 </Grid>
                             </Paper>
                             <Paper
