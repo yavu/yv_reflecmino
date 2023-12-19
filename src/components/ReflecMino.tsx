@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Fab, Paper, Typography } from '@mui/material';
+import { Box, Button, Divider, Fab, Paper, Snackbar, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
@@ -47,6 +47,7 @@ const ReflecMino = (): JSX.Element => {
         }, []
     );
 
+    const [copied_snackbar_visible, setCopiedSnackbarVisible] = useState<boolean>(false);
     const copy_result_to_clipboard = useCallback(
         () => {
             const text = [
@@ -56,6 +57,10 @@ const ReflecMino = (): JSX.Element => {
             ].join("\n");
             navigator.clipboard.writeText(text)
                 .then(function () {
+                    setCopiedSnackbarVisible(true);
+                    window.setTimeout(() => {
+                        setCopiedSnackbarVisible(false);
+                    }, 2000);
                     console.log("Async: Copying to clipboard was successful");
                 }, function (err) {
                     console.error("Async: Could not copy text: ", err);
@@ -115,6 +120,7 @@ const ReflecMino = (): JSX.Element => {
                     <CssBaseline />
                     <Box
                         width={theme.spacing(43)}
+                        minHeight={`calc(100vh - ${theme.spacing(4)})`}
                         margin={`${theme.spacing(1)} auto`}
                         sx={{
                             "@media screen and (max-width:704px)": {
@@ -186,9 +192,10 @@ const ReflecMino = (): JSX.Element => {
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         height: theme.spacing(16),
-                                        marginLeft: 0,
-                                        marginRight: 0,
-                                        marginBottom: theme.spacing(1),
+                                        marginLeft: "0",
+                                        marginRight: "0",
+                                        marginTop: "0",
+                                        marginBottom: theme.spacing(1)
                                     },
                                 }}
                             />
@@ -210,9 +217,10 @@ const ReflecMino = (): JSX.Element => {
                                         position: "static",
                                         width: theme.spacing(22),
                                         height: theme.spacing(16),
-                                        marginLeft: 0,
-                                        marginRight: 0,
-                                        marginBottom: theme.spacing(1),
+                                        marginLeft: "0",
+                                        marginRight: "0",
+                                        marginTop: "0",
+                                        marginBottom: theme.spacing(1)
                                     },
                                 }}
                             >
@@ -298,6 +306,7 @@ const ReflecMino = (): JSX.Element => {
                                     width: theme.spacing(43),
                                     height: playing && solved ? theme.spacing(22) : theme.spacing(32.65),
                                     transition: solved ? "height 1s" : undefined,
+                                    boxShadow: playing ? undefined : "none",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
                                         height: playing && solved ? theme.spacing(22) : theme.spacing(27.75),
@@ -456,7 +465,7 @@ const ReflecMino = (): JSX.Element => {
                                     width: theme.spacing(43),
                                     height: theme.spacing(32.65),
                                     position: "absolute",
-                                    boxShadow: "none",
+                                    boxShadow: playing ? "none" : undefined,
                                     visibility: playing ? "hidden" : "visible",
                                     opacity: playing ? "0" : "1",
                                     transition: "opacity 0.6s, visibility 0.6s",
@@ -551,6 +560,7 @@ const ReflecMino = (): JSX.Element => {
                                     height: playing && solved ? theme.spacing(4.5) : "0px",
                                     marginTop: theme.spacing(1),
                                     marginBottom: playing && solved ? theme.spacing(1) : "0px",
+                                    boxShadow: playing ? undefined : "none",
                                     transition: playing ? "height 1s, padding 1s, margin-bottom 1s" : "height 0.6s, padding 0.6s, margin-bottom 0.6s",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
@@ -614,10 +624,22 @@ const ReflecMino = (): JSX.Element => {
                                     >
                                         Top
                                     </Button>
+                                    <Snackbar
+                                        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                                        open={copied_snackbar_visible}
+                                        message="Copied results to clipboard"
+                                    />
                                 </Grid>
                             </Paper>
                         </Grid>
                     </Box>
+                    <Typography
+                        width={"100%"}
+                        textAlign={"center"}
+                        color={"#586270"}
+                    >
+                        Copyright © yavu All Rights Reserved.
+                    </Typography>
                 </ThemeProvider >
             </body >
         </>
