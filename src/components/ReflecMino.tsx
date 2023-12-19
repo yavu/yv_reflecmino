@@ -10,6 +10,7 @@ import { PuzzleData, puzzle_initial_data } from '../puzzle/const';
 import Canvas from './Canvas';
 import icon_img from '../images/icon.png';
 import h2p1_img from '../images/howtoplay_1.png';
+import h2p2_img from '../images/howtoplay_2.png';
 import Timer from './Timer';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -342,7 +343,7 @@ const ReflecMino = (): JSX.Element => {
                                 >
                                     <Typography
                                         variant="h3"
-                                        marginTop={theme.spacing(2)}
+                                        margin={`${theme.spacing(1.5)} 0 ${theme.spacing(0.5)} 0`}
                                     >
                                         HowToPlay
                                     </Typography>
@@ -351,36 +352,128 @@ const ReflecMino = (): JSX.Element => {
                                         direction={"column"}
                                         flexWrap={"nowrap"}
                                         justifyContent={"flex-start"}
-                                        alignItems={"center"}
-                                        width={theme.spacing(18)}
+                                        alignItems={"flex-start"}
+                                        marginLeft={theme.spacing(1)}
+                                        width={theme.spacing(19.5)}
                                         height={theme.spacing(20)}
                                         sx={{
-                                            overflowY:"scroll"
+                                            overflowY: "scroll",
+                                            overflowX: "hidden"
                                         }}
                                     >
-                                        <Box
-                                            width={theme.spacing(17)}
-                                            minHeight={theme.spacing(8.5)}
-                                            overflow={"hidden"}
-                                        >
-                                            <img
-                                                src={h2p1_img}
-                                                alt={""}
-                                                width={theme.spacing(17)}
-                                                style={{
-                                                    borderRadius:"2px"
-                                                }}
-                                            />
-                                        </Box>
                                         <Typography
                                             variant="h6"
                                             marginTop={theme.spacing(1)}
                                         >
-                                            Reflect the laser to illminate all the boxes.<br />
-                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
-                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
-                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
-                                            aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa aaaaa <br />
+                                            This is a puzzle that makes all tiles illuminate by reflecting lasers.
+                                        </Typography>
+                                        <Divider
+                                            sx={{
+                                                zIndex: "100",
+                                                borderColor: "#abb5bd",
+                                                width:"100%",
+                                                marginTop: theme.spacing(1),
+                                            }}
+                                        />
+                                        <img
+                                            src={h2p1_img}
+                                            alt={"example"}
+                                            width={theme.spacing(18)}
+                                            style={{
+                                                marginTop: theme.spacing(1),
+                                                marginLeft: "auto",
+                                                marginRight: "auto",
+                                                borderRadius: "2px"
+                                            }}
+                                        />
+                                        <Typography
+                                            variant="h6"
+                                            position={"relative"}
+                                            height={"0"}
+                                            bottom={"140px"}
+                                            left={"180px"}
+                                        >
+                                            ⯇ Board
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            position={"relative"}
+                                            height={"0"}
+                                            bottom={"106px"}
+                                            left={"188px"}
+                                        >
+                                            ⯆ Mino
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            height={"0"}
+                                            marginTop={theme.spacing(1.2)}
+                                        >
+                                            •
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            paddingLeft={theme.spacing(1)}
+                                        >
+                                            There are 4 Minos, place them all on the board.
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            height={"0"}
+                                            marginTop={theme.spacing(1)}
+                                        >
+                                            •
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            paddingLeft={theme.spacing(1)}
+                                        >
+                                            When the laser passes over Mino, the tile inside Mino will glow.
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            height={"0"}
+                                            marginTop={theme.spacing(1)}
+                                        >
+                                            •
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            paddingLeft={theme.spacing(1)}
+                                        >
+                                            Use the mirror attached to the Mino to illuminate all the tiles.
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            marginTop={theme.spacing(1)}
+                                        >
+                                            Examples
+                                        </Typography>
+                                        <img
+                                            src={h2p2_img}
+                                            alt={"example"}
+                                            width={theme.spacing(18)}
+                                            style={{
+                                                marginTop: theme.spacing(0.5),
+                                                marginLeft: "auto",
+                                                marginRight: "auto",
+                                                borderRadius: "2px"
+                                            }}
+                                        />
+                                        <Divider
+                                            sx={{
+                                                zIndex: "100",
+                                                borderColor: "#abb5bd",
+                                                width:"100%",
+                                                marginTop: theme.spacing(1),
+                                            }}
+                                        />
+                                        <Typography
+                                            variant="h6"
+                                            marginTop={theme.spacing(1)}
+                                        >
+                                            New puzzles are released daily.<br />
+                                            You can try puzzles from the past by specifying the date.
                                         </Typography>
                                     </Grid>
                                     <Button
@@ -427,18 +520,15 @@ const ReflecMino = (): JSX.Element => {
                                     justifyContent={"flex-start"}
                                     alignItems={"center"}
                                 >
-                                    <Box
+                                    <img
+                                        src={icon_img}
+                                        alt={"icon"}
                                         width={theme.spacing(5)}
                                         height={theme.spacing(5)}
-                                        marginTop={theme.spacing(3)}
-                                    >
-                                        <img
-                                            src={icon_img}
-                                            alt={"icon"}
-                                            width={"100%"}
-                                            height={"100%"}
-                                            />
-                                    </Box>
+                                        style={{
+                                            marginTop: theme.spacing(3)
+                                        }}
+                                    />
                                     <Typography
                                         variant="h3"
                                         marginTop={theme.spacing(2)}
@@ -573,8 +663,8 @@ const ReflecMino = (): JSX.Element => {
                             </Paper>
                         </Grid>
                     </Box>
-                </ThemeProvider>
-            </body>
+                </ThemeProvider >
+            </body >
         </>
     )
 }
