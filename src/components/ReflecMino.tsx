@@ -21,7 +21,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import ShareIcon from '@mui/icons-material/Share'
 import HomeIcon from '@mui/icons-material/Home'
 import DoneIcon from '@mui/icons-material/Done'
-import NextIcon from '@mui/icons-material/NavigateNext'
 
 const ReflecMino = (): JSX.Element => {
 
@@ -373,14 +372,21 @@ const ReflecMino = (): JSX.Element => {
                                     >
                                         HowToPlay
                                     </Typography>
+                                    <Typography
+                                        variant="h6"
+                                        marginTop={theme.spacing(0.5)}
+                                    >
+                                        すべてのタイルを光らせましょう
+                                    </Typography>
                                     < Grid
                                         container
                                         direction={"row"}
                                         flexWrap={"nowrap"}
                                         justifyContent={"flex-start"}
-                                        alignItems={"center"}
+                                        alignItems={"flex-start"}
                                         width={theme.spacing(20)}
-                                        height={theme.spacing(18)}
+                                        height={theme.spacing(16)}
+                                        marginTop={theme.spacing(0.5)}
                                         sx={{
                                             overflowX: "scroll",
                                             overflowY: "hidden",
@@ -389,31 +395,34 @@ const ReflecMino = (): JSX.Element => {
                                             }
                                         }}
                                     >
+                                        <Typography
+                                            variant="h5"
+                                            margin={`${theme.spacing(0.5)} 0 auto ${theme.spacing(2.5)}`}
+                                        >
+                                            1.
+                                        </Typography>
                                         <img
                                             src={h2p1_img}
                                             alt={"move"}
-                                            height={theme.spacing(16)}
-                                            style={{
-                                                marginLeft: theme.spacing(3.8)
-                                            }}
+                                            height={theme.spacing(15)}
                                         />
-                                        <NextIcon
-                                            fontSize={"large"}
-                                            sx={{
-                                                height: theme.spacing(16)
-                                            }}
-                                        />
+                                        <Typography
+                                            variant="h5"
+                                            margin={`${theme.spacing(0.5)} 0 auto ${theme.spacing(1.5)}`}
+                                        >
+                                            2.
+                                        </Typography>
                                         <img
                                             src={h2p2_img}
                                             alt={"move"}
-                                            height={theme.spacing(16)}
+                                            height={theme.spacing(15)}
                                         />
-                                        <NextIcon
-                                            fontSize={"large"}
-                                            sx={{
-                                                height: theme.spacing(16)
-                                            }}
-                                        />
+                                        <Typography
+                                            variant="h5"
+                                            margin={`${theme.spacing(0.5)} 0 auto ${theme.spacing(1.5)}`}
+                                        >
+                                            3.
+                                        </Typography>
                                         <Box
                                             width={"0"}
                                         >
@@ -421,17 +430,17 @@ const ReflecMino = (): JSX.Element => {
                                                 fontSize={"large"}
                                                 sx={{
                                                     position: "relative",
-                                                    top:theme.spacing(6.5),
-                                                    left:theme.spacing(5.2)
+                                                    top: theme.spacing(12.2),
+                                                    left: theme.spacing(4.75)
                                                 }}
                                             />
                                         </Box>
                                         <img
                                             src={h2p3_img}
                                             alt={"move"}
-                                            height={theme.spacing(16)}
+                                            height={theme.spacing(15)}
                                             style={{
-                                                paddingRight: theme.spacing(3.8)
+                                                paddingRight: theme.spacing(4.2)
                                             }}
                                         />
                                     </Grid>
