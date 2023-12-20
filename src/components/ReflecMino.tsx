@@ -431,7 +431,7 @@ const ReflecMino = (): JSX.Element => {
                                             alt={"move"}
                                             height={theme.spacing(16)}
                                             style={{
-                                                marginRight: theme.spacing(3.8)
+                                                paddingRight: theme.spacing(3.8)
                                             }}
                                         />
                                     </Grid>
