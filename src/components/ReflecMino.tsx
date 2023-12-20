@@ -310,7 +310,7 @@ const ReflecMino = (): JSX.Element => {
                                     boxShadow: playing ? undefined : "none",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
-                                        height: playing && solved ? theme.spacing(27.75) : theme.spacing(27.75),
+                                        height: playing && solved ? theme.spacing(22) : theme.spacing(27.75),
                                         marginLeft: 0,
                                         marginRight: 0
                                     }
