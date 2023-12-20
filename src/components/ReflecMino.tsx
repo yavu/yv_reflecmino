@@ -9,8 +9,9 @@ import Measure from 'react-measure'
 import { PuzzleData, puzzle_initial_data } from '../puzzle/const';
 import Canvas from './Canvas';
 import icon_img from '../images/icon.png';
-import h2p1_img from '../images/howtoplay_1.png';
-import h2p2_img from '../images/howtoplay_2.png';
+import h2p1_img from '../images/how_to_play_1.gif';
+import h2p2_img from '../images/how_to_play_2.gif';
+import h2p3_img from '../images/how_to_play_3.png';
 import Timer from './Timer';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -20,7 +21,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import ShareIcon from '@mui/icons-material/Share'
 import HomeIcon from '@mui/icons-material/Home'
 import DoneIcon from '@mui/icons-material/Done'
-import TimerIcon from '@mui/icons-material/Timer'
+import NextIcon from '@mui/icons-material/NavigateNext'
 
 const ReflecMino = (): JSX.Element => {
 
@@ -309,7 +310,7 @@ const ReflecMino = (): JSX.Element => {
                                     boxShadow: playing ? undefined : "none",
                                     "@media screen and (max-width:704px)": {
                                         width: theme.spacing(22),
-                                        height: playing && solved ? theme.spacing(22) : theme.spacing(27.75),
+                                        height: playing && solved ? theme.spacing(27.75) : theme.spacing(27.75),
                                         marginLeft: 0,
                                         marginRight: 0
                                     }
@@ -368,73 +369,69 @@ const ReflecMino = (): JSX.Element => {
                                 >
                                     <Typography
                                         variant="h3"
-                                        margin={`${theme.spacing(1.5)} 0 ${theme.spacing(0.5)} 0`}
+                                        marginTop={theme.spacing(2)}
                                     >
                                         HowToPlay
                                     </Typography>
                                     < Grid
                                         container
-                                        direction={"column"}
+                                        direction={"row"}
                                         flexWrap={"nowrap"}
                                         justifyContent={"flex-start"}
-                                        alignItems={"flex-start"}
-                                        marginLeft={theme.spacing(1)}
-                                        width={theme.spacing(19.5)}
-                                        height={theme.spacing(20)}
+                                        alignItems={"center"}
+                                        width={theme.spacing(20)}
+                                        height={theme.spacing(18)}
                                         sx={{
-                                            overflowY: "scroll",
-                                            overflowX: "hidden"
+                                            overflowX: "scroll",
+                                            overflowY: "hidden",
+                                            "@media screen and (max-width:704px)": {
+                                                width: theme.spacing(20),
+                                            }
                                         }}
                                     >
                                         <img
                                             src={h2p1_img}
-                                            alt={"example"}
-                                            width={theme.spacing(18)}
+                                            alt={"move"}
+                                            height={theme.spacing(16)}
                                             style={{
-                                                marginTop: theme.spacing(1),
-                                                marginLeft: "auto",
-                                                marginRight: "auto",
-                                                borderRadius: "2px"
+                                                marginLeft: theme.spacing(3.8)
                                             }}
                                         />
-                                        <Typography
-                                            variant="h6"
-                                            position={"relative"}
-                                            height={"0"}
-                                            bottom={"140px"}
-                                            left={"180px"}
-                                        >
-                                            ← Board
-                                        </Typography>
-                                        <Typography
-                                            variant="h6"
-                                            position={"relative"}
-                                            height={"0"}
-                                            bottom={"106px"}
-                                            left={"188px"}
-                                        >
-                                            ↓ Mino
-                                        </Typography>
-                                        < Grid
-                                            container
-                                            direction={"row"}
-                                            justifyContent={"space-around"}
-                                            width={"100%"}
-                                            minHeight={theme.spacing(1.5)}
-                                            marginTop={theme.spacing(2.5)}
-                                        >
-                                            <TimerIcon /><DoneIcon
-                                            />
-                                        </Grid>
+                                        <NextIcon
+                                            fontSize={"large"}
+                                            sx={{
+                                                height: theme.spacing(16)
+                                            }}
+                                        />
                                         <img
                                             src={h2p2_img}
-                                            alt={"example"}
-                                            width={theme.spacing(18)}
+                                            alt={"move"}
+                                            height={theme.spacing(16)}
+                                        />
+                                        <NextIcon
+                                            fontSize={"large"}
+                                            sx={{
+                                                height: theme.spacing(16)
+                                            }}
+                                        />
+                                        <Box
+                                            width={"0"}
+                                        >
+                                            <DoneIcon
+                                                fontSize={"large"}
+                                                sx={{
+                                                    position: "relative",
+                                                    top:theme.spacing(6.5),
+                                                    left:theme.spacing(5.2)
+                                                }}
+                                            />
+                                        </Box>
+                                        <img
+                                            src={h2p3_img}
+                                            alt={"move"}
+                                            height={theme.spacing(16)}
                                             style={{
-                                                marginTop: theme.spacing(0.5),
-                                                marginLeft: "auto",
-                                                marginRight: "auto",
-                                                borderRadius: "2px"
+                                                marginRight: theme.spacing(3.8)
                                             }}
                                         />
                                     </Grid>
@@ -444,7 +441,7 @@ const ReflecMino = (): JSX.Element => {
                                         size={"large"}
                                         sx={{
                                             width: theme.spacing(10),
-                                            marginTop: theme.spacing(1),
+                                            marginTop: theme.spacing(2),
                                             color: "#ffffff",
                                             borderColor: "#ffffff",
                                             "&:hover": {
@@ -631,6 +628,13 @@ const ReflecMino = (): JSX.Element => {
                                     />
                                 </Grid>
                             </Paper>
+                            <Box
+                                sx={{
+                                    "@media screen and (max-width:704px)": {
+                                        height: playing ? "0" : theme.spacing(5)
+                                    }
+                                }}
+                            />
                         </Grid>
                     </Box>
                     <Typography
