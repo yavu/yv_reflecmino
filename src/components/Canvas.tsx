@@ -56,11 +56,11 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                     y={303}
                     visible={width > height}
                 />
-                {/* <PortraitInventory
+                <PortraitInventory
                     x={-33}
                     y={296}
                     visible={width < height}
-                /> */}
+                />
                 <Group
                     visible={timer_enabled}
                 >
