@@ -33,8 +33,10 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
 
     return (
         <Stage
-            width={width}
-            height={height}
+            // width={width}
+            // height={height}
+            width={656}
+            height={490.4}
         >
             <Layer
                 offset={{ x: -35, y: -35 }}

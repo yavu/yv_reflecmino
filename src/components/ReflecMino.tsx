@@ -321,6 +321,7 @@ const ReflecMino = (): JSX.Element => {
                                             ref={measureRef}
                                             width={"100%"}
                                             height={"100%"}
+                                            overflow={"hidden"}
                                         >
                                             <Box
                                                 zIndex={2}
