@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { MinoData, PuzzleData } from "../puzzle/const";
+import { PuzzleData } from "../puzzle/const";
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Group, Line } from 'react-konva';
 import Cell from './Cell';
@@ -11,13 +11,15 @@ type InventoryMinoProp = {
     x: number,
     y: number,
     scale: { x: number, y: number },
-    mino_data: MinoData[],
+    puzzle_data: PuzzleData,
     setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
-    setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>
+    dragging_mino_index: number | undefined,
+    setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>,
+    setSolved: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const InventoryMino = ({ index, x, y, scale, mino_data, setPuzzleData, setDraggingMinoIndex }: InventoryMinoProp): JSX.Element => {
-    const picked_mino = mino_data[index];
+const InventoryMino = ({ index, x, y, scale, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex, setSolved }: InventoryMinoProp): JSX.Element => {
+    const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
     const centered_pos = {
         x: x - (picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 25 * scale.x,
@@ -30,6 +32,17 @@ const InventoryMino = ({ index, x, y, scale, mino_data, setPuzzleData, setDraggi
         }, []
     );
     const onDragEnd = useDropMino(index, setPuzzleData, setDraggingMinoIndex, centered_pos, scale);
+
+    const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
+    setSolved(
+        !non_activated_cells.flat().includes("￭") &&
+        puzzle_data[1][0].pos !== undefined &&
+        puzzle_data[1][1].pos !== undefined &&
+        puzzle_data[1][2].pos !== undefined &&
+        puzzle_data[1][3].pos !== undefined &&
+        dragging_mino_index === undefined
+    );
+
     return (
         <Group
             draggable
