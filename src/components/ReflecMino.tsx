@@ -592,8 +592,7 @@ const ReflecMino = (): JSX.Element => {
                                     }}
                                 >
                                     <Button
-                                        // disabled={!solved}
-                                        disabled={true}
+                                        disabled={!solved}
                                         variant={"outlined"}
                                         size={"large"}
                                         sx={{
