@@ -169,7 +169,7 @@ const ReflecMino = (): JSX.Element => {
                                 sx={{
                                     backgroundColor: "#32373f",
                                     "@media screen and (max-width:704px)": {
-                                        marginTop: "441.2px",
+                                        marginTop: "425.2px",
                                         marginRight: "103px"
                                     }
                                 }}
