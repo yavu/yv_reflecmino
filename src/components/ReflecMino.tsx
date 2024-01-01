@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Fab, Paper, Snackbar, Typography } from '@mui/material';
+import { Box, Button, Divider, Fab, IconButton, Paper, Snackbar, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
@@ -21,17 +21,28 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import ShareIcon from '@mui/icons-material/Share'
 import HomeIcon from '@mui/icons-material/Home'
 import DoneIcon from '@mui/icons-material/Done'
+import RandomDateIcon from '@mui/icons-material/History'
 
 const ReflecMino = (): JSX.Element => {
 
     const [date, setDate] = useState<Date>(new Date());
-    const HandleDayChange = useCallback(
+    const HandleDateChange = useCallback(
         (value: Date | null) => {
             if (!Number.isNaN(value?.getTime()) && value !== null) {
                 const new_date = isBefore(value, new Date()) ? value : new Date();
                 console.log(format(new_date, "yyyyMMdd"));
                 setDate(new_date);
             }
+        }, []
+    );
+    const HandleRandomDate = useCallback(
+        () => {
+            const start_date = new Date("1900-01-01");
+            const end_date = new Date();
+            const time_diff = end_date.getTime() - start_date.getTime();
+            const random_time = Math.random() * time_diff;
+            const random_date = new Date(start_date.getTime() + random_time);
+            setDate(random_date);
         }, []
     );
     const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial_data);
@@ -505,23 +516,46 @@ const ReflecMino = (): JSX.Element => {
                                         ReflecMino
                                     </Typography>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker
-                                            disabled={playing || solved || how2play_visible}
-                                            format={"yyyy/MM/dd"}
-                                            slotProps={{
-                                                textField: {
-                                                    variant: 'outlined',
-                                                    size: 'small'
-                                                },
-                                            }}
-                                            sx={{
-                                                width: theme.spacing(14),
-                                                marginTop: theme.spacing(2),
-                                            }}
-                                            value={date}
-                                            maxDate={new Date()}
-                                            onChange={HandleDayChange}
-                                        />
+                                        < Grid
+                                            container
+                                            direction={"row"}
+                                            justifyContent={"center"}
+                                            alignItems={"center"}
+                                            width={theme.spacing(14)}
+                                            marginTop={theme.spacing(2)}
+                                        >
+                                            <IconButton
+                                                sx={{
+                                                    zIndex: "1",
+                                                    position: "absolute",
+                                                    marginLeft: theme.spacing(11)
+                                                }}
+                                                onClick={HandleRandomDate}
+                                            >
+                                                <RandomDateIcon />
+                                            </IconButton>
+                                            <DatePicker
+                                                disabled={playing || solved || how2play_visible}
+                                                format={"yyyy/MM/dd"}
+                                                slotProps={{
+                                                    textField: {
+                                                        variant: "outlined",
+                                                        size: "small",
+                                                    },
+                                                    openPickerButton: {
+                                                        style: {
+                                                            marginRight: theme.spacing(2)
+                                                        }
+                                                    }
+                                                }}
+                                                sx={{
+                                                    width: "100%"
+                                                }}
+                                                value={date}
+                                                maxDate={new Date()}
+                                                onChange={HandleDateChange}
+                                            />
+                                        </Grid>
                                     </LocalizationProvider>
                                     <Button
                                         disabled={playing || solved || how2play_visible}
