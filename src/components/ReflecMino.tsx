@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Fab, IconButton, Paper, Snackbar, Typography } from '@mui/material';
+import { Box, Button, Divider, Fab, IconButton, Link, Paper, Snackbar, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
@@ -138,18 +138,16 @@ const ReflecMino = (): JSX.Element => {
                                 width: theme.spacing(22)
                             }
                         }}>
-                        <Typography
+                        <Link
+                            href={""}
+                            onClick={reload_page}
                             variant={"h4"}
                             marginLeft={theme.spacing(0.5)}
-                            onClick={reload_page}
-                            sx={{
-                                "&:hover": {
-                                    cursor: "pointer"
-                                }
-                            }}
+                            underline={"none"}
+                            color={"#ffffff"}
                         >
                             ReflecMino
-                        </Typography>
+                        </Link>
                         <Divider
                             sx={{
                                 marginTop: theme.spacing(0.5),
