@@ -15,17 +15,20 @@ import h2p3_img from '../images/how_to_play_3.png';
 import Timer from './Timer';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { format, isBefore } from 'date-fns';
+import { format, isAfter, isBefore } from 'date-fns';
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import ShareIcon from '@mui/icons-material/Share'
 import HomeIcon from '@mui/icons-material/Home'
 import DoneIcon from '@mui/icons-material/Done'
 import RandomDateIcon from '@mui/icons-material/History'
+import parse from 'date-fns/parse'
+
+const query_params = Object.fromEntries(window.location.search.slice(1).split('&').map(e => e.split("=")));
 
 const ReflecMino = (): JSX.Element => {
 
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(query_params.date ? parse(query_params.date, "yyyyMMdd", new Date()) : new Date());
     const HandleDateChange = useCallback(
         (value: Date | null) => {
             if (!Number.isNaN(value?.getTime()) && value !== null) {
@@ -81,6 +84,8 @@ const ReflecMino = (): JSX.Element => {
 
     const reload_page = useCallback(
         () => {
+            const url = new URL(window.location.href);
+            window.history.replaceState('', '', url.pathname);
             window.location.reload();
         }, []
     );
@@ -556,7 +561,7 @@ const ReflecMino = (): JSX.Element => {
                                         </Grid>
                                     </LocalizationProvider>
                                     <Button
-                                        disabled={playing || solved || how2play_visible}
+                                        disabled={playing || solved || how2play_visible || isBefore(date, new Date(1900, 1, 1)) || isAfter(date, new Date())}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
