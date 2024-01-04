@@ -14,3 +14,5 @@ export const replace_2d_array = <A>(base: A[][], x: number, y: number, other: A)
     const y_array = replace_array(base[y], x, other);
     return replace_array(structuredClone(base), y, y_array);
 };
+
+export const is_invalid_date = (date: Date) => Number.isNaN(date.getTime());

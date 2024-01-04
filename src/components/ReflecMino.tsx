@@ -23,18 +23,27 @@ import HomeIcon from '@mui/icons-material/Home'
 import DoneIcon from '@mui/icons-material/Done'
 import RandomDateIcon from '@mui/icons-material/History'
 import parse from 'date-fns/parse'
+import { is_invalid_date } from '../utils/function';
 
 const query_params = Object.fromEntries(window.location.search.slice(1).split('&').map(e => e.split("=")));
+const initial_date = (() => {
+    const parse_date = parse(query_params.date, "yyyyMMdd", new Date());
+    return is_invalid_date(parse_date)
+        ? new Date()
+        : parse_date;
+})();
 
 const ReflecMino = (): JSX.Element => {
 
-    const [date, setDate] = useState<Date>(query_params.date ? parse(query_params.date, "yyyyMMdd", new Date()) : new Date());
+    const [date, setDate] = useState<Date>(initial_date);
     const HandleDateChange = useCallback(
         (value: Date | null) => {
-            if (!Number.isNaN(value?.getTime()) && value !== null) {
-                const new_date = isBefore(value, new Date()) ? value : new Date();
-                console.log(format(new_date, "yyyyMMdd"));
-                setDate(new_date);
+            if (value !== null) {
+                if (!is_invalid_date(value)) {
+                    const new_date = isBefore(value, new Date()) ? value : new Date();
+                    console.log(format(new_date, "yyyyMMdd"));
+                    setDate(new_date);
+                }
             }
         }, []
     );
@@ -85,7 +94,7 @@ const ReflecMino = (): JSX.Element => {
     const reload_page = useCallback(
         () => {
             const url = new URL(window.location.href);
-            window.history.replaceState('', '', url.pathname);
+            window.history.replaceState("", "", url.pathname);
             window.location.reload();
         }, []
     );
@@ -561,7 +570,7 @@ const ReflecMino = (): JSX.Element => {
                                         </Grid>
                                     </LocalizationProvider>
                                     <Button
-                                        disabled={playing || solved || how2play_visible || isBefore(date, new Date(1900, 1, 1)) || isAfter(date, new Date())}
+                                        disabled={playing || solved || how2play_visible || isBefore(date, new Date("1900-1-1")) || isAfter(date, new Date())}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
