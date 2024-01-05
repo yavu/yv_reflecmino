@@ -21,7 +21,7 @@ type CanvasProp = {
 };
 const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_enabled }: CanvasProp) => {
     const [dragging_mino_index, setDraggingMinoIndex] = useState<number | undefined>(undefined);
-    console.log(puzzle_data);
+
     return (
         <Stage
             width={656}
