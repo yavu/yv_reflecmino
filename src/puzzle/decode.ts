@@ -1,3 +1,4 @@
+import { replace_2d_array } from "../utils/function";
 import { PuzzleData, decode_table, empty_board } from "./const";
 import { simulate_laser } from "./simulate_laser";
 
@@ -14,9 +15,15 @@ export function decode(code: string): PuzzleData | undefined {
             simulate_laser(empty_board, pos[0]),
             simulate_laser(empty_board, pos[2])
         ];
+        const board = (() => {
+            const draw_1 = replace_2d_array(empty_board, pos[0].x, pos[0].y, "s");
+            const draw_2 = replace_2d_array(draw_1, pos[1].x, pos[1].y, "e");
+            const draw_3 = replace_2d_array(draw_2, pos[2].x, pos[2].y, "s");
+            return replace_2d_array(draw_3, pos[3].x, pos[3].y, "e");
+        })();
 
         return [
-            empty_board,
+            board,
             [
                 {
                     cell: [
