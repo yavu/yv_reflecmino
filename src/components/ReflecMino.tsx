@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
 import Measure from 'react-measure'
-import { PuzzleData, puzzle_initial_data } from '../puzzle/const';
+import { PuzzleData, empty_puzzle_data } from '../puzzle/const';
 import Canvas from './Canvas';
 import icon_img from '../images/icon.png';
 import h2p1_img from '../images/how_to_play_1.gif';
@@ -24,6 +24,7 @@ import DoneIcon from '@mui/icons-material/Done'
 import RandomDateIcon from '@mui/icons-material/History'
 import parse from 'date-fns/parse'
 import { is_invalid_date } from '../utils/function';
+import { decode } from '../puzzle/decode';
 
 const query_params = Object.fromEntries(window.location.search.slice(1).split('&').map(e => e.split("=")));
 const initial_date = (() => {
@@ -32,6 +33,7 @@ const initial_date = (() => {
         ? new Date()
         : parse_date;
 })();
+const custom_puzzle_data = decode(query_params.custom);
 
 const ReflecMino = (): JSX.Element => {
 
@@ -57,7 +59,7 @@ const ReflecMino = (): JSX.Element => {
             setDate(random_date);
         }, []
     );
-    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(puzzle_initial_data);
+    const [puzzle_data, setPuzzleData] = useState<PuzzleData>(empty_puzzle_data);
     const [solved, setSolved] = useState<boolean>(false);
 
     const [size, setSize] = useState<{ x: number, y: number }>({ x: 100, y: 100 });
@@ -74,7 +76,7 @@ const ReflecMino = (): JSX.Element => {
     const copy_result_to_clipboard = useCallback(
         () => {
             const text = [
-                `⬛🟧⬛ ReflecMino ${format(date, "yyyy/MM/dd")}`,
+                `⬛🟧⬛ ReflecMino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
                 `🟧⬜🟦 https://yavu.github.io/yv_reflecmino/`,
                 `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
             ].join("\n");
@@ -104,7 +106,7 @@ const ReflecMino = (): JSX.Element => {
 
                 setPlaying(false);
                 window.setTimeout(() => {
-                    setPuzzleData(puzzle_initial_data);
+                    setPuzzleData(empty_puzzle_data);
                     setSolved(false);
                     setTimerEnabled(false);
                 }, 600);
@@ -119,7 +121,11 @@ const ReflecMino = (): JSX.Element => {
     const [timer_enabled, setTimerEnabled] = useState<boolean>(false);
     const game_start = useCallback(
         () => {
-            setPuzzleData(generate(Number(format(date, "yyyyMMdd"))));
+            setPuzzleData(
+                custom_puzzle_data
+                    ? custom_puzzle_data
+                    : generate(Number(format(date, "yyyyMMdd")))
+            );
             setPlaying(true);
             setTimerEnabled(true);
         }, [date]
@@ -311,7 +317,7 @@ const ReflecMino = (): JSX.Element => {
                                         marginTop={theme.spacing(2)}
                                         variant="h4"
                                     >
-                                        {format(date, "yyyy/MM/dd")}
+                                        {custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}
                                     </Typography>
                                     <Divider
                                         sx={{
@@ -527,6 +533,13 @@ const ReflecMino = (): JSX.Element => {
                                     >
                                         ReflecMino
                                     </Typography>
+                                    <Typography
+                                        variant="h4"
+                                        marginTop={theme.spacing(2)}
+                                        display={custom_puzzle_data ? "block" : "none"}
+                                    >
+                                        Custom
+                                    </Typography>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         < Grid
                                             container
@@ -535,6 +548,7 @@ const ReflecMino = (): JSX.Element => {
                                             alignItems={"center"}
                                             width={theme.spacing(14)}
                                             marginTop={theme.spacing(2)}
+                                            display={custom_puzzle_data ? "none" : "inline-flex"}
                                         >
                                             <IconButton
                                                 sx={{
@@ -547,7 +561,7 @@ const ReflecMino = (): JSX.Element => {
                                                 <RandomDateIcon />
                                             </IconButton>
                                             <DatePicker
-                                                disabled={playing || solved || how2play_visible}
+                                                disabled={playing || solved || how2play_visible || custom_puzzle_data !== undefined}
                                                 format={"yyyy/MM/dd"}
                                                 slotProps={{
                                                     textField: {

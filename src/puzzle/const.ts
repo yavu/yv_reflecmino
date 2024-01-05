@@ -54,16 +54,68 @@ export type PuzzleData = [
     laser: LaserData[]
 ];
 
-export const puzzle_initial_data: PuzzleData = [
+export const empty_puzzle_data: PuzzleData = [
     empty_board,
     [
-        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
-        { "cell": [{ "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }, { "x": 0, "y": 0, "type": "￭" }], "vertex": [], pos: undefined },
+        { cell: [{ x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }], vertex: [], pos: undefined },
+        { cell: [{ x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }], vertex: [], pos: undefined },
+        { cell: [{ x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }], vertex: [], pos: undefined },
+        { cell: [{ x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }, { x: 0, y: 0, type: "￭" }], vertex: [], pos: undefined },
     ],
     [
         { start: { "x": 3, "y": 3 }, end: { "x": 3, "y": 3 }, board: empty_board, vertex: [] },
         { start: { "x": 3, "y": 3 }, end: { "x": 3, "y": 3 }, board: empty_board, vertex: [] }
     ]
 ];
+
+export const decode_table: { cell: [string, { x: number, y: number, type: string }][], vertex: [string, number[]][], pos: [string, { x: number, y: number }][] } = {
+    cell: [
+        ["A", { "x": 0, "y": -1, "type": "￭" }],
+        ["B", { "x": -1, "y": 0, "type": "￭" }],
+        ["C", { "x": 0, "y": 0, "type": "￭" }],
+        ["D", { "x": 1, "y": 0, "type": "￭" }],
+        ["E", { "x": 0, "y": 1, "type": "￭" }],
+
+        ["F", { "x": 0, "y": -1, "type": "/" }],
+        ["G", { "x": -1, "y": 0, "type": "/" }],
+        ["H", { "x": 0, "y": 0, "type": "/" }],
+        ["I", { "x": 1, "y": 0, "type": "/" }],
+        ["J", { "x": 0, "y": 1, "type": "/" }],
+
+        ["K", { "x": 0, "y": -1, "type": "\\" }],
+        ["L", { "x": -1, "y": 0, "type": "\\" }],
+        ["M", { "x": 0, "y": 0, "type": "\\" }],
+        ["N", { "x": 1, "y": 0, "type": "\\" }],
+        ["O", { "x": 0, "y": 1, "type": "\\" }]
+    ],
+    vertex: [
+        ["P", [0, -50, 50, -50, 50, 100, 0, 100]],
+        ["Q", [-50, 0, 100, 0, 100, 50, -50, 50]],
+        ["R", [0, 0, 0, -50, 50, -50, 50, 50, -50, 50, -50, 0]],
+        ["S", [0, 50, 0, -50, 50, -50, 50, 0, 100, 0, 100, 50]],
+        ["T", [0, 100, 0, 0, 100, 0, 100, 50, 50, 50, 50, 100]],
+        ["U", [-50, 0, 50, 0, 50, 100, 0, 100, 0, 50, -50, 50]]
+    ],
+    pos: [
+        ["a", { x: 1, y: 0 }],
+        ["b", { x: 2, y: 0 }],
+        ["c", { x: 3, y: 0 }],
+        ["d", { x: 4, y: 0 }],
+        ["e", { x: 5, y: 0 }],
+        ["f", { x: 0, y: 1 }],
+        ["g", { x: 6, y: 1 }],
+        ["h", { x: 0, y: 2 }],
+        ["i", { x: 6, y: 2 }],
+        ["j", { x: 0, y: 3 }],
+        ["k", { x: 6, y: 3 }],
+        ["l", { x: 0, y: 4 }],
+        ["m", { x: 6, y: 4 }],
+        ["n", { x: 0, y: 5 }],
+        ["o", { x: 6, y: 5 }],
+        ["p", { x: 1, y: 6 }],
+        ["q", { x: 2, y: 6 }],
+        ["r", { x: 3, y: 6 }],
+        ["s", { x: 4, y: 6 }],
+        ["t", { x: 5, y: 6 }]
+    ]
+}
