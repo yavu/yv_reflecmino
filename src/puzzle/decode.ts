@@ -10,7 +10,7 @@ export function decode(code: string): PuzzleData | undefined {
     const vertices = [chars[3], chars[7], chars[11], chars[15]].map(e => decode_table.vertex.find(([k,]) => (k === e))?.[1]).filter((e): e is Exclude<typeof e, undefined> => e !== undefined);
     const pos = [...chars.slice(16)].map(e => decode_table.pos.find(([k,]) => (k === e))?.[1]).filter((e): e is Exclude<typeof e, undefined> => e !== undefined);
 
-    if (cells.length === 12 && vertices.length === 4 && pos.length === 4) {
+    if (chars.length === 20 && cells.length === 12 && vertices.length === 4 && pos.length === 4) {
         const laser_board = [
             simulate_laser(empty_board, pos[0]),
             simulate_laser(empty_board, pos[2])
