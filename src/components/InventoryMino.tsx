@@ -22,6 +22,7 @@ const InventoryMino = ({ index, x, y, scale, puzzle_data, setPuzzleData, draggin
     const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
     const centered_pos = {
+        //ここの後ろの数字は区画の中のミノの位置に関係してそう
         x: x - (picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 25 * scale.x,
         y: y - (picked_mino.cell[0].y + picked_mino.cell[1].y + picked_mino.cell[2].y) * 25 * scale.y
     };
@@ -36,10 +37,7 @@ const InventoryMino = ({ index, x, y, scale, puzzle_data, setPuzzleData, draggin
     const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
     setSolved(
         !non_activated_cells.flat().includes("￭") &&
-        puzzle_data[1][0].pos !== undefined &&
-        puzzle_data[1][1].pos !== undefined &&
-        puzzle_data[1][2].pos !== undefined &&
-        puzzle_data[1][3].pos !== undefined &&
+        puzzle_data[1].every(e => e.pos !== undefined) &&
         dragging_mino_index === undefined
     );
 
@@ -60,7 +58,7 @@ const InventoryMino = ({ index, x, y, scale, puzzle_data, setPuzzleData, draggin
                 fill={"#c2c8cc"}
                 closed={true}
                 stroke={"#414958"}
-                strokeWidth={4}
+                strokeWidth={3}
                 lineJoin={"round"}
             />
             <Cell data={picked_mino.cell[0]} color={undefined} rect_visible={true} />

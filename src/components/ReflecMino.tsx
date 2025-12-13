@@ -531,7 +531,7 @@ const ReflecMino = (): JSX.Element => {
                                         variant="h3"
                                         marginTop={theme.spacing(2)}
                                     >
-                                        ReflecMino
+                                        Reflec鬼Mino
                                     </Typography>
                                     <Typography
                                         variant="h4"

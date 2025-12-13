@@ -10,6 +10,12 @@ export function generate(seed: number): PuzzleData {
     const random_insert = (base: string) => insert(base, rnd.next_int(0, base.length + 2), "S");
     const flame = compose_n(2, random_insert)("##################").split("");
 
+    // ミラーの総枚数
+    // 原作は６
+    const total_mirror_count = 8;
+    // ミノの数
+    const tortal_mino_count = 4;
+
     type Move = [0, 1] | [0, -1] | [1, 0] | [-1, 0];
     const get_s = (index: number): { x: number, y: number, move: Move } => {
         if (index < 5) { return { x: index + 1, y: 0, move: [0, 1] }; }
@@ -17,10 +23,12 @@ export function generate(seed: number): PuzzleData {
         else { return { x: index - 14, y: 6, move: [0, -1] }; }
     }
 
-    const mirror_random_count = rnd.next_int(3, 7);
+    // 青のレーザーは０〜総枚数までのミラーを使う
+    // 初期は3,4,5,6だった
+    const mirror_random_count = rnd.next_int(0, total_mirror_count);
     const laser = [
         Object.assign({ mirror: mirror_random_count }, get_s(flame.indexOf("S"))),
-        Object.assign({ mirror: 6 - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
+        Object.assign({ mirror: total_mirror_count - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
     ]
 
     type DrawLaser = [board: string[][], x: number, y: number, move: Move, mirror: number];
@@ -209,7 +217,7 @@ export function generate(seed: number): PuzzleData {
         // console.log(draw_2_data);
         const mirror_count = [...draw_2_data[0]].join().replace(/[^\\/]/g, "").length;
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
-        if (laser_cell_count > 11 && mirror_count === 6) {
+        if (laser_cell_count >= tortal_mino_count * 3 && mirror_count === total_mirror_count) {
             // if (laser_cell_count > 11) {
             const s_drawn_board = (() => {
                 const draw_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
@@ -320,6 +328,8 @@ export function generate(seed: number): PuzzleData {
         const place_4 = place_random_mino(place_3);
         const return_data: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_4[2], laser_drawn_board[1], laser_drawn_board[2]];
         return [[...place_4[0]].flat().includes("/") || [...place_4[0]].flat().includes("\\") || place_4[2].length !== 4, return_data];
+        // const return_data: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_3[2], laser_drawn_board[1], laser_drawn_board[2]];
+        // return [[...place_3[0]].flat().includes("/") || [...place_3[0]].flat().includes("\\") || place_3[2].length !== 4, return_data];
     });
 
     // console.log("==generate==");
