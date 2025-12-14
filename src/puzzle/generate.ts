@@ -1,10 +1,13 @@
 import { compose_n, while_f, replace_2d_array } from "../utils/function";
 import { random } from "../utils/random"
-import { difficulty_setting, empty_board, mino_pattern } from "./const";
-import { MinoData, PuzzleData } from "./const";
+import { normal_difficulty_setting, hell_difficulty_setting, empty_board, mino_pattern } from "./const";
+import { MinoData, PuzzleData, Mode } from "./const";
 import { simulate_laser } from "./simulate_laser";
 
-export function generate(seed: number): PuzzleData {
+export function generate(mode: Mode,seed: number): PuzzleData {
+    const minoCount = mode === "HellMode" ? hell_difficulty_setting.minoCount : normal_difficulty_setting.minoCount;
+    const mirrorCount = mode === "HellMode" ? hell_difficulty_setting.mirrorCount : normal_difficulty_setting.mirrorCount;
+
     const rnd = new random(seed);
     const insert = (base: string, index: number, other: string) => base.slice(0, index) + other + base.slice(index);
     const random_insert = (base: string) => insert(base, rnd.next_int(0, base.length + 2), "S");
@@ -19,10 +22,10 @@ export function generate(seed: number): PuzzleData {
 
     // 青のレーザーは０〜総枚数までのミラーを使う
     // 原作はnext_int(3, 7)だった
-    const mirror_random_count = rnd.next_int(0, difficulty_setting.mirrorCount + 1);
+    const mirror_random_count = rnd.next_int(0, mirrorCount + 1);
     const laser = [
         Object.assign({ mirror: mirror_random_count }, get_s(flame.indexOf("S"))),
-        Object.assign({ mirror: difficulty_setting.mirrorCount - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
+        Object.assign({ mirror: mirrorCount - mirror_random_count }, get_s(flame.lastIndexOf("S"))),
     ]
 
     type DrawLaser = [board: string[][], x: number, y: number, move: Move, mirror: number];
@@ -211,7 +214,7 @@ export function generate(seed: number): PuzzleData {
         // console.log(draw_2_data);
         const mirror_count = [...draw_2_data[0]].join().replace(/[^\\/]/g, "").length;
         const laser_cell_count = [...draw_2_data[0]].join().replace(/[^\\/￭]/g, "").length;
-        if (laser_cell_count >= difficulty_setting.minoCount * 3 && mirror_count === difficulty_setting.mirrorCount) {
+        if (laser_cell_count >= minoCount * 3 && mirror_count === mirrorCount) {
             // if (laser_cell_count > 11) {
             const s_drawn_board = (() => {
                 const draw_1 = replace_2d_array(draw_2_data[0], laser[0].x, laser[0].y, "s");
@@ -324,11 +327,11 @@ export function generate(seed: number): PuzzleData {
         const laser_cells: { x: number, y: number }[] = [...laser_drawn_board[0]].map((y, y_index) => y.map((e, x_index) => e === "\\" || e === "/" || e === "￭" ? { x: x_index, y: y_index } : { x: -1, y: -1 }).filter(e => e.x !== -1)).flat();
         // ミノを難易度設定で指定した回数置く
         let placed_minos_board: PlaceMino = [laser_drawn_board[0], laser_cells, []];
-        for (let i = 0; i < difficulty_setting.minoCount; i++) {
+        for (let i = 0; i < minoCount; i++) {
             placed_minos_board = place_random_mino(placed_minos_board);
         } 
         const return_data: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], placed_minos_board[2], laser_drawn_board[1], laser_drawn_board[2]];
-        return [[...placed_minos_board[0]].flat().includes("/") || [...placed_minos_board[0]].flat().includes("\\") || placed_minos_board[2].length !== difficulty_setting.minoCount, return_data];
+        return [[...placed_minos_board[0]].flat().includes("/") || [...placed_minos_board[0]].flat().includes("\\") || placed_minos_board[2].length !== minoCount, return_data];
         // const return_data: [board: string[][], mino_data: MinoData[], start: { x: number, y: number }[], end: { x: number, y: number }[]] = [laser_drawn_board[0], place_3[2], laser_drawn_board[1], laser_drawn_board[2]];
         // return [[...place_3[0]].flat().includes("/") || [...place_3[0]].flat().includes("\\") || place_3[2].length !== 4, return_data];
     });

@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Button, Divider, Fab, IconButton, Link, Paper, Snackbar, Typography } from '@mui/material';
+import { Box, Button, ButtonBase, Divider, Fab, IconButton, Link, Paper, Snackbar, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { gh_dark as theme } from '../theme/gh_dark';
 import { generate } from '../puzzle/generate';
 import Measure from 'react-measure'
-import { PuzzleData, empty_puzzle_data } from '../puzzle/const';
+import { Mode, PuzzleData, empty_puzzle_data } from '../puzzle/const';
 import Canvas from './Canvas';
 import icon_img from '../images/icon.png';
 import h2p1_img from '../images/how_to_play_1.gif';
@@ -72,14 +72,28 @@ const ReflecMino = (): JSX.Element => {
         }, []
     );
 
+    const [playMode, setPlayMode] = useState<Mode>("NormalMode");
+    const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [copied_snackbar_visible, setCopiedSnackbarVisible] = useState<boolean>(false);
     const copy_result_to_clipboard = useCallback(
         () => {
-            const text = [
-                `⬛🟧👿 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
-                `🟧⬜🟦 https://kota-yanagimachi.github.io/yv_reflecONImino/`,
-                `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
-            ].join("\n");
+            let text;
+            switch (playMode) {
+                case "NormalMode":
+                    text = [
+                        `⬛🟧👿 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
+                        `🟧⬜🟦 https://kota-yanagimachi.github.io/yv_reflecONImino/`,
+                        `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
+                    ].join("\n");
+                    break;
+                case "HellMode":
+                    text = [
+                        `👿🟧👿 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
+                        `🟧⬜🟦 https://kota-yanagimachi.github.io/yv_reflecONImino/`,
+                        `👿🟦👿 Solved in ${document.getElementById("timer")?.textContent}`,
+                    ].join("\n")
+                    break;
+            }
             navigator.clipboard.writeText(text)
                 .then(function () {
                     setCopiedSnackbarVisible(true);
@@ -90,9 +104,23 @@ const ReflecMino = (): JSX.Element => {
                 }, function (err) {
                     console.error("Async: Could not copy text: ", err);
                 });
-        }, [date]
+        }, [date, playMode]
     );
-
+    const hellCountRef = useRef(0);
+    const [hellModeCount, setHellModeCount] = useState(0);
+    
+    const add_hell_mode_count = () => {
+      const next = hellCountRef.current + 1;
+      if (next >= 4) {
+        hellCountRef.current = 0;
+        setHellModeCount(0);
+        game_start("HellMode");
+      } else {
+        hellCountRef.current = next;
+        setHellModeCount(next);
+      }
+    };
+    
     const reload_page = useCallback(
         () => {
             const url = new URL(window.location.href);
@@ -120,15 +148,20 @@ const ReflecMino = (): JSX.Element => {
     const [playing, setPlaying] = useState<boolean>(false);
     const [timer_enabled, setTimerEnabled] = useState<boolean>(false);
     const game_start = useCallback(
-        () => {
-            setPuzzleData(
-                custom_puzzle_data
-                    ? custom_puzzle_data
-                    : generate(Number(format(date, "yyyyMMdd")))
-            );
-            setPlaying(true);
-            setTimerEnabled(true);
-        }, [date]
+        (mode: Mode) => {
+            setIsGenerating(true);
+            setPlayMode(mode);
+            window.setTimeout(() => {
+                setPuzzleData(
+                    custom_puzzle_data
+                        ? custom_puzzle_data
+                        : generate(mode, Number(format(date, "yyyyMMdd")))
+                );
+                setPlaying(true);
+                setTimerEnabled(true);
+                setIsGenerating(false);
+            }, 0);
+        }, [date, custom_puzzle_data]
     );
 
     const [how2play_visible, setHow2PlayVisible] = useState<boolean>(false);
@@ -531,7 +564,23 @@ const ReflecMino = (): JSX.Element => {
                                         variant="h3"
                                         marginTop={theme.spacing(2)}
                                     >
-                                        Reflec<span style={{ color: '#ff4a4aff' }}>鬼</span>Mino
+                                        Reflec
+                                        <ButtonBase
+                                            disabled={isGenerating}
+                                            onClick={add_hell_mode_count}
+                                            disableRipple
+                                            sx={{
+                                                color: '#ff4a4aff',
+                                                font: 'inherit',
+                                                padding: 0,
+                                                minWidth: 0,
+                                                verticalAlign: 'baseline',
+                                                userSelect: 'none',
+                                            }}
+                                        >
+                                            鬼
+                                        </ButtonBase>
+                                        Mino
                                     </Typography>
                                     <Typography
                                         variant="h4"
@@ -584,7 +633,7 @@ const ReflecMino = (): JSX.Element => {
                                         </Grid>
                                     </LocalizationProvider>
                                     <Button
-                                        disabled={playing || solved || how2play_visible || isBefore(date, new Date("1900-1-1")) || isAfter(date, new Date())}
+                                        disabled={ isGenerating ||playing || solved || how2play_visible || isBefore(date, new Date("1900-1-1")) || isAfter(date, new Date())}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
@@ -595,9 +644,9 @@ const ReflecMino = (): JSX.Element => {
                                                 backgroundColor: "#40c0ff",
                                             }
                                         }}
-                                        onClick={game_start}
+                                        onClick={ () => game_start("NormalMode") }
                                     >
-                                        Play
+                                        {isGenerating ? "Generating..." : "Play"}
                                     </Button>
                                     <Button
                                         disabled={playing || solved || how2play_visible}
