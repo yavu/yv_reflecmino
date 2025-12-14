@@ -1,3 +1,18 @@
+type DifficultySetting = {
+    minoCount: number,
+    mirrorCount: number
+}
+
+// 難易度調整
+// 原作はミノ４、ミラー６
+// 不正な値に注意！理論上可能な組み合わせでもアルゴリズム的に厳しい場合がある
+// 例（1, 8）=>エラー　（3, 9）=>待てば出る　（5, 13）=>待てば出る　（5, 15）=>無限ループ？　（8, 13）=>余裕　
+// (x, 3x)に近づくと厳しくなるっぽい
+export const difficulty_setting: DifficultySetting = {
+    minoCount: 8,
+    mirrorCount: 15
+};
+
 export const empty_board = [
     ["#", "#", "#", "#", "#", "#", "#"],
     ["#", " ", " ", " ", " ", " ", "#"],

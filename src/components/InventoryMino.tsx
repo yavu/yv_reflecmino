@@ -5,12 +5,13 @@ import { Group, Line } from 'react-konva';
 import Cell from './Cell';
 import usePickupMino from '../hooks/usePickupMino';
 import useDropMino from '../hooks/useDropMino';
+import { Frame } from './common';
 
 type InventoryMinoProp = {
     index: number,
-    x: number,
-    y: number,
-    scale: { x: number, y: number },
+    inventoryFrame: Frame,
+    slotFrame: Frame,
+    isLandscape: boolean,
     puzzle_data: PuzzleData,
     setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
     dragging_mino_index: number | undefined,
@@ -18,13 +19,16 @@ type InventoryMinoProp = {
     setSolved: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const InventoryMino = ({ index, x, y, scale, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex, setSolved }: InventoryMinoProp): JSX.Element => {
+const InventoryMino = ({ index, inventoryFrame, slotFrame, isLandscape, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex, setSolved }: InventoryMinoProp): JSX.Element => {
     const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
+    const baseScale = isLandscape ? 0.8 : 0.45;
+    const scaleModifier = Math.min(4 / puzzle_data[1].length, 1);
+    const scale = isLandscape ? {x: baseScale * scaleModifier, y: baseScale * scaleModifier} : {x: baseScale * scaleModifier, y: baseScale * scaleModifier};
     const centered_pos = {
-        //ここの後ろの数字は区画の中のミノの位置に関係してそう
-        x: x - (picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 25 * scale.x,
-        y: y - (picked_mino.cell[0].y + picked_mino.cell[1].y + picked_mino.cell[2].y) * 25 * scale.y
+        // (スロットの左上絶対座標) - (ミノ座標とミノ中心の差分) + (スロット座標とスロット中心との差分)
+        x: (inventoryFrame.x + slotFrame.x) - ((picked_mino.cell[0].x + picked_mino.cell[1].x + picked_mino.cell[2].x) * 25 * scale.x) + (slotFrame.width / 2),
+        y: (inventoryFrame.y + slotFrame.y) - ((picked_mino.cell[0].y + picked_mino.cell[1].y + picked_mino.cell[2].y) * 25 * scale.y) + (slotFrame.height / 2)
     };
     const onDragMove = useCallback(
         (e: KonvaEventObject<DragEvent>) => {
