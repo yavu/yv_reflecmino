@@ -76,7 +76,7 @@ const ReflecMino = (): JSX.Element => {
     const copy_result_to_clipboard = useCallback(
         () => {
             const text = [
-                `⬛🟧👹 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
+                `⬛🟧👿 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
                 `🟧⬜🟦 https://kota-yanagimachi.github.io/yv_reflecONImino/`,
                 `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
             ].join("\n");
