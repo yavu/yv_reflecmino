@@ -108,19 +108,23 @@ const ReflecMino = (): JSX.Element => {
     );
     const hellCountRef = useRef(0);
     const [hellModeCount, setHellModeCount] = useState(0);
-    
+    const [oniFlash, setOniFlash] = useState<boolean>(false);
     const add_hell_mode_count = () => {
-      const next = hellCountRef.current + 1;
-      if (next >= 4) {
-        hellCountRef.current = 0;
-        setHellModeCount(0);
-        game_start("HellMode");
-      } else {
-        hellCountRef.current = next;
-        setHellModeCount(next);
-      }
+        setOniFlash(true);
+        window.setTimeout(() => {
+            const next = hellCountRef.current + 1;
+            if (next >= 4) {
+                hellCountRef.current = 0;
+                setHellModeCount(0);
+                game_start("HellMode");
+            } else {
+                hellCountRef.current = next;
+                setHellModeCount(next);
+                setOniFlash(false);
+            }
+        }, 120);
     };
-    
+
     const reload_page = useCallback(
         () => {
             const url = new URL(window.location.href);
@@ -160,6 +164,7 @@ const ReflecMino = (): JSX.Element => {
                 setPlaying(true);
                 setTimerEnabled(true);
                 setIsGenerating(false);
+                setOniFlash(false);
             }, 0);
         }, [date, custom_puzzle_data]
     );
@@ -570,12 +575,35 @@ const ReflecMino = (): JSX.Element => {
                                             onClick={add_hell_mode_count}
                                             disableRipple
                                             sx={{
-                                                color: '#ff4a4aff',
+                                                display: 'inline-block',
+                                                lineHeight: 1,
                                                 font: 'inherit',
                                                 padding: 0,
                                                 minWidth: 0,
                                                 verticalAlign: 'baseline',
                                                 userSelect: 'none',
+
+                                                // ▼ 通常時：色の脈動
+                                                animation: oniFlash
+                                                    ? 'none'
+                                                    : 'oniColorPulse 3.4s ease-in-out infinite',
+
+                                                // ▼ クリック時フラッシュ（上書き）
+                                                color: oniFlash ? '#ff7d7dff' : undefined,
+                                                filter: oniFlash
+                                                    ? 'drop-shadow(0 0 24px rgba(255, 74, 74, 1))drop-shadow(0 0 24px rgba(255, 74, 74, 1))'
+                                                    : 'drop-shadow(0 0 0 rgba(255, 74, 74, 0))',
+
+                                                transition: 'color 620ms ease, filter 120ms ease',
+
+                                                '@keyframes oniColorPulse': {
+                                                    '0%, 100%': {
+                                                        color: '#ff4c4cff', // 薄い赤
+                                                    },
+                                                    '50%': {
+                                                        color: '#ff0000ff', // 濃い赤
+                                                    },
+                                                },
                                             }}
                                         >
                                             鬼
@@ -633,7 +661,7 @@ const ReflecMino = (): JSX.Element => {
                                         </Grid>
                                     </LocalizationProvider>
                                     <Button
-                                        disabled={ isGenerating ||playing || solved || how2play_visible || isBefore(date, new Date("1900-1-1")) || isAfter(date, new Date())}
+                                        disabled={isGenerating || playing || solved || how2play_visible || isBefore(date, new Date("1900-1-1")) || isAfter(date, new Date())}
                                         variant={"contained"}
                                         size={"large"}
                                         sx={{
@@ -644,7 +672,7 @@ const ReflecMino = (): JSX.Element => {
                                                 backgroundColor: "#40c0ff",
                                             }
                                         }}
-                                        onClick={ () => game_start("NormalMode") }
+                                        onClick={() => game_start("NormalMode")}
                                     >
                                         {isGenerating ? "Generating..." : "Play"}
                                     </Button>
