@@ -76,8 +76,8 @@ const ReflecMino = (): JSX.Element => {
     const copy_result_to_clipboard = useCallback(
         () => {
             const text = [
-                `⬛🟧⬛ ReflecMino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
-                `🟧⬜🟦 https://yavu.github.io/yv_reflecmino/`,
+                `⬛🟧👹 Reflec鬼Mino ${custom_puzzle_data ? "Custom" : format(date, "yyyy/MM/dd")}`,
+                `🟧⬜🟦 https://kota-yanagimachi.github.io/yv_reflecONImino/`,
                 `⬛🟦⬛ Solved in ${document.getElementById("timer")?.textContent}`,
             ].join("\n");
             navigator.clipboard.writeText(text)
@@ -166,7 +166,7 @@ const ReflecMino = (): JSX.Element => {
                             underline={"none"}
                             color={"#ffffff"}
                         >
-                            ReflecMino
+                            Reflec<span style={{ color: '#ff3838ff' }}>鬼</span>Mino
                         </Link>
                         <Divider
                             sx={{
@@ -531,7 +531,7 @@ const ReflecMino = (): JSX.Element => {
                                         variant="h3"
                                         marginTop={theme.spacing(2)}
                                     >
-                                        Reflec鬼Mino
+                                        Reflec<span style={{ color: '#ff4a4aff' }}>鬼</span>Mino
                                     </Typography>
                                     <Typography
                                         variant="h4"

@@ -9,8 +9,8 @@ type DifficultySetting = {
 // 例（1, 8）=>エラー　（3, 9）=>待てば出る　（5, 13）=>待てば出る　（5, 15）=>無限ループ？　（8, 13）=>余裕　
 // (x, 3x)に近づくと厳しくなるっぽい
 export const difficulty_setting: DifficultySetting = {
-    minoCount: 8,
-    mirrorCount: 15
+    minoCount: 4,
+    mirrorCount: 6
 };
 
 export const empty_board = [
