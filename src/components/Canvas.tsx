@@ -93,7 +93,6 @@ const Canvas = ({ width, height, puzzle_data, setPuzzleData, setSolved, timer_en
                             setPuzzleData={setPuzzleData}
                             dragging_mino_index={dragging_mino_index}
                             setDraggingMinoIndex={setDraggingMinoIndex}
-                            setSolved={setSolved}
                         />
                     ))}
                 </Group>

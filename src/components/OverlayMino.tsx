@@ -13,10 +13,9 @@ type OverlayMinoProp = {
     setPuzzleData: React.Dispatch<React.SetStateAction<PuzzleData>>,
     dragging_mino_index: number | undefined,
     setDraggingMinoIndex: React.Dispatch<React.SetStateAction<number | undefined>>
-    setSolved: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex, setSolved }: OverlayMinoProp): JSX.Element => {
+const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex }: OverlayMinoProp): JSX.Element => {
     const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
     const pos = picked_mino.pos
@@ -27,13 +26,6 @@ const OverlayMino = ({ index, puzzle_data, setPuzzleData, dragging_mino_index, s
         : undefined;
     const onDragMove = useCallback((e: KonvaEventObject<DragEvent>) => e.cancelBubble = true, []);
     const onDragEnd = useDropMino(index, setPuzzleData, setDraggingMinoIndex, pos, undefined);
-
-    const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
-    setSolved(
-        !non_activated_cells.flat().includes("￭") &&
-        puzzle_data[1].every(e => e.pos !== undefined) &&
-        dragging_mino_index === undefined
-    );
 
     return (
         <Portal

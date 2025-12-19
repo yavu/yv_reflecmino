@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Button, ButtonBase, Divider, Fab, IconButton, Link, Paper, Snackbar, Typography } from '@mui/material';
@@ -175,6 +175,21 @@ const ReflecMino = (): JSX.Element => {
             setHow2PlayVisible(!how2play_visible);
         }, [how2play_visible]
     );
+
+    useEffect(() => {
+            const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y
+                    .map((e, x_index) => (
+                        e !== "#" &&
+                        e !== " " &&
+                        puzzle_data[2][0].board[y_index][x_index] !== "￭" && 
+                        puzzle_data[2][1].board[y_index][x_index] !== "￭"
+                    ) ? "￭" : " ")
+                );
+            setSolved(
+                !non_activated_cells.flat().includes("￭") &&
+                puzzle_data[1].every(e => e.pos !== undefined)
+            );
+    }, [puzzle_data])
 
     return (
         <>

@@ -19,7 +19,7 @@ type InventoryMinoProp = {
     setSolved: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const InventoryMino = ({ index, inventoryFrame, slotFrame, isLandscape, puzzle_data, setPuzzleData, dragging_mino_index, setDraggingMinoIndex, setSolved }: InventoryMinoProp): JSX.Element => {
+const InventoryMino = ({ index, inventoryFrame, slotFrame, isLandscape, puzzle_data, setPuzzleData, setDraggingMinoIndex }: InventoryMinoProp): JSX.Element => {
     const picked_mino = puzzle_data[1][index];
     const onDragStart = usePickupMino(index, setPuzzleData, setDraggingMinoIndex);
     const baseScale = isLandscape ? 0.8 : 0.45;
@@ -37,13 +37,6 @@ const InventoryMino = ({ index, inventoryFrame, slotFrame, isLandscape, puzzle_d
         }, []
     );
     const onDragEnd = useDropMino(index, setPuzzleData, setDraggingMinoIndex, centered_pos, scale);
-
-    const non_activated_cells = [...puzzle_data[0]].map((y, y_index) => y.map((e, x_index) => (e !== "#" && e !== " " && puzzle_data[2][0].board[y_index][x_index] !== "￭" && puzzle_data[2][1].board[y_index][x_index] !== "￭") ? "￭" : " "));
-    setSolved(
-        !non_activated_cells.flat().includes("￭") &&
-        puzzle_data[1].every(e => e.pos !== undefined) &&
-        dragging_mino_index === undefined
-    );
 
     return (
         <Group
