@@ -712,7 +712,7 @@ const ReflecMino = (): JSX.Element => {
                         textAlign={"center"}
                         color={"#586270"}
                     >
-                        Copyright © yavu All Rights Reserved.
+                        Copyright © 2024 yavu
                     </Typography>
                 </ThemeProvider >
             </body >
